@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "App_Julia",
-    "slug": "App_Julia",
+    "slug": "projet-julia",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -43,6 +43,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c986c0c4-8342-44bd-9455-adf137508394"
+      }
+    },
+    "owner": "dylanfs-organization"
   }
 }
