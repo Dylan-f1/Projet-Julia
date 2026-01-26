@@ -352,7 +352,7 @@ const PatientDetailScreen = ({ route, navigation }) => {
                 </Text>
               </Card>
             ) : (
-              recentEvaluations.map((eval) => (
+              recentEvaluations.map((evaluation) => (
                 <Card key={eval._id} className="mb-3">
                   <View className="flex-row justify-between items-center mb-3">
                     <Text className="text-base font-semibold text-gray-900">
