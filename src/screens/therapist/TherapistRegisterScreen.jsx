@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { useAuth } from '../../contexts/AuthContext';
 
-const TherapistRegisterScreen = ({ navigation }) => {
+const TherapistRegisterScreen = () => { 
+  const router = useRouter(); 
   const { registerTherapist } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -23,13 +25,9 @@ const TherapistRegisterScreen = ({ navigation }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const specialties = [
-    'Psychologue clinicien',
     'Psychiatre',
     'Psychothérapeute',
-    'Psychanalyste',
-    'Neuropsychologue',
-    'Psychologue du travail',
-    'Autre',
+    'Psychologue',
   ];
 
   const updateField = (field, value) => {
@@ -62,16 +60,28 @@ const TherapistRegisterScreen = ({ navigation }) => {
     return true;
   };
 
-  const handleRegister = async () => {
+    const handleRegister = async () => {
     if (!validateForm()) return;
+
+    console.log('=== DÉBUT INSCRIPTION ===');
+    console.log('Données à envoyer:', formData);
 
     setLoading(true);
     const { confirmPassword, ...registrationData } = formData;
+    
+    console.log('Données après suppression confirmPassword:', registrationData);
+    
     const result = await registerTherapist(registrationData);
+    
+    console.log('Résultat reçu:', result);
+    
     setLoading(false);
 
     if (!result.success) {
-      Alert.alert('Erreur', result.error);
+      console.error('Erreur détaillée:', result.error);
+      Alert.alert('Erreur', result.error || 'Erreur inconnue lors de l\'inscription');
+    } else {
+      console.log('Inscription réussie !');
     }
   };
 
@@ -234,7 +244,7 @@ const TherapistRegisterScreen = ({ navigation }) => {
 
         <View className="flex-row justify-center mb-6">
           <Text className="text-gray-600">Déjà un compte ? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('TherapistLogin')}>
+          <TouchableOpacity onPress={() => router.push('/auth/therapist-login')}>
             <Text className="text-secondary-600 font-semibold">Se connecter</Text>
           </TouchableOpacity>
         </View>
@@ -242,7 +252,7 @@ const TherapistRegisterScreen = ({ navigation }) => {
         <View className="pt-6 border-t border-gray-200">
           <Button
             title="← Retour à l'accueil"
-            onPress={() => navigation.navigate('PatientLogin')}
+            onPress={() => router.push('/')}
             variant="ghost"
           />
         </View>

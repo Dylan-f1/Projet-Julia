@@ -1,11 +1,15 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import authService from '../services/authService';
 import notificationService from '../services/notificationService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL
 
 const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -50,25 +54,115 @@ export const AuthProvider = ({ children }) => {
   };
 
   const loginTherapist = async (email, password) => {
-    const result = await authService.loginTherapist(email, password);
-    if (result.success) {
-      setUser(result.data.user);
-      setUserRole('therapist');
-      setIsAuthenticated(true);
-      await notificationService.registerForPushNotifications();
+  try {
+    const url = `${API_URL}/api/auth/login`;
+
+    console.log('=== AuthContext - loginTherapist ===');
+    console.log('URL:', url);
+    console.log('Email:', email);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    console.log('Status HTTP:', response.status);
+
+    const result = await response.json();
+    
+    console.log('Réponse complète du serveur:', JSON.stringify(result, null, 2));
+
+    if (!response.ok) {
+      return { 
+        success: false, 
+        error: result.message || 'Identifiants incorrects' 
+      };
     }
-    return result;
+
+    // Stocker le token et l'utilisateur
+    await AsyncStorage.setItem('token', result.token);
+    await AsyncStorage.setItem('user', JSON.stringify(result.user));
+    
+    setUser(result.user);
+    setToken(result.token);
+    setUserRole('therapist');
+    setIsAuthenticated(true);
+
+    // Enregistrer pour les notifications push
+    await notificationService.registerForPushNotifications();
+
+    return { success: true };
+  } catch (error) {
+    console.error('=== ERREUR CATCH LOGIN ===');
+    console.error('Message:', error.message);
+    
+    return { 
+      success: false, 
+      error: error.message || 'Erreur réseau' 
+    };
+  }
   };
 
   const registerTherapist = async (data) => {
-    const result = await authService.registerTherapist(data);
-    if (result.success) {
-      setUser(result.data.user);
-      setUserRole('therapist');
-      setIsAuthenticated(true);
-      await notificationService.registerForPushNotifications();
+  try {
+    const backendData = {
+      email: data.email,
+      password: data.password,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      profession: data.specialty,
+      phone: data.phone || '',
+      workLocation: data.workLocation || '', 
+      consultationType: data.consultationType || 'online', 
+    };
+
+    const url = `${API_URL}/api/auth/register`;
+
+    console.log('=== AuthContext - registerTherapist ===');
+    console.log('URL:', url);
+    console.log('Données envoyées:', JSON.stringify(backendData, null, 2));
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(backendData),
+    });
+
+    console.log('Status HTTP:', response.status);
+
+    const result = await response.json();
+    
+    console.log('Réponse complète du serveur:', JSON.stringify(result, null, 2));
+
+    if (!response.ok) {
+      return { 
+        success: false, 
+        error: result.message || 'Erreur serveur' 
+      };
     }
-    return result;
+
+    // Stocker le token
+    await AsyncStorage.setItem('token', result.token);
+    await AsyncStorage.setItem('user', JSON.stringify(result.user));
+    
+    setUser(result.user);
+    setToken(result.token);
+
+    return { success: true };
+  } catch (error) {
+    console.error('=== ERREUR CATCH ===');
+    console.error('Message:', error.message);
+    
+    return { 
+      success: false, 
+      error: error.message || 'Erreur réseau' 
+    };
+  }
   };
 
   const logout = async () => {
@@ -77,21 +171,23 @@ export const AuthProvider = ({ children }) => {
     setUserRole(null);
     setIsAuthenticated(false);
   };
+  const value = {
+    user,
+    userRole,
+    loading,
+    isAuthenticated,
+    sendMagicLink,
+    verifyMagicLink,
+    loginTherapist,
+    logout,
+    setUser,
+    setToken,
+    registerTherapist,
+  }
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        userRole,
-        loading,
-        isAuthenticated,
-        sendMagicLink,
-        verifyMagicLink,
-        loginTherapist,
-        registerTherapist,
-        logout,
-      }}
-    >
+      value={value}>
       {children}
     </AuthContext.Provider>
   );

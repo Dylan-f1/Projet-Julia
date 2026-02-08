@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { useAuth } from '../../contexts/AuthContext';
 
-const TherapistLoginScreen = ({ navigation }) => {
+const TherapistLoginScreen = () => { 
+  const router = useRouter(); 
   const { loginTherapist } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,6 +27,8 @@ const TherapistLoginScreen = ({ navigation }) => {
 
     if (!result.success) {
       Alert.alert('Erreur', result.error);
+    } else {
+      router.replace('/therapist');
     }
   };
 
@@ -92,7 +96,7 @@ const TherapistLoginScreen = ({ navigation }) => {
 
           <View className="mt-6 flex-row justify-center">
             <Text className="text-gray-600">Pas encore de compte ? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('TherapistRegister')}>
+            <TouchableOpacity onPress={() => router.push('/auth/therapist-register')}>
               <Text className="text-primary-600 font-semibold">S'inscrire</Text>
             </TouchableOpacity>
           </View>
@@ -100,7 +104,7 @@ const TherapistLoginScreen = ({ navigation }) => {
           <View className="mt-8 pt-8 border-t border-gray-200">
             <Button
               title="← Retour à l'accueil"
-              onPress={() => navigation.navigate('PatientLogin')}
+              onPress={() => router.push('/')}
               variant="ghost"
             />
           </View>

@@ -403,7 +403,7 @@ console.log(parsed.title, parsed.message);
 
 ```jsx
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { SkeletonDashboard } from '../components/common/Skeleton';
 import ErrorMessage, { NetworkError } from '../components/common/ErrorMessage';
 import useApiError from '../hooks/useApiError';
