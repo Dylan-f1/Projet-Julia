@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import patientService from '../../services/patientService';
 
-const EditPatientScreen = ({ route, navigation }) => {
+const EditPatientScreen = ({ route }) => {
+  const router = useRouter();
   const { patientId, patient } = route.params;
   const [formData, setFormData] = useState({
     firstName: patient.firstName || '',
@@ -48,7 +50,7 @@ const EditPatientScreen = ({ route, navigation }) => {
       Alert.alert('Succès', 'Les informations du patient ont été mises à jour', [
         {
           text: 'OK',
-          onPress: () => navigation.goBack(),
+          onPress: () => router.back(),
         },
       ]);
     } else {
@@ -150,7 +152,7 @@ const EditPatientScreen = ({ route, navigation }) => {
 
         <Button
           title="Annuler"
-          onPress={() => navigation.goBack()}
+          onPress={() => router.back()}
           variant="outline"
         />
       </ScrollView>

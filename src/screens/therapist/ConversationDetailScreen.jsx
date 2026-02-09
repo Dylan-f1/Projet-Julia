@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import MessageBubble from '../../components/chat/MessageBubble';
 import Loading from '../../components/common/Loading';
 import chatService from '../../services/chatService';
 
-const ConversationDetailScreen = ({ route, navigation }) => {
+const ConversationDetailScreen = ({ route }) => {
+  const router = useRouter();
   const { conversationId } = route.params;
   const [conversation, setConversation] = useState(null);
   const [loading, setLoading] = useState(true);

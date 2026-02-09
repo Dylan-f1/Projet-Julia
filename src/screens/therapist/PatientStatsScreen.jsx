@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import Card from '../../components/common/Card';
 import Loading from '../../components/common/Loading';
 import EvaluationChart from '../../components/therapist/EvaluationChart';
 import evaluationService from '../../services/evaluationService';
 import Button from '../../components/common/Button';
 
-const PatientStatsScreen = ({ route, navigation }) => {
+const PatientStatsScreen = ({ route }) => {
+  const router = useRouter();
   const { patientId, patientName } = route.params;
   const [evaluations, setEvaluations] = useState([]);
   const [loading, setLoading] = useState(true);

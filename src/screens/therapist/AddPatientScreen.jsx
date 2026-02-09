@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import patientService from '../../services/patientService';
 
-const AddPatientScreen = ({ navigation }) => {
+const AddPatientScreen = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -37,24 +39,45 @@ const AddPatientScreen = ({ navigation }) => {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
+    console.log('🔴 === DÉBUT handleSubmit ===');
+    console.log('📋 FormData:', formData);
+    
+    if (!validateForm()) {
+      console.log('❌ Validation échouée');
+      return;
+    }
+    
+    console.log('✅ Validation OK');
+    console.log('⏳ Appel API createPatient...');
 
     setLoading(true);
+    
     const result = await patientService.createPatient(formData);
+    
+    console.log('📥 Résultat:', result);
+    console.log('📥 Success:', result.success);
+    console.log('📥 Data:', result.data);
+    console.log('📥 Error:', result.error);
+    
     setLoading(false);
 
     if (result.success) {
+      console.log('✅ Création réussie !');
       Alert.alert(
         'Succès',
         'Le patient a été créé avec succès. Un email de connexion lui a été envoyé.',
         [
           {
             text: 'OK',
-            onPress: () => navigation.goBack(),
+            onPress: () => {
+              console.log('🔙 Retour au dashboard');
+              router.back();
+            },
           },
         ]
       );
     } else {
+      console.log('❌ Erreur création:', result.error);
       Alert.alert('Erreur', result.error);
     }
   };
@@ -163,7 +186,7 @@ const AddPatientScreen = ({ navigation }) => {
 
         <Button
           title="Annuler"
-          onPress={() => navigation.goBack()}
+          onPress={() => router.back()}
           variant="outline"
         />
       </ScrollView>

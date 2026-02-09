@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import Card from '../../components/common/Card';
 import Loading from '../../components/common/Loading';
 import EmptyState from '../../components/common/EmptyState';
@@ -9,7 +10,8 @@ import Button from '../../components/common/Button';
 import patientService from '../../services/patientService';
 import { useAuth } from '../../contexts/AuthContext';
 
-const TherapistDashboardScreen = ({ navigation }) => {
+const TherapistDashboardScreen = () => {
+  const router = useRouter();  
   const { logout } = useAuth();
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,8 +31,10 @@ const TherapistDashboardScreen = ({ navigation }) => {
     setLoading(false);
 
     if (result.success) {
-      setPatients(result.data);
-      calculateStats(result.data);
+      const patientsArray = result.data.patients || result.data || [];
+      
+      setPatients(patientsArray);
+      calculateStats(patientsArray);
     }
   };
 
@@ -46,11 +50,11 @@ const TherapistDashboardScreen = ({ navigation }) => {
   };
 
   const handlePatientPress = (patient) => {
-    navigation.navigate('PatientDetail', { patientId: patient._id });
+    router.push(`/therapist/patients/${patient._id}`);
   };
 
   const handleAddPatient = () => {
-    navigation.navigate('AddPatient');
+    router.push('/therapist/patients/add');
   };
 
   const handleLogout = async () => {

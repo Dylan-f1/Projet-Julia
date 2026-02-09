@@ -1,28 +1,16 @@
-import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+
+const LOCAL_IP = '192.168.1.16';
 
 const ENV = {
-  dev: {
-    apiUrl: 'http://localhost:3000/api',
-    wsUrl: 'ws://localhost:3000'
-  },
-  staging: {
-    apiUrl: 'https://staging-api.julia-app.com/api',
-    wsUrl: 'wss://staging-api.julia-app.com'
-  },
-  prod: {
-    apiUrl: 'https://api.julia-app.com/api',
-    wsUrl: 'wss://api.julia-app.com'
-  }
+  apiUrl: Platform.select({
+    web: 'http://localhost:5000/api',
+    default: `http://${LOCAL_IP}:5000/api`,
+  }),
+  wsUrl: Platform.select({
+    web: 'ws://localhost:5000',
+    default: `ws://${LOCAL_IP}:5000`,
+  }),
 };
 
-const getEnvVars = (env = Constants.expoConfig?.releaseChannel) => {
-  if (__DEV__) {
-    return ENV.dev;
-  } else if (env === 'staging') {
-    return ENV.staging;
-  } else {
-    return ENV.prod;
-  }
-};
-
-export default getEnvVars();
+export default ENV;

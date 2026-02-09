@@ -33,7 +33,7 @@ class AuthService {
   // Connexion thérapeute
   async loginTherapist(email, password) {
     try {
-      const response = await api.post('/auth/therapist/login', { email, password });
+      const response = await api.post('/auth/login', { email, password });
       await StorageService.setItem('userToken', response.data.token); // ✅
       await StorageService.setItem('userRole', 'therapist'); // ✅
       return { success: true, data: response.data };

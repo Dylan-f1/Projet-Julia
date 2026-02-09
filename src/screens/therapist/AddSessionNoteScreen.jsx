@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import Input from '../../components/common/Input';
@@ -9,7 +10,8 @@ import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import sessionNoteService from '../../services/sessionNoteService';
 
-const AddSessionNoteScreen = ({ route, navigation }) => {
+const AddSessionNoteScreen = ({ route }) => {
+  const router = useRouter();
   const { patientId } = route.params;
   const [sessionDate, setSessionDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -94,7 +96,7 @@ const AddSessionNoteScreen = ({ route, navigation }) => {
         [
           {
             text: 'OK',
-            onPress: () => navigation.goBack(),
+            onPress: () => router.back(),
           },
         ]
       );
@@ -220,7 +222,7 @@ const AddSessionNoteScreen = ({ route, navigation }) => {
 
         <Button
           title="Annuler"
-          onPress={() => navigation.goBack()}
+          onPress={() => router.back()}
           variant="outline"
         />
       </ScrollView>

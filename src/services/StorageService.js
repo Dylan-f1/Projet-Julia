@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-class StorageService {
+const StorageService = {
   async setItem(key, value) {
     try {
       if (Platform.OS === 'web') {
@@ -11,10 +11,9 @@ class StorageService {
         await SecureStore.setItemAsync(key, value);
       }
     } catch (error) {
-      console.error(`Erreur setItem(${key}):`, error);
-      throw error;
+      console.error('Storage setItem error:', error);
     }
-  }
+  },
 
   async getItem(key) {
     try {
@@ -24,12 +23,12 @@ class StorageService {
         return await SecureStore.getItemAsync(key);
       }
     } catch (error) {
-      console.error(`Erreur getItem(${key}):`, error);
+      console.error('Storage getItem error:', error);
       return null;
     }
-  }
+  },
 
-  async removeItem(key) {
+  async deleteItem(key) {
     try {
       if (Platform.OS === 'web') {
         await AsyncStorage.removeItem(key);
@@ -37,10 +36,9 @@ class StorageService {
         await SecureStore.deleteItemAsync(key);
       }
     } catch (error) {
-      console.error(`Erreur removeItem(${key}):`, error);
-      throw error;
+      console.error('Storage deleteItem error:', error);
     }
-  }
-}
+  },
+};
 
-export default new StorageService();
+export default StorageService;

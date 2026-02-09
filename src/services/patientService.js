@@ -4,7 +4,7 @@ class PatientService {
   // Obtenir tous les patients du thérapeute
   async getMyPatients() {
     try {
-      const response = await api.get('/therapist/patients');
+      const response = await api.get('/patients');
       return { success: true, data: response.data };
     } catch (error) {
       return { 
@@ -17,7 +17,7 @@ class PatientService {
   // Obtenir un patient spécifique
   async getPatient(patientId) {
     try {
-      const response = await api.get(`/therapist/patients/${patientId}`);
+      const response = await api.get(`/patients/${patientId}`);
       return { success: true, data: response.data };
     } catch (error) {
       return { 
@@ -30,7 +30,7 @@ class PatientService {
   // Créer un nouveau patient
   async createPatient(patientData) {
     try {
-      const response = await api.post('/therapist/patients', patientData);
+      const response = await api.post('/patients', patientData);
       return { success: true, data: response.data };
     } catch (error) {
       return { 
@@ -43,7 +43,7 @@ class PatientService {
   // Mettre à jour un patient
   async updatePatient(patientId, patientData) {
     try {
-      const response = await api.put(`/therapist/patients/${patientId}`, patientData);
+      const response = await api.put(`/patients/${patientId}`, patientData);
       return { success: true, data: response.data };
     } catch (error) {
       return { 
@@ -56,7 +56,7 @@ class PatientService {
   // Archiver un patient
   async archivePatient(patientId) {
     try {
-      const response = await api.put(`/therapist/patients/${patientId}/archive`);
+      const response = await api.put(`/patients/${patientId}/archive`);
       return { success: true, data: response.data };
     } catch (error) {
       return { 
@@ -69,7 +69,7 @@ class PatientService {
   // Obtenir les statistiques d'un patient
   async getPatientStats(patientId) {
     try {
-      const response = await api.get(`/therapist/patients/${patientId}/stats`);
+      const response = await api.get(`/patients/${patientId}/stats`);
       return { success: true, data: response.data };
     } catch (error) {
       return { 

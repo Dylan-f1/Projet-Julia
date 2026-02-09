@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter, useLocalSearchParams } from 'expo-router'; 
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Loading from '../../components/common/Loading';
@@ -10,24 +11,28 @@ import evaluationService from '../../services/evaluationService';
 import sessionNoteService from '../../services/sessionNoteService';
 import chatService from '../../services/chatService';
 
-const PatientDetailScreen = ({ route, navigation }) => {
-  const { patientId } = route.params;
+const PatientDetailScreen = () => { 
+  const router = useRouter();
+  const { id } = useLocalSearchParams(); 
+  const patientId = id; 
+  
   const [patient, setPatient] = useState(null);
   const [stats, setStats] = useState(null);
   const [recentEvaluations, setRecentEvaluations] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [sessionNotes, setSessionNotes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview'); // overview, conversations, evaluations, notes
+  const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    loadPatientData();
-  }, []);
+    if (patientId) { 
+      loadPatientData();
+    }
+  }, [patientId]);
 
   const loadPatientData = async () => {
     setLoading(true);
     
-    // Charger en parallèle
     const [patientResult, statsResult, conversationsResult, notesResult] = await Promise.all([
       patientService.getPatient(patientId),
       patientService.getPatientStats(patientId),
@@ -40,7 +45,6 @@ const PatientDetailScreen = ({ route, navigation }) => {
     if (conversationsResult.success) setConversations(conversationsResult.data);
     if (notesResult.success) setSessionNotes(notesResult.data);
 
-    // Charger les dernières évaluations
     const endDate = new Date().toISOString();
     const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
     const evalResult = await evaluationService.getPatientEvaluationsByTherapist(
@@ -56,7 +60,7 @@ const PatientDetailScreen = ({ route, navigation }) => {
   const handleArchive = async () => {
     Alert.alert(
       'Archiver le patient',
-      'Êtes-vous sûr de vouloir archiver ce patient ? Il ne sera plus visible dans votre liste active.',
+      'Êtes-vous sûr de vouloir archiver ce patient ?',
       [
         { text: 'Annuler', style: 'cancel' },
         {
@@ -66,7 +70,7 @@ const PatientDetailScreen = ({ route, navigation }) => {
             const result = await patientService.archivePatient(patientId);
             if (result.success) {
               Alert.alert('Succès', 'Patient archivé');
-              navigation.goBack();
+              router.back();
             } else {
               Alert.alert('Erreur', result.error);
             }
@@ -77,15 +81,15 @@ const PatientDetailScreen = ({ route, navigation }) => {
   };
 
   const handleEditPatient = () => {
-    navigation.navigate('EditPatient', { patientId, patient });
+    router.push(`/therapist/patients/${patientId}/edit`); 
   };
 
   const handleViewConversation = (conversation) => {
-    navigation.navigate('ConversationDetail', { conversationId: conversation._id });
+    router.push(`/therapist/conversations/${conversation._id}`);
   };
 
   const handleAddNote = () => {
-    navigation.navigate('AddSessionNote', { patientId });
+    router.push(`/therapist/patients/${patientId}/add-note`); 
   };
 
   if (loading) {
@@ -148,10 +152,9 @@ const PatientDetailScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      {/* Header fixe */}
       <View className="bg-white px-4 py-4 border-b border-gray-200">
         <View className="flex-row items-center justify-between mb-4">
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => router.back()}> {/* ✅ Correction navigation.goBack */}
             <Ionicons name="arrow-back" size={24} color="#1F2937" />
           </TouchableOpacity>
           
@@ -167,7 +170,6 @@ const PatientDetailScreen = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Alerte critique */}
         {patient.criticalStatus && (
           <View className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
             <View className="flex-row items-center">
@@ -179,7 +181,6 @@ const PatientDetailScreen = ({ route, navigation }) => {
           </View>
         )}
 
-        {/* Tabs */}
         <View className="flex-row">
           <TabButton id="overview" label="Vue d'ensemble" icon="grid-outline" />
           <TabButton id="conversations" label="Conversations" icon="chatbubbles-outline" />
@@ -189,10 +190,8 @@ const PatientDetailScreen = ({ route, navigation }) => {
       </View>
 
       <ScrollView className="flex-1">
-        {/* Vue d'ensemble */}
         {activeTab === 'overview' && (
           <View className="p-4">
-            {/* Statistiques */}
             {stats && (
               <Card className="mb-4">
                 <Text className="text-lg font-semibold text-gray-900 mb-4">
@@ -202,7 +201,7 @@ const PatientDetailScreen = ({ route, navigation }) => {
                   <StatBox
                     icon="chatbubbles"
                     label="Conversations"
-                    value={stats.totalConversations}
+                    value={stats.totalConversations || 0}
                   />
                   <StatBox
                     icon="calendar"
@@ -241,17 +240,16 @@ const PatientDetailScreen = ({ route, navigation }) => {
               </Card>
             )}
 
-            {/* Informations patient */}
             <Card className="mb-4">
               <Text className="text-lg font-semibold text-gray-900 mb-4">
                 Informations
               </Text>
               
-              {patient.dateOfBirth && (
+              {patient.birthDate && (
                 <View className="flex-row items-center mb-3">
                   <Ionicons name="calendar-outline" size={20} color="#6B7280" />
                   <Text className="text-gray-700 ml-3">
-                    Né(e) le {new Date(patient.dateOfBirth).toLocaleDateString('fr-FR')}
+                    Né(e) le {new Date(patient.birthDate).toLocaleDateString('fr-FR')}
                   </Text>
                 </View>
               )}
@@ -278,7 +276,6 @@ const PatientDetailScreen = ({ route, navigation }) => {
               )}
             </Card>
 
-            {/* Notes du thérapeute */}
             {patient.notes && (
               <Card className="mb-4">
                 <Text className="text-lg font-semibold text-gray-900 mb-2">
@@ -288,7 +285,6 @@ const PatientDetailScreen = ({ route, navigation }) => {
               </Card>
             )}
 
-            {/* Actions */}
             <View className="mb-4">
               <Button
                 title="Ajouter une note de séance"
@@ -313,7 +309,6 @@ const PatientDetailScreen = ({ route, navigation }) => {
           </View>
         )}
 
-        {/* Conversations */}
         {activeTab === 'conversations' && (
           <View className="p-4">
             {conversations.length === 0 ? (
@@ -342,7 +337,6 @@ const PatientDetailScreen = ({ route, navigation }) => {
           </View>
         )}
 
-        {/* Évaluations */}
         {activeTab === 'evaluations' && (
           <View className="p-4">
             {recentEvaluations.length === 0 ? (
@@ -353,10 +347,10 @@ const PatientDetailScreen = ({ route, navigation }) => {
               </Card>
             ) : (
               recentEvaluations.map((evaluation) => (
-                <Card key={eval._id} className="mb-3">
+                <Card key={evaluation._id} className="mb-3">
                   <View className="flex-row justify-between items-center mb-3">
                     <Text className="text-base font-semibold text-gray-900">
-                      {new Date(eval.date).toLocaleDateString('fr-FR', { 
+                      {new Date(evaluation.date).toLocaleDateString('fr-FR', { 
                         weekday: 'long', 
                         day: 'numeric', 
                         month: 'long' 
@@ -368,7 +362,7 @@ const PatientDetailScreen = ({ route, navigation }) => {
                     <View className="items-center flex-1">
                       <Text className="text-xs text-gray-600 mb-1">Humeur</Text>
                       <View className="flex-row items-center">
-                        <Text className="text-2xl font-bold text-gray-900">{eval.mood}</Text>
+                        <Text className="text-2xl font-bold text-gray-900">{evaluation.mood}</Text>
                         <Text className="text-gray-500">/5</Text>
                       </View>
                     </View>
@@ -376,7 +370,7 @@ const PatientDetailScreen = ({ route, navigation }) => {
                     <View className="items-center flex-1">
                       <Text className="text-xs text-gray-600 mb-1">Anxiété</Text>
                       <View className="flex-row items-center">
-                        <Text className="text-2xl font-bold text-gray-900">{eval.anxiety}</Text>
+                        <Text className="text-2xl font-bold text-gray-900">{evaluation.anxiety}</Text>
                         <Text className="text-gray-500">/5</Text>
                       </View>
                     </View>
@@ -384,15 +378,15 @@ const PatientDetailScreen = ({ route, navigation }) => {
                     <View className="items-center flex-1">
                       <Text className="text-xs text-gray-600 mb-1">Sommeil</Text>
                       <View className="flex-row items-center">
-                        <Text className="text-2xl font-bold text-gray-900">{eval.sleep}</Text>
+                        <Text className="text-2xl font-bold text-gray-900">{evaluation.sleep}</Text>
                         <Text className="text-gray-500">/5</Text>
                       </View>
                     </View>
                   </View>
 
-                  {eval.notes && (
+                  {evaluation.notes && (
                     <View className="mt-3 pt-3 border-t border-gray-200">
-                      <Text className="text-sm text-gray-700">{eval.notes}</Text>
+                      <Text className="text-sm text-gray-700">{evaluation.notes}</Text>
                     </View>
                   )}
                 </Card>
@@ -401,7 +395,6 @@ const PatientDetailScreen = ({ route, navigation }) => {
           </View>
         )}
 
-        {/* Notes de séance */}
         {activeTab === 'notes' && (
           <View className="p-4">
             <Button
