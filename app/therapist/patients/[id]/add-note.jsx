@@ -1,12 +1,11 @@
-// app/therapist/patients/[id].jsx
 import { Stack } from 'expo-router';
-import PatientDetailScreen from '../../../src/screens/therapist/PatientDetailScreen';
+import AddSessionNoteScreen from '../../../../src/screens/therapist/AddSessionNoteScreen';
 
 export default function Page() {
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <PatientDetailScreen />
+      <AddSessionNoteScreen />
     </>
   );
 }

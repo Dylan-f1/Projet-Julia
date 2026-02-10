@@ -35,17 +35,6 @@ export default function TherapistLayout() {
         }}
       />
       <Tabs.Screen
-        name="patients"
-        options={{
-          title: 'Patients',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people" size={size} color={color} />
-          ),
-          headerTitle: 'Liste des patients',
-          href: null, // Cache cet onglet, on navigue depuis dashboard
-        }}
-      />
-      <Tabs.Screen
         name="profile"
         options={{
           title: 'Profil',
