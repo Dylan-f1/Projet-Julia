@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Alert, TouchableOpacity, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -14,6 +14,8 @@ const TherapistLoginScreen = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const isWeb = Platform.OS === 'web';
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -34,12 +36,18 @@ const TherapistLoginScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View className="flex-1 px-6 justify-center">
+      {/* Conteneur centré pour desktop */}
+      <View className={`flex-1 ${isWeb ? 'max-w-md mx-auto w-full' : ''}`}>
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ 
+            flexGrow: 1,
+            padding: isWeb ? 32 : 24,
+            justifyContent: 'center'
+          }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={!isWeb}
+        >
           {/* Logo et titre */}
           <View className="items-center mb-12">
             <View className="w-20 h-20 bg-secondary-100 rounded-full items-center justify-center mb-4">
@@ -108,8 +116,8 @@ const TherapistLoginScreen = () => {
               variant="ghost"
             />
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };

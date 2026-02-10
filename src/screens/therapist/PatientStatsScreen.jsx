@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -11,6 +11,8 @@ import Button from '../../components/common/Button';
 
 const PatientStatsScreen = ({ route }) => {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 768; // Breakpoint pour desktop
   const { patientId, patientName } = route.params;
   const [evaluations, setEvaluations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -102,9 +104,50 @@ const PatientStatsScreen = ({ route }) => {
       onPress={() => setPeriod(value)}
       variant={period === value ? 'primary' : 'outline'}
       size="small"
-      className="flex-1 mx-1"
+      className={isDesktop ? 'flex-1 mx-2' : 'flex-1 mx-1'}
     />
   );
+
+  const StatIndicator = ({ label, value, color, min, max }) => (
+    <View className="mb-4 pb-4 border-b border-gray-200 last:border-0 last:mb-0 last:pb-0">
+      <View className="flex-row justify-between items-center mb-2">
+        <Text className={`${isDesktop ? 'text-base' : 'text-sm'} font-medium text-gray-700`}>
+          {label}
+        </Text>
+        <Text className={`${isDesktop ? 'text-2xl' : 'text-lg'} font-bold ${color}`}>
+          {value}/5
+        </Text>
+      </View>
+      <View className="flex-row justify-between">
+        <Text className="text-xs text-gray-500">Min: {min}</Text>
+        <Text className="text-xs text-gray-500">Max: {max}</Text>
+      </View>
+    </View>
+  );
+
+  const AlertBox = ({ icon, title, message, severity = 'warning' }) => {
+    const bgColor = severity === 'warning' ? 'bg-yellow-50' : 'bg-red-50';
+    const borderColor = severity === 'warning' ? 'border-yellow-200' : 'border-red-200';
+    const iconColor = severity === 'warning' ? '#f59e0b' : '#ef4444';
+    const titleColor = severity === 'warning' ? 'text-yellow-700' : 'text-red-700';
+    const textColor = severity === 'warning' ? 'text-yellow-600' : 'text-red-600';
+
+    return (
+      <View className={`${bgColor} border ${borderColor} rounded-lg p-4 mb-4`}>
+        <View className="flex-row items-start">
+          <Ionicons name={icon} size={20} color={iconColor} />
+          <View className="ml-2 flex-1">
+            <Text className={`${titleColor} font-semibold mb-1 ${isDesktop ? 'text-base' : 'text-sm'}`}>
+              {title}
+            </Text>
+            <Text className={`${textColor} text-sm`}>
+              {message}
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
 
   if (loading) {
     return <Loading message="Chargement des statistiques..." />;
@@ -112,6 +155,156 @@ const PatientStatsScreen = ({ route }) => {
 
   const stats = calculateStats();
 
+  // Rendu Desktop
+  if (isDesktop) {
+    return (
+      <SafeAreaView className="flex-1 bg-gray-50">
+        {/* Header */}
+        <View className="bg-white px-8 py-6 border-b border-gray-200">
+          <Text className="text-2xl font-bold text-gray-900 mb-1">
+            Statistiques détaillées
+          </Text>
+          <Text className="text-base text-gray-600">{patientName}</Text>
+        </View>
+
+        <ScrollView className="flex-1">
+          <View className="max-w-7xl mx-auto w-full p-8">
+            {/* Sélecteur de période */}
+            <Card className="mb-6">
+              <Text className="text-lg font-semibold text-gray-900 mb-4">
+                Période d'analyse
+              </Text>
+              <View className="flex-row max-w-md">
+                <PeriodButton value="week" label="7 jours" />
+                <PeriodButton value="month" label="30 jours" />
+                <PeriodButton value="quarter" label="3 mois" />
+                <PeriodButton value="year" label="1 an" />
+              </View>
+            </Card>
+
+            {!stats ? (
+              <Card>
+                <View className="items-center py-12">
+                  <Ionicons name="analytics-outline" size={80} color="#9CA3AF" />
+                  <Text className="text-gray-600 mt-4 text-center text-lg">
+                    Aucune évaluation pour cette période
+                  </Text>
+                </View>
+              </Card>
+            ) : (
+              <>
+                {/* Première ligne: Vue d'ensemble + Indicateurs moyens */}
+                <View className="flex-row mb-6 gap-6">
+                  {/* Vue d'ensemble */}
+                  <Card className="flex-1">
+                    <Text className="text-xl font-semibold text-gray-900 mb-6">
+                      Vue d'ensemble
+                    </Text>
+
+                    <View className="flex-row mb-6">
+                      <View className="flex-1">
+                        <Text className="text-sm text-gray-600 mb-2">Évaluations</Text>
+                        <Text className="text-4xl font-bold text-gray-900">
+                          {stats.totalEvaluations}
+                        </Text>
+                      </View>
+                      <View className="flex-1">
+                        <Text className="text-sm text-gray-600 mb-2">Régularité</Text>
+                        <Text className="text-4xl font-bold text-gray-900">
+                          {stats.consistency}%
+                        </Text>
+                      </View>
+                    </View>
+
+                    {stats.consistency < 50 && (
+                      <AlertBox
+                        icon="alert-circle"
+                        title="Taux de complétion faible"
+                        message="Encourager le patient à remplir ses évaluations quotidiennes"
+                        severity="warning"
+                      />
+                    )}
+                  </Card>
+
+                  {/* Indicateurs moyens */}
+                  <Card className="flex-1">
+                    <Text className="text-xl font-semibold text-gray-900 mb-6">
+                      Indicateurs moyens
+                    </Text>
+
+                    <StatIndicator
+                      label="Humeur"
+                      value={stats.mood.avg}
+                      color="text-green-600"
+                      min={stats.mood.min}
+                      max={stats.mood.max}
+                    />
+
+                    <StatIndicator
+                      label="Anxiété"
+                      value={stats.anxiety.avg}
+                      color="text-red-600"
+                      min={stats.anxiety.min}
+                      max={stats.anxiety.max}
+                    />
+
+                    <StatIndicator
+                      label="Sommeil"
+                      value={stats.sleep.avg}
+                      color="text-blue-600"
+                      min={stats.sleep.min}
+                      max={stats.sleep.max}
+                    />
+                  </Card>
+                </View>
+
+                {/* Alertes en pleine largeur */}
+                {(stats.anxiety.avg > 3.5 || stats.mood.avg < 2.5) && (
+                  <View className="mb-6">
+                    {stats.anxiety.avg > 3.5 && (
+                      <AlertBox
+                        icon="warning"
+                        title="Niveau d'anxiété élevé"
+                        message="Le niveau d'anxiété moyen dépasse 3.5/5. Envisager un ajustement du suivi."
+                        severity="error"
+                      />
+                    )}
+
+                    {stats.mood.avg < 2.5 && (
+                      <AlertBox
+                        icon="warning"
+                        title="Humeur basse"
+                        message="L'humeur moyenne est inférieure à 2.5/5. Surveillance recommandée."
+                        severity="error"
+                      />
+                    )}
+                  </View>
+                )}
+
+                {/* Graphiques sur 2 colonnes */}
+                <View className="flex-row gap-6 mb-6">
+                  <Card className="flex-1">
+                    <EvaluationChart evaluations={evaluations} type="mood" />
+                  </Card>
+
+                  <Card className="flex-1">
+                    <EvaluationChart evaluations={evaluations} type="anxiety" />
+                  </Card>
+                </View>
+
+                {/* Dernier graphique pleine largeur */}
+                <Card className="mb-6">
+                  <EvaluationChart evaluations={evaluations} type="sleep" />
+                </Card>
+              </>
+            )}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  // Rendu Mobile (code original légèrement refactorisé)
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       {/* Header */}
@@ -169,14 +362,12 @@ const PatientStatsScreen = ({ route }) => {
               </View>
 
               {stats.consistency < 50 && (
-                <View className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                  <View className="flex-row items-center">
-                    <Ionicons name="alert-circle" size={16} color="#f59e0b" />
-                    <Text className="text-yellow-700 text-sm ml-2">
-                      Taux de complétion faible - Encourager le patient
-                    </Text>
-                  </View>
-                </View>
+                <AlertBox
+                  icon="alert-circle"
+                  title="Taux de complétion faible"
+                  message="Encourager le patient"
+                  severity="warning"
+                />
               )}
             </Card>
 
@@ -186,47 +377,29 @@ const PatientStatsScreen = ({ route }) => {
                 Indicateurs moyens
               </Text>
 
-              {/* Humeur */}
-              <View className="mb-4 pb-4 border-b border-gray-200">
-                <View className="flex-row justify-between items-center mb-2">
-                  <Text className="text-sm font-medium text-gray-700">Humeur</Text>
-                  <Text className="text-lg font-bold text-green-600">
-                    {stats.mood.avg}/5
-                  </Text>
-                </View>
-                <View className="flex-row justify-between">
-                  <Text className="text-xs text-gray-500">Min: {stats.mood.min}</Text>
-                  <Text className="text-xs text-gray-500">Max: {stats.mood.max}</Text>
-                </View>
-              </View>
+              <StatIndicator
+                label="Humeur"
+                value={stats.mood.avg}
+                color="text-green-600"
+                min={stats.mood.min}
+                max={stats.mood.max}
+              />
 
-              {/* Anxiété */}
-              <View className="mb-4 pb-4 border-b border-gray-200">
-                <View className="flex-row justify-between items-center mb-2">
-                  <Text className="text-sm font-medium text-gray-700">Anxiété</Text>
-                  <Text className="text-lg font-bold text-red-600">
-                    {stats.anxiety.avg}/5
-                  </Text>
-                </View>
-                <View className="flex-row justify-between">
-                  <Text className="text-xs text-gray-500">Min: {stats.anxiety.min}</Text>
-                  <Text className="text-xs text-gray-500">Max: {stats.anxiety.max}</Text>
-                </View>
-              </View>
+              <StatIndicator
+                label="Anxiété"
+                value={stats.anxiety.avg}
+                color="text-red-600"
+                min={stats.anxiety.min}
+                max={stats.anxiety.max}
+              />
 
-              {/* Sommeil */}
-              <View>
-                <View className="flex-row justify-between items-center mb-2">
-                  <Text className="text-sm font-medium text-gray-700">Sommeil</Text>
-                  <Text className="text-lg font-bold text-blue-600">
-                    {stats.sleep.avg}/5
-                  </Text>
-                </View>
-                <View className="flex-row justify-between">
-                  <Text className="text-xs text-gray-500">Min: {stats.sleep.min}</Text>
-                  <Text className="text-xs text-gray-500">Max: {stats.sleep.max}</Text>
-                </View>
-              </View>
+              <StatIndicator
+                label="Sommeil"
+                value={stats.sleep.avg}
+                color="text-blue-600"
+                min={stats.sleep.min}
+                max={stats.sleep.max}
+              />
             </Card>
 
             {/* Graphiques */}
@@ -244,35 +417,21 @@ const PatientStatsScreen = ({ route }) => {
 
             {/* Alertes */}
             {stats.anxiety.avg > 3.5 && (
-              <View className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-                <View className="flex-row items-start">
-                  <Ionicons name="warning" size={20} color="#ef4444" />
-                  <View className="ml-2 flex-1">
-                    <Text className="text-red-700 font-semibold mb-1">
-                      Niveau d'anxiété élevé
-                    </Text>
-                    <Text className="text-red-600 text-sm">
-                      Le niveau d'anxiété moyen dépasse 3.5/5. Envisager un ajustement du suivi.
-                    </Text>
-                  </View>
-                </View>
-              </View>
+              <AlertBox
+                icon="warning"
+                title="Niveau d'anxiété élevé"
+                message="Le niveau d'anxiété moyen dépasse 3.5/5. Envisager un ajustement du suivi."
+                severity="error"
+              />
             )}
 
             {stats.mood.avg < 2.5 && (
-              <View className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-                <View className="flex-row items-start">
-                  <Ionicons name="warning" size={20} color="#ef4444" />
-                  <View className="ml-2 flex-1">
-                    <Text className="text-red-700 font-semibold mb-1">
-                      Humeur basse
-                    </Text>
-                    <Text className="text-red-600 text-sm">
-                      L'humeur moyenne est inférieure à 2.5/5. Surveillance recommandée.
-                    </Text>
-                  </View>
-                </View>
-              </View>
+              <AlertBox
+                icon="warning"
+                title="Humeur basse"
+                message="L'humeur moyenne est inférieure à 2.5/5. Surveillance recommandée."
+                severity="error"
+              />
             )}
           </>
         )}

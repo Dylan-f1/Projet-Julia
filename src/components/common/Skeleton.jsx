@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Animated, Easing } from 'react-native';
+import { View, Animated, Easing, useWindowDimensions } from 'react-native';
 import { useEffect, useRef } from 'react';
 
-const Skeleton = ({ 
-  width = '100%', 
-  height = 20, 
+const Skeleton = ({
+  width = '100%',
+  height = 20,
   borderRadius = 4,
-  className = '' 
+  className = '',
 }) => {
   const animatedValue = useRef(new Animated.Value(0)).current;
 
@@ -75,13 +75,34 @@ export const SkeletonCard = ({ className = '' }) => (
   </View>
 );
 
-export const SkeletonList = ({ count = 3, className = '' }) => (
-  <View className={className}>
-    {Array.from({ length: count }).map((_, index) => (
-      <SkeletonCard key={index} className="mb-3" />
-    ))}
-  </View>
-);
+export const SkeletonList = ({ count = 3, className = '' }) => {
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 768;
+
+  // Desktop : grille 2 colonnes
+  if (isDesktop) {
+    return (
+      <View
+        className={className}
+        style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}
+      >
+        {Array.from({ length: count }).map((_, index) => (
+          <View key={index} style={{ width: '48.5%' }}>
+            <SkeletonCard className="mb-0" />
+          </View>
+        ))}
+      </View>
+    );
+  }
+
+  return (
+    <View className={className}>
+      {Array.from({ length: count }).map((_, index) => (
+        <SkeletonCard key={index} className="mb-3" />
+      ))}
+    </View>
+  );
+};
 
 export const SkeletonAvatar = ({ size = 'medium', className = '' }) => {
   const sizes = {
@@ -114,21 +135,31 @@ export const SkeletonInput = ({ className = '' }) => (
   </View>
 );
 
-export const SkeletonChart = ({ className = '' }) => (
-  <View className={`bg-white rounded-xl p-4 ${className}`}>
-    <Skeleton width="50%" height={20} className="mb-4" />
-    <View className="flex-row items-end justify-between" style={{ height: 200 }}>
-      {Array.from({ length: 7 }).map((_, index) => (
-        <Skeleton
-          key={index}
-          width={30}
-          height={Math.random() * 150 + 50}
-          borderRadius={4}
-        />
-      ))}
+export const SkeletonChart = ({ className = '' }) => {
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 768;
+  const barCount = isDesktop ? 12 : 7;
+  const barWidth = isDesktop ? 40 : 30;
+
+  return (
+    <View className={`bg-white rounded-xl p-4 ${className}`}>
+      <Skeleton width="50%" height={20} className="mb-4" />
+      <View
+        className="flex-row items-end justify-between"
+        style={{ height: isDesktop ? 260 : 200 }}
+      >
+        {Array.from({ length: barCount }).map((_, index) => (
+          <Skeleton
+            key={index}
+            width={barWidth}
+            height={Math.random() * 150 + 50}
+            borderRadius={4}
+          />
+        ))}
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 export const SkeletonPatientCard = ({ className = '' }) => (
   <View className={`bg-white rounded-xl p-4 ${className}`}>
@@ -154,44 +185,96 @@ export const SkeletonPatientCard = ({ className = '' }) => (
 );
 
 export const SkeletonMessageBubble = ({ isUser = false, className = '' }) => (
-  <View className={`mb-3 ${isUser ? 'items-end' : 'items-start'} ${className}`}>
-    <View className={`max-w-[80%] ${isUser ? 'bg-primary-100' : 'bg-gray-100'} rounded-2xl p-3`}>
+  <View
+    className={`mb-3 ${isUser ? 'items-end' : 'items-start'} ${className}`}
+  >
+    <View
+      className={`max-w-[80%] ${
+        isUser ? 'bg-primary-100' : 'bg-gray-100'
+      } rounded-2xl p-3`}
+    >
       <SkeletonText lines={2} />
       <Skeleton width={60} height={10} className="mt-2" />
     </View>
   </View>
 );
 
-export const SkeletonChatScreen = ({ className = '' }) => (
-  <View className={`flex-1 p-4 ${className}`}>
-    <SkeletonMessageBubble isUser={false} />
-    <SkeletonMessageBubble isUser={true} />
-    <SkeletonMessageBubble isUser={false} />
-    <SkeletonMessageBubble isUser={true} />
-  </View>
-);
+export const SkeletonChatScreen = ({ className = '' }) => {
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 768;
 
-export const SkeletonDashboard = ({ className = '' }) => (
-  <View className={`p-4 ${className}`}>
-    {/* Stats cards */}
-    <View className="flex-row mb-4">
-      <View className="flex-1 mr-2">
-        <View className="bg-white rounded-xl p-4">
-          <Skeleton width="60%" height={14} className="mb-2" />
-          <Skeleton width="40%" height={32} />
-        </View>
-      </View>
-      <View className="flex-1 ml-2">
-        <View className="bg-white rounded-xl p-4">
-          <Skeleton width="60%" height={14} className="mb-2" />
-          <Skeleton width="40%" height={32} />
-        </View>
-      </View>
+  return (
+    <View
+      className={`flex-1 p-4 ${className}`}
+      style={
+        isDesktop
+          ? { alignSelf: 'center', width: '100%', maxWidth: 760 }
+          : undefined
+      }
+    >
+      <SkeletonMessageBubble isUser={false} />
+      <SkeletonMessageBubble isUser={true} />
+      <SkeletonMessageBubble isUser={false} />
+      <SkeletonMessageBubble isUser={true} />
     </View>
+  );
+};
 
-    {/* List */}
-    <SkeletonList count={3} />
-  </View>
-);
+export const SkeletonDashboard = ({ className = '' }) => {
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 768;
+
+  return (
+    <View
+      className={`p-4 ${className}`}
+      style={
+        isDesktop
+          ? { alignSelf: 'center', width: '100%', maxWidth: 900 }
+          : undefined
+      }
+    >
+      {/* Stats cards — 4 colonnes desktop, 2 mobile */}
+      <View
+        style={
+          isDesktop
+            ? { flexDirection: 'row', gap: 12, marginBottom: 16 }
+            : { flexDirection: 'row', marginBottom: 16 }
+        }
+      >
+        <View style={{ flex: 1, marginRight: isDesktop ? 0 : 8 }}>
+          <View className="bg-white rounded-xl p-4">
+            <Skeleton width="60%" height={14} className="mb-2" />
+            <Skeleton width="40%" height={32} />
+          </View>
+        </View>
+        <View style={{ flex: 1, marginLeft: isDesktop ? 0 : 8 }}>
+          <View className="bg-white rounded-xl p-4">
+            <Skeleton width="60%" height={14} className="mb-2" />
+            <Skeleton width="40%" height={32} />
+          </View>
+        </View>
+        {isDesktop && (
+          <>
+            <View style={{ flex: 1 }}>
+              <View className="bg-white rounded-xl p-4">
+                <Skeleton width="60%" height={14} className="mb-2" />
+                <Skeleton width="40%" height={32} />
+              </View>
+            </View>
+            <View style={{ flex: 1 }}>
+              <View className="bg-white rounded-xl p-4">
+                <Skeleton width="60%" height={14} className="mb-2" />
+                <Skeleton width="40%" height={32} />
+              </View>
+            </View>
+          </>
+        )}
+      </View>
+
+      {/* List */}
+      <SkeletonList count={isDesktop ? 4 : 3} />
+    </View>
+  );
+};
 
 export default Skeleton;

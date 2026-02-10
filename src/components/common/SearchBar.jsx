@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity } from 'react-native';
+import { View, TextInput, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const SearchBar = ({ 
-  placeholder = 'Rechercher...', 
+const SearchBar = ({
+  placeholder = 'Rechercher...',
   onSearch,
   onChangeText,
   value,
   autoFocus = false,
-  className = '' 
+  className = '',
 }) => {
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 768;
+
   const [isFocused, setIsFocused] = useState(false);
   const [searchValue, setSearchValue] = useState(value || '');
 
@@ -31,9 +34,15 @@ const SearchBar = ({
   const borderColor = isFocused ? 'border-primary-600' : 'border-gray-300';
 
   return (
-    <View className={`flex-row items-center bg-white border rounded-lg px-3 py-2 ${borderColor} ${className}`}>
+    <View
+      className={`flex-row items-center bg-white border rounded-lg ${borderColor} ${className}`}
+      style={{
+        paddingHorizontal: isDesktop ? 16 : 12,
+        paddingVertical: isDesktop ? 10 : 8,
+      }}
+    >
       <Ionicons name="search-outline" size={20} color="#6B7280" />
-      
+
       <TextInput
         value={searchValue}
         onChangeText={handleChange}
@@ -45,10 +54,14 @@ const SearchBar = ({
         autoFocus={autoFocus}
         returnKeyType="search"
         className="flex-1 mx-3 text-gray-900 text-base"
+        style={isDesktop ? { outlineStyle: 'none' } : undefined}
       />
 
       {searchValue.length > 0 && (
-        <TouchableOpacity onPress={handleClear}>
+        <TouchableOpacity
+          onPress={handleClear}
+          style={isDesktop ? { cursor: 'pointer' } : undefined}
+        >
           <Ionicons name="close-circle" size={20} color="#9CA3AF" />
         </TouchableOpacity>
       )}
