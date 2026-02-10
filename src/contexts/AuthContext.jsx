@@ -1,3 +1,4 @@
+// src/contexts/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import authService from '../services/authService';
 import notificationService from '../services/notificationService';
@@ -61,6 +62,42 @@ export const AuthProvider = ({ children }) => {
       await notificationService.registerForPushNotifications();
     }
     return result;
+  };
+
+  // 🔥 NOUVELLE FONCTION : Login Patient (alias de verifyMagicLink)
+  const loginPatient = async (magicToken) => {
+    try {
+      console.log('=== AuthContext - loginPatient ===');
+      console.log('Token:', magicToken);
+
+      const result = await authService.verifyMagicLink(magicToken);
+      
+      console.log('✅ Résultat vérification:', result);
+
+      if (result.success) {
+        await StorageService.setItem('userToken', result.data.token);
+        await StorageService.setItem('userRole', 'patient');
+        await StorageService.setItem('user', JSON.stringify(result.data.patient || result.data.user));
+        
+        setUser(result.data.patient || result.data.user);
+        setToken(result.data.token);
+        setUserRole('patient');
+        setIsAuthenticated(true);
+
+        await notificationService.registerForPushNotifications();
+
+        console.log('🎉 Patient authentifié avec succès');
+        return { success: true, patient: result.data.patient || result.data.user };
+      }
+
+      return result;
+    } catch (error) {
+      console.error('❌ Erreur login patient:', error);
+      return { 
+        success: false, 
+        error: error.message || 'Erreur réseau' 
+      };
+    }
   };
 
   const loginTherapist = async (email, password) => {
@@ -158,6 +195,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     sendMagicLink,
     verifyMagicLink,
+    loginPatient,      // 🔥 AJOUTER ICI
     loginTherapist,
     registerTherapist,
     logout,

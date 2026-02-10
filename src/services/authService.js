@@ -31,11 +31,22 @@ class AuthService {
   }
 
   // Connexion thérapeute
+ // src/services/authService.js
   async loginTherapist(email, password) {
     try {
       const response = await api.post('/auth/login', { email, password });
-      await StorageService.setItem('userToken', response.data.token); // ✅
-      await StorageService.setItem('userRole', 'therapist'); // ✅
+      
+      console.log('📦 Réponse login:', response.data);
+      console.log('🔑 Token reçu:', response.data.token);
+      
+      // Stocker le token
+      await StorageService.setItem('userToken', response.data.token);
+      await StorageService.setItem('userRole', 'therapist');
+      
+      // Vérifier que c'est bien stocké
+      const storedToken = await StorageService.getItem('userToken');
+      console.log('✅ Token stocké:', storedToken ? 'OUI' : 'NON');
+      
       return { success: true, data: response.data };
     } catch (error) {
       return { 

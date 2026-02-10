@@ -7,31 +7,44 @@ export default function PatientLayout() {
     <ChatProvider>
       <Tabs
         screenOptions={{
-          headerShown: true,
+          headerShown: false,  
           tabBarActiveTintColor: '#0284c7',
           tabBarInactiveTintColor: '#9CA3AF',
+          tabBarStyle: {
+            backgroundColor: 'white',
+            borderTopWidth: 1,
+            borderTopColor: '#E5E7EB',
+            paddingBottom: 5,
+            paddingTop: 5,
+            height: 60,
+          },
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: '600',
+          },
         }}
       >
+        {/* 🔥 NOUVEL ONGLET : Home */}
+        <Tabs.Screen
+          name="home"
+          options={{
+            title: 'Accueil',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="home" size={size} color={color} />
+            ),
+          }}
+        />
+
         <Tabs.Screen
           name="chat"
           options={{
-            title: 'Chat',
+            title: 'Julia',
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="chatbubbles" size={size} color={color} />
             ),
-            headerTitle: 'Julia - Votre compagnon 24/7',
           }}
         />
-        <Tabs.Screen
-          name="history"
-          options={{
-            title: 'Historique',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="time" size={size} color={color} />
-            ),
-            headerTitle: 'Mes conversations',
-          }}
-        />
+
         <Tabs.Screen
           name="evaluation"
           options={{
@@ -39,9 +52,19 @@ export default function PatientLayout() {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="analytics" size={size} color={color} />
             ),
-            headerTitle: 'Évaluation quotidienne',
           }}
         />
+
+        <Tabs.Screen
+          name="history"
+          options={{
+            title: 'Historique',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="time" size={size} color={color} />
+            ),
+          }}
+        />
+
         <Tabs.Screen
           name="profile"
           options={{
@@ -49,7 +72,6 @@ export default function PatientLayout() {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="person" size={size} color={color} />
             ),
-            headerTitle: 'Mon profil',
           }}
         />
       </Tabs>

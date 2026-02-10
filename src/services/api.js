@@ -12,29 +12,35 @@ const api = axios.create({
 });
 
 // Intercepteur pour ajouter le token JWT
-api.interceptors.request.use(
-  async (config) => {
-    console.log('🌐 === REQUÊTE API ===');
-    console.log('📍 URL complète:', config.baseURL + config.url);
-    console.log('🔑 Method:', config.method.toUpperCase());
-    console.log('📦 Data:', config.data);
-    
-    const token = await StorageService.getItem('userToken');
-    console.log('🎫 Token:', token ? `Présent (${token.substring(0, 30)}...)` : '❌ ABSENT');
-    
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  api.interceptors.request.use(
+    async (config) => {
+      console.log('🌐 === REQUÊTE API ===');
+      console.log('📍 URL complète:', config.baseURL + config.url);
+      console.log('🔑 Method:', config.method.toUpperCase());
+      console.log('📦 Data:', config.data);
+      
+      const token = await StorageService.getItem('userToken');
+      
+      // 🔥 AJOUTER CES LOGS
+      console.log('🔍 Recherche token...');
+      console.log('🎫 Token trouvé:', token ? `OUI (${token.substring(0, 30)}...)` : '❌ NON');
+      
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+        console.log('✅ Token ajouté au header');
+      } else {
+        console.log('⚠️ Aucun token trouvé dans le storage');
+      }
+      
+      console.log('📤 Headers:', config.headers);
+      
+      return config;
+    },
+    (error) => {
+      console.log('🚨 Erreur intercepteur requête:', error);
+      return Promise.reject(error);
     }
-    
-    console.log('📤 Headers:', config.headers);
-    
-    return config;
-  },
-  (error) => {
-    console.log('🚨 Erreur intercepteur requête:', error);
-    return Promise.reject(error);
-  }
-);
+  );
 
 // Intercepteur pour gérer les erreurs
 api.interceptors.response.use(
