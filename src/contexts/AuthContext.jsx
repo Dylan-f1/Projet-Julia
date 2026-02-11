@@ -48,19 +48,43 @@ export const AuthProvider = ({ children }) => {
   };
 
   const verifyMagicLink = async (token) => {
+    console.log('🔐 === VERIFY MAGIC LINK ===');
+    console.log('🔐 Token reçu:', token);
+    
     const result = await authService.verifyMagicLink(token);
+    
+    console.log('🔐 Résultat backend:', result);
+    console.log('🔐 result.success:', result.success);
+    console.log('🔐 result.data:', result.data);
+    console.log('🔐 result.data.token:', result.data?.token);
+    console.log('🔐 result.data.user:', result.data?.user);
+    
     if (result.success) {
+      console.log('✅ Vérification réussie, stockage du token...');
+      
       await StorageService.setItem('userToken', result.data.token);
       await StorageService.setItem('userRole', 'patient');
       await StorageService.setItem('user', JSON.stringify(result.data.user));
+      
+      // Vérifier que c'est bien stocké
+      const storedToken = await StorageService.getItem('userToken');
+      const storedRole = await StorageService.getItem('userRole');
+      
+      console.log('✅ Token après stockage:', storedToken);
+      console.log('✅ Role après stockage:', storedRole);
       
       setUser(result.data.user);
       setToken(result.data.token);
       setUserRole('patient');
       setIsAuthenticated(true);
       
+      console.log('✅ États mis à jour');
+      
       await notificationService.registerForPushNotifications();
+    } else {
+      console.error('❌ Échec vérification:', result.error);
     }
+    
     return result;
   };
 
@@ -195,7 +219,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     sendMagicLink,
     verifyMagicLink,
-    loginPatient,      // 🔥 AJOUTER ICI
+    loginPatient,      
     loginTherapist,
     registerTherapist,
     logout,

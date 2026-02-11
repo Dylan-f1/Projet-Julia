@@ -103,6 +103,15 @@ export const ChatProvider = ({ children }) => {
         loadConversation,
         sendMessage,
         startNewConversation,
+        activeConversation: currentConversation?._id || null,
+        setActiveConversation: (id) => {
+          if (id) {
+            loadConversation(id);
+          } else {
+            setCurrentConversation(null);
+            setMessages([]);
+          }
+        },
       }}
     >
       {children}

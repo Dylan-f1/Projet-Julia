@@ -14,12 +14,15 @@ function RootLayoutNav() {
     const inAuthGroup = segments[0] === 'auth';
     const inTherapistGroup = segments[0] === 'therapist';
     const inPatientGroup = segments[0] === 'patient';
+    const inVerifyMagicLink = segments.includes('verify-magic-link');
+
+    if (inVerifyMagicLink) {
+      return;
+    }
 
     if (!isAuthenticated && !inAuthGroup) {
-      // Pas connecté → rediriger vers auth
       router.replace('/auth/therapist-login');
     } else if (isAuthenticated) {
-      // Connecté → rediriger selon le rôle
       if (userRole === 'therapist' && !inTherapistGroup) {
         router.replace('/therapist/dashboard');
       } else if (userRole === 'patient' && !inPatientGroup) {

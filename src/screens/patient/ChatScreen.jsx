@@ -1,7 +1,8 @@
 // src/screens/patient/ChatScreen.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { View, ScrollView, Platform, ActivityIndicator, Text } from 'react-native';
+import { View, ScrollView, Platform, ActivityIndicator, Text , TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 import ChatBubble from '../../components/chat/ChatBubble';
 import ChatInput from '../../components/chat/ChatInput';
@@ -30,22 +31,39 @@ const ChatScreen = () => {
   }, []);
 
   const loadConversations = async () => {
+    console.log('📂 Chargement des conversations...');
     const result = await chatService.getMyConversations();
+    console.log('📂 Résultat:', result);
+    
     if (result.success) {
-      const convArray = Array.isArray(result.data)
-        ? result.data
-        : result.data?.conversations || [];
+      const convArray = result.data?.conversation 
+        ? [result.data.conversation] 
+        : Array.isArray(result.data) 
+          ? result.data 
+          : [];
+      
+      console.log('📂 Conversations:', convArray);
       setConversations(convArray);
+      
+      if (convArray.length > 0 && !activeConversation) {
+        console.log('📂 Sélection conversation active:', convArray[0]._id);
+        setActiveConversation(convArray[0]._id);
+        loadMessages(convArray[0]._id);
+      }
     }
   };
 
   const loadMessages = async (conversationId) => {
+    console.log('💬 Chargement messages pour:', conversationId);
     setLoading(true);
     const result = await chatService.getMessages(conversationId);
+    console.log('💬 Résultat:', result);
+    
     if (result.success) {
       const msgArray = Array.isArray(result.data)
         ? result.data
         : result.data?.messages || [];
+      console.log('💬 Messages:', msgArray);
       setMessages(msgArray);
       setTimeout(() => scrollToBottom(), 100);
     }
@@ -55,32 +73,61 @@ const ChatScreen = () => {
   const handleSendMessage = async (content) => {
     if (!content.trim()) return;
 
-    // Ajouter le message utilisateur immédiatement
+    console.log('📤 Envoi message:', content);
+    console.log('📤 Conversation active:', activeConversation);
+
+    // ✅ Si pas de conversation active, en créer une avec le premier message
+    if (!activeConversation) {
+      console.log('📝 Création nouvelle conversation avec premier message');
+      
+      setIsTyping(true);
+      const createResult = await chatService.createConversation(content);
+      setIsTyping(false);
+      
+      console.log('📝 Résultat création:', createResult);
+      
+      if (createResult.success) {
+        const newConv = createResult.data.conversation || createResult.data;
+        console.log('✅ Conversation créée:', newConv);
+        
+        setActiveConversation(newConv._id);
+        setMessages(newConv.messages || []);
+        loadConversations();
+        scrollToBottom();
+      } else {
+        console.error('❌ Erreur création conversation:', createResult.error);
+      }
+      return;
+    }
+
+    // ✅ Sinon, envoyer le message dans la conversation active
     const userMessage = {
       _id: Date.now().toString(),
       content,
       sender: 'patient',
       timestamp: new Date().toISOString(),
     };
+    
     setMessages(prev => [...prev, userMessage]);
     scrollToBottom();
 
-    // Montrer l'indicateur de typing
     setIsTyping(true);
 
-    // Envoyer au backend
+    console.log('📤 Envoi vers conversation:', activeConversation);
     const result = await chatService.sendMessage(activeConversation, content);
 
     setIsTyping(false);
 
+    console.log('📤 Résultat envoi:', result);
+
     if (result.success) {
-      // Ajouter la réponse de Julia
       const aiMessage = result.data.message || result.data;
+      console.log('✅ Message AI reçu:', aiMessage);
       setMessages(prev => [...prev, aiMessage]);
       scrollToBottom();
-
-      // Recharger les conversations pour mettre à jour la synthèse
       loadConversations();
+    } else {
+      console.error('❌ Erreur envoi message:', result.error);
     }
   };
 
@@ -90,11 +137,13 @@ const ChatScreen = () => {
   };
 
   const handleNewConversation = async () => {
-    const result = await chatService.createConversation();
+    console.log('🆕 Nouvelle conversation');
+    const result = await chatService.createConversation('Bonjour');
+    
     if (result.success) {
       const newConv = result.data.conversation || result.data;
       setActiveConversation(newConv._id);
-      setMessages([]);
+      setMessages(newConv.messages || []);
       loadConversations();
     }
   };
@@ -150,7 +199,7 @@ const ChatScreen = () => {
               <Ionicons name="sparkles" size={20} color="white" />
             </View>
             <View className="flex-1">
-              <Text className="text-lg font-bold text-gray-900">Julia</Text>
+              <Text className="text-lg font-bold text-gray-900">Jul-IA</Text>
               <Text className="text-sm text-gray-500">Toujours là pour vous écouter</Text>
             </View>
           </View>
@@ -174,7 +223,7 @@ const ChatScreen = () => {
                   Bienvenue !
                 </Text>
                 <Text className="text-gray-600 text-center px-6">
-                  Je suis Julia, votre compagnon d'écoute disponible 24/7.
+                  Je suis Jul-IA, votre compagnon d'écoute disponible 24/7.
                   {'\n'}Comment puis-je vous aider aujourd'hui ?
                 </Text>
               </View>
@@ -192,7 +241,6 @@ const ChatScreen = () => {
             )}
           </ScrollView>
 
-          {/* Input */}
           <ChatInput onSend={handleSendMessage} disabled={isTyping} />
         </View>
       </View>

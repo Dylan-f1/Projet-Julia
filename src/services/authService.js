@@ -19,8 +19,8 @@ class AuthService {
   async verifyMagicLink(token) {
     try {
       const response = await api.post('/auth/verify-magic-link', { token });
-      await StorageService.setItem('userToken', response.data.token); // ✅
-      await StorageService.setItem('userRole', 'patient'); // ✅
+      await StorageService.setItem('userToken', response.data.token); 
+      await StorageService.setItem('userRole', 'patient'); 
       return { success: true, data: response.data };
     } catch (error) {
       return { 
@@ -36,16 +36,10 @@ class AuthService {
     try {
       const response = await api.post('/auth/login', { email, password });
       
-      console.log('📦 Réponse login:', response.data);
-      console.log('🔑 Token reçu:', response.data.token);
-      
-      // Stocker le token
       await StorageService.setItem('userToken', response.data.token);
       await StorageService.setItem('userRole', 'therapist');
       
-      // Vérifier que c'est bien stocké
       const storedToken = await StorageService.getItem('userToken');
-      console.log('✅ Token stocké:', storedToken ? 'OUI' : 'NON');
       
       return { success: true, data: response.data };
     } catch (error) {
@@ -56,12 +50,11 @@ class AuthService {
     }
   }
 
-  // Inscription thérapeute
   async registerTherapist(data) {
     try {
       const response = await api.post('/auth/therapist/register', data);
-      await StorageService.setItem('userToken', response.data.token); // ✅
-      await StorageService.setItem('userRole', 'therapist'); // ✅
+      await StorageService.setItem('userToken', response.data.token); 
+      await StorageService.setItem('userRole', 'therapist'); 
       return { success: true, data: response.data };
     } catch (error) {
       return { 
@@ -71,24 +64,20 @@ class AuthService {
     }
   }
 
-  // Déconnexion
   async logout() {
-    await StorageService.removeItem('userToken'); // ✅
-    await StorageService.removeItem('userRole'); // ✅
+    await StorageService.removeItem('userToken'); 
+    await StorageService.removeItem('userRole'); 
   }
 
-  // Vérifier si l'utilisateur est connecté
   async isAuthenticated() {
-    const token = await StorageService.getItem('userToken'); // ✅
+    const token = await StorageService.getItem('userToken'); 
     return !!token;
   }
 
-  // Obtenir le rôle de l'utilisateur
   async getUserRole() {
-    return await StorageService.getItem('userRole'); // ✅
+    return await StorageService.getItem('userRole'); 
   }
 
-  // ✅ Méthode utile pour récupérer le token (pour les headers API)
   async getToken() {
     return await StorageService.getItem('userToken');
   }

@@ -1,4 +1,3 @@
-// src/screens/patient/HomeScreen.jsx
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Platform, RefreshControl, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,8 +26,6 @@ const HomeScreen = () => {
   const loadPatientData = async () => {
     setLoading(true);
     
-    // TODO: Appeler les APIs pour récupérer les données du patient
-    // Simuler un chargement pour l'instant
     setTimeout(() => {
       setPatientData({
         firstName: user?.firstName || 'Patient',

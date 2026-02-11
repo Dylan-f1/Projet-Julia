@@ -101,7 +101,7 @@ const ConversationDetailScreen = () => {
           <View className="flex-row items-center">
             <Ionicons name="information-circle-outline" size={16} color="#6B7280" />
             <Text className="text-xs text-gray-600 ml-2 flex-1">
-              Cette conversation est en lecture seule. Le patient peut continuer à échanger avec Julia.
+              Cette conversation est en lecture seule. Le patient peut continuer à échanger avec Jul-IA .
             </Text>
           </View>
         </View>

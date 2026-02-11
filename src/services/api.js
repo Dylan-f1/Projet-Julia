@@ -13,61 +13,32 @@ const api = axios.create({
 
 // Intercepteur pour ajouter le token JWT
   api.interceptors.request.use(
-    async (config) => {
-      console.log('🌐 === REQUÊTE API ===');
-      console.log('📍 URL complète:', config.baseURL + config.url);
-      console.log('🔑 Method:', config.method.toUpperCase());
-      console.log('📦 Data:', config.data);
-      
+    async (config) => {      
       const token = await StorageService.getItem('userToken');
-      
-      // 🔥 AJOUTER CES LOGS
-      console.log('🔍 Recherche token...');
-      console.log('🎫 Token trouvé:', token ? `OUI (${token.substring(0, 30)}...)` : '❌ NON');
-      
+
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
-        console.log('✅ Token ajouté au header');
       } else {
         console.log('⚠️ Aucun token trouvé dans le storage');
-      }
-      
-      console.log('📤 Headers:', config.headers);
-      
+      }      
       return config;
     },
     (error) => {
-      console.log('🚨 Erreur intercepteur requête:', error);
       return Promise.reject(error);
     }
   );
 
-// Intercepteur pour gérer les erreurs
-api.interceptors.response.use(
-  (response) => {
-    console.log('✅ === RÉPONSE API ===');
-    console.log('📍 URL:', response.config.url);
-    console.log('📊 Status:', response.status);
-    console.log('📦 Data:', response.data);
-    return response;
-  },
-  async (error) => {
-    console.log('❌ === ERREUR API ===');
-    console.log('📍 URL:', error.config?.url);
-    console.log('📊 Status:', error.response?.status);
-    console.log('📦 Response data:', error.response?.data);
-    console.log('💬 Message:', error.message);
-    console.log('🔍 Code:', error.code);
-    
-    if (error.response?.status === 401) {
-      console.log('🔐 Token expiré, déconnexion...');
-      await StorageService.deleteItem('userToken');
-      await StorageService.deleteItem('userRole');
+  // Intercepteur pour gérer les erreurs
+  api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      if (error.response?.status === 401) {
+        console.warn('⚠️ 401 Unauthorized - vérifier le token');
+        // NE PAS faire de logout automatique
+      }
+      return Promise.reject(error);
     }
-    
-    return Promise.reject(error);
-  }
-);
+  );
 
 /**
  * Fonction utilitaire pour faire des requêtes API

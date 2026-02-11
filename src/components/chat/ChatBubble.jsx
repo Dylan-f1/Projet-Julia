@@ -17,7 +17,7 @@ const ChatBubble = ({ message, isUser }) => {
       <View className={`max-w-[75%] ${isUser ? 'items-end' : 'items-start'}`}>
         {/* Nom */}
         {!isUser && (
-          <Text className="text-xs text-gray-500 mb-1 ml-2">Julia</Text>
+          <Text className="text-xs text-gray-500 mb-1 ml-2">JuliApp</Text>
         )}
 
         {/* Message */}

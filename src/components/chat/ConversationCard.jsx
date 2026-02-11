@@ -6,8 +6,28 @@ import { Ionicons } from '@expo/vector-icons';
 const ConversationCard = ({ conversation, isActive, onPress }) => {
   const isWeb = Platform.OS === 'web';
 
-  // Extraire les mots-clés de la synthèse
-  const keywords = conversation.keywords || [];
+   console.log('🔍 Full conversation:', JSON.stringify(conversation, null, 2));
+
+  const getKeywords = (conv) => {
+    // summary.keywords
+    if (conv.summary?.keywords && Array.isArray(conv.summary.keywords)) {
+      return conv.summary.keywords;
+    }
+    // keywords direct
+    if (Array.isArray(conv.keywords)) {
+      return conv.keywords;
+    }
+    // analysis.keywords
+    if (conv.analysis?.keywords && Array.isArray(conv.analysis.keywords)) {
+      return conv.analysis.keywords;
+    }
+    return [];
+  };
+
+  const keywords = getKeywords(conversation);
+
+  console.log('🔍 Extracted keywords:', keywords);
+  console.log('🔍 Keywords type:', typeof keywords, Array.isArray(keywords));
   
   // Couleur selon le degré de gravité
   const getCrisisColor = (level) => {
@@ -28,7 +48,6 @@ const ConversationCard = ({ conversation, isActive, onPress }) => {
       activeOpacity={0.7}
     >
       <View className="flex-row items-start justify-between mb-2">
-        {/* Date et heure */}
         <Text className="text-xs text-gray-500">
           {new Date(conversation.createdAt).toLocaleDateString('fr-FR', {
             day: 'numeric',
@@ -38,7 +57,6 @@ const ConversationCard = ({ conversation, isActive, onPress }) => {
           })}
         </Text>
 
-        {/* Indicateur de crise */}
         {conversation.crisisLevel && conversation.crisisLevel !== 'none' && (
           <View className={`px-2 py-1 rounded-full ${crisisStyle.bg} border ${crisisStyle.border} flex-row items-center`}>
             <Ionicons name={crisisStyle.icon} size={12} color={crisisStyle.text.replace('text-', '#')} />
@@ -49,12 +67,12 @@ const ConversationCard = ({ conversation, isActive, onPress }) => {
         )}
       </View>
 
-      {/* Synthèse de la conversation */}
       <Text className="text-sm text-gray-900 font-medium mb-2" numberOfLines={2}>
-        {conversation.summary || 'Discussion avec Julia'}
+        {typeof conversation.summary === 'string' 
+        ? conversation.summary 
+        : (conversation.summary?.text || conversation.summary?.content || 'Discussion avec Jul-IA')}
       </Text>
 
-      {/* Mots-clés */}
       {keywords.length > 0 && (
         <View className="flex-row flex-wrap gap-1">
           {keywords.slice(0, 3).map((keyword, index) => (
@@ -72,7 +90,6 @@ const ConversationCard = ({ conversation, isActive, onPress }) => {
         </View>
       )}
 
-      {/* Nombre de messages */}
       <View className="flex-row items-center mt-2">
         <Ionicons name="chatbubble-outline" size={12} color="#9CA3AF" />
         <Text className="text-xs text-gray-500 ml-1">

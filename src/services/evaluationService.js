@@ -1,7 +1,6 @@
 import api from './api';
 
 class EvaluationService {
-  // Soumettre une évaluation quotidienne
   async submitDailyEvaluation(evaluationData) {
     try {
       const response = await api.post('/evaluations/daily', evaluationData);
@@ -14,7 +13,6 @@ class EvaluationService {
     }
   }
 
-  // Obtenir les évaluations du patient
   async getPatientEvaluations(startDate, endDate) {
     try {
       const params = {};
@@ -31,7 +29,6 @@ class EvaluationService {
     }
   }
 
-  // Obtenir les évaluations d'un patient (pour thérapeute)
   async getPatientEvaluationsByTherapist(patientId, startDate, endDate) {
     try {
       const params = {};
@@ -48,7 +45,6 @@ class EvaluationService {
     }
   }
 
-  // Vérifier si l'évaluation du jour a été faite
   async checkTodayEvaluation() {
     try {
       const response = await api.get('/evaluations/today');

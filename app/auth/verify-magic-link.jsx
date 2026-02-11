@@ -12,7 +12,7 @@ export default function MagicLinkVerifyScreen() {
   const { token } = useLocalSearchParams();
   const { verifyMagicLink } = useAuth();
   const router = useRouter();
-  const [status, setStatus] = useState('verifying'); // verifying, success, error
+  const [status, setStatus] = useState('verifying');
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -32,9 +32,8 @@ export default function MagicLinkVerifyScreen() {
 
     if (result.success) {
       setStatus('success');
-      // Le redirect sera fait automatiquement par AuthContext
       setTimeout(() => {
-        router.replace('/patient/chat');
+        router.replace('/patient/home');
       }, 1500);
     } else {
       setStatus('error');

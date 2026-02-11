@@ -74,7 +74,7 @@ const ConversationHistoryScreen = ({ navigation }) => {
               </Text>
               {isDesktop && (
                 <Text className="text-sm text-gray-500 mt-1">
-                  Retrouvez l'historique de vos échanges avec Julia
+                  Retrouvez l'historique de vos échanges avec Jul-IA
                 </Text>
               )}
             </View>
@@ -105,7 +105,7 @@ const ConversationHistoryScreen = ({ navigation }) => {
               />
             }
             title="Aucune conversation"
-            message="Commencez une nouvelle conversation avec Julia pour partager vos pensées et émotions."
+            message="Commencez une nouvelle conversation avec Jul-IA pour partager vos pensées et émotions."
             actionLabel="Nouvelle conversation"
             onAction={handleNewConversation}
           />

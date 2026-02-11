@@ -27,7 +27,6 @@ class SessionNoteService {
     }
   }
 
-  // Obtenir les notes de séance d'un patient
   async getSessionNotes(patientId) {
     try {
       const response = await api.get(`/session-notes/patient/${patientId}`);
@@ -40,7 +39,6 @@ class SessionNoteService {
     }
   }
 
-  // Obtenir une note spécifique
   async getSessionNote(noteId) {
     try {
       const response = await api.get(`/session-notes/${noteId}`);
@@ -53,7 +51,6 @@ class SessionNoteService {
     }
   }
 
-  // Mettre à jour une note de séance
   async updateSessionNote(noteId, updateData) {
     try {
       const response = await api.put(`/session-notes/${noteId}`, updateData);
@@ -66,7 +63,6 @@ class SessionNoteService {
     }
   }
 
-  // Supprimer une note de séance
   async deleteSessionNote(noteId) {
     try {
       const response = await api.delete(`/session-notes/${noteId}`);

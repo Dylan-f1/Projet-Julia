@@ -38,7 +38,7 @@ export default function PatientLayout() {
         <Tabs.Screen
           name="chat"
           options={{
-            title: 'Julia',
+            title: 'Jul-IA',
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="chatbubbles" size={size} color={color} />
             ),

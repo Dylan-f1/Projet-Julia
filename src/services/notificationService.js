@@ -5,7 +5,6 @@ import api from './api';
 
 class NotificationService {
   constructor() {
-    // Configuration par défaut des notifications
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
         shouldShowAlert: true,
@@ -15,7 +14,6 @@ class NotificationService {
     });
   }
 
-  // Demander la permission et enregistrer le token
   async registerForPushNotifications() {
     let token;
 
@@ -43,7 +41,6 @@ class NotificationService {
       
       token = (await Notifications.getExpoPushTokenAsync()).data;
       
-      // Envoyer le token au backend
       try {
         await api.post('/notifications/register', { pushToken: token });
       } catch (error) {
@@ -56,17 +53,14 @@ class NotificationService {
     return { success: true, token };
   }
 
-  // Écouter les notifications reçues
   addNotificationReceivedListener(callback) {
     return Notifications.addNotificationReceivedListener(callback);
   }
 
-  // Écouter les interactions avec les notifications
   addNotificationResponseReceivedListener(callback) {
     return Notifications.addNotificationResponseReceivedListener(callback);
   }
 
-  // Planifier une notification locale
   async scheduleLocalNotification(title, body, data = {}, trigger = null) {
     await Notifications.scheduleNotificationAsync({
       content: {
@@ -75,21 +69,18 @@ class NotificationService {
         data,
         sound: true,
       },
-      trigger: trigger || null, // null = immédiat
+      trigger: trigger || null,
     });
   }
 
-  // Annuler toutes les notifications programmées
   async cancelAllScheduledNotifications() {
     await Notifications.cancelAllScheduledNotificationsAsync();
   }
 
-  // Obtenir le badge count
   async getBadgeCount() {
     return await Notifications.getBadgeCountAsync();
   }
 
-  // Définir le badge count
   async setBadgeCount(count) {
     await Notifications.setBadgeCountAsync(count);
   }

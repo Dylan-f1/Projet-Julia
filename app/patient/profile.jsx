@@ -42,7 +42,7 @@ export default function ProfileScreen() {
 
           {/* Layout en grille sur desktop */}
           <View className={isWeb ? 'flex-row gap-4' : ''}>
-            {/* Colonne gauche : À propos de Julia */}
+            {/* Colonne gauche : À propos de Jul-IA */}
             <View className={isWeb ? 'flex-1' : ''}>
               <Card className="mb-4">
                 <View className="flex-row items-center mb-4">
@@ -50,12 +50,12 @@ export default function ProfileScreen() {
                     <Ionicons name="heart" size={20} color="#0284c7" />
                   </View>
                   <Text className="text-lg font-semibold text-gray-900">
-                    À propos de Julia
+                    À propos de Jul-IA
                   </Text>
                 </View>
                 
                 <Text className="text-gray-700 leading-6 mb-3">
-                  Julia est votre compagnon thérapeutique disponible 24/7. Partagez vos pensées, 
+                  Jul-IA est votre compagnon thérapeutique disponible 24/7. Partagez vos pensées, 
                   émotions et préoccupations en toute confidentialité.
                 </Text>
                 <Text className="text-gray-700 leading-6">
