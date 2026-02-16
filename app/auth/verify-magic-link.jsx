@@ -1,9 +1,11 @@
+// app/(auth)/verify-magic-link.jsx
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../src/contexts/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../../src/components/common/Loading';
 import Alert from '../../src/components/common/Alert';
 import Button from '../../src/components/common/Button';
@@ -32,8 +34,20 @@ export default function MagicLinkVerifyScreen() {
 
     if (result.success) {
       setStatus('success');
-      setTimeout(() => {
-        router.replace('/patient/home');
+      
+      // 🔥 CHANGEMENT ICI : Vérifier le consentement avant de rediriger
+      setTimeout(async () => {
+        const consentAccepted = await AsyncStorage.getItem('dataConsentAccepted');
+        
+        if (!consentAccepted || consentAccepted !== 'true') {
+          // Pas de consentement → écran de consentement
+          console.log('📋 Redirection vers first-time-consent');
+          router.replace('/patient/first-time-consent');
+        } else {
+          // Consentement déjà donné → home
+          console.log('✅ Redirection vers home');
+          router.replace('/patient/home');
+        }
       }, 1500);
     } else {
       setStatus('error');

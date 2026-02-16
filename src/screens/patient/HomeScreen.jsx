@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Platform, RefreshControl, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Platform, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
@@ -15,13 +16,38 @@ const HomeScreen = () => {
   const isWeb = Platform.OS === 'web';
 
   const [loading, setLoading] = useState(true);
+  const [checkingConsent, setCheckingConsent] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [patientData, setPatientData] = useState(null);
   const [lastEvaluation, setLastEvaluation] = useState(null);
 
+  // VÉRIFICATION DU CONSENTEMENT EN PREMIER
   useEffect(() => {
-    loadPatientData();
+    checkConsent();
   }, []);
+
+  const checkConsent = async () => {
+    try {
+      const consentAccepted = await AsyncStorage.getItem('dataConsentAccepted');
+      
+      console.log('🏠 Vérification consentement depuis HomeScreen:', consentAccepted);
+      
+      if (!consentAccepted || consentAccepted !== 'true') {
+        console.log('❌ Pas de consentement, redirection vers first-time-consent');
+        router.replace('/patient/first-time-consent');
+        return;
+      }
+      
+      console.log('✅ Consentement OK, chargement des données');
+      setCheckingConsent(false);
+      loadPatientData();
+      
+    } catch (error) {
+      console.error('Erreur vérification consentement:', error);
+      setCheckingConsent(false);
+      loadPatientData();
+    }
+  };
 
   const loadPatientData = async () => {
     setLoading(true);
@@ -64,6 +90,18 @@ const HomeScreen = () => {
   const handleChat = () => {
     router.push('/patient/chat');
   };
+
+  // Afficher un loader pendant la vérification du consentement
+  if (checkingConsent) {
+    return (
+      <SafeAreaView className="flex-1 bg-gray-50">
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#0284c7" />
+          <Text className="mt-4 text-gray-600">Vérification...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   if (loading) {
     return <Loading message="Chargement de votre espace..." />;

@@ -1,3 +1,4 @@
+// app/patient/_layout.jsx
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ChatProvider } from '../../src/contexts/ChatContext';
@@ -24,7 +25,6 @@ export default function PatientLayout() {
           },
         }}
       >
-        {/* 🔥 NOUVEL ONGLET : Home */}
         <Tabs.Screen
           name="home"
           options={{
@@ -74,6 +74,11 @@ export default function PatientLayout() {
             ),
           }}
         />
+
+        <Tabs.Screen name="first-time-consent" options={{ href: null }} />
+        <Tabs.Screen name="data-policy" options={{ href: null }} />
+        <Tabs.Screen name="withdraw-consent" options={{ href: null }} />
+        <Tabs.Screen name="delete-account" options={{ href: null }} />
       </Tabs>
     </ChatProvider>
   );
