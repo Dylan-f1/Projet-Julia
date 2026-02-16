@@ -6,36 +6,45 @@ const PatientHeader = ({ patient, onBack, onEdit }) => {
   const isWeb = Platform.OS === 'web';
 
   return (
-    <View className="bg-white px-4 py-4 border-b border-gray-200">
+    <View className="bg-therapist-50 px-4 py-5 border-b border-therapist-100">
       <View className="flex-row items-center justify-between mb-4">
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={onBack}
-          className={isWeb ? 'hover:bg-gray-100 p-2 rounded-lg -ml-2' : ''}
+          className={`w-10 h-10 bg-surface-100 rounded-full items-center justify-center ${
+            isWeb ? 'hover:bg-surface-200' : ''
+          }`}
         >
-          <Ionicons name="arrow-back" size={24} color="#1F2937" />
+          <Ionicons name="arrow-back" size={20} color="#404040" />
         </TouchableOpacity>
-        
+
         <View className="flex-1 mx-4">
-          <Text className="text-xl font-bold text-gray-900">
+          <Text className="text-xl font-bold text-text-900">
             {patient.firstName} {patient.lastName}
           </Text>
-          <Text className="text-sm text-gray-600">{patient.email}</Text>
+          <Text className="text-sm text-text-300 mt-0.5">{patient.email}</Text>
         </View>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={onEdit}
-          className={isWeb ? 'hover:bg-gray-100 p-2 rounded-lg' : ''}
+          className={`w-10 h-10 bg-surface-100 rounded-full items-center justify-center ${
+            isWeb ? 'hover:bg-surface-200' : ''
+          }`}
         >
-          <Ionicons name="create-outline" size={24} color="#6B7280" />
+          <Ionicons name="create-outline" size={20} color="#404040" />
         </TouchableOpacity>
       </View>
 
       {patient.criticalStatus && (
-        <View className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+        <View
+          className="bg-danger-50 rounded-xl p-4"
+          style={{ borderLeftWidth: 4, borderLeftColor: '#E05B5B' }}
+        >
           <View className="flex-row items-center">
-            <Ionicons name="warning" size={20} color="#ef4444" />
-            <Text className="text-red-600 font-semibold ml-2 flex-1">
-              Patient en situation critique - Surveillance renforcée
+            <View className="w-8 h-8 bg-danger-100 rounded-full items-center justify-center mr-3">
+              <Ionicons name="warning" size={18} color="#E05B5B" />
+            </View>
+            <Text className="text-danger-600 font-semibold flex-1">
+              Patient en situation critique - Surveillance renforcee
             </Text>
           </View>
         </View>

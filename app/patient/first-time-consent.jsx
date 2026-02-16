@@ -1,12 +1,10 @@
 // app/patient/first-time-consent.jsx
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Platform, Alert } from 'react-native';
+import { View, Text, ScrollView, Platform, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import Button from '../../src/components/common/Button';
 
 export default function FirstTimeConsentScreen() {
   const router = useRouter();
@@ -21,12 +19,12 @@ export default function FirstTimeConsentScreen() {
       await AsyncStorage.setItem('dataConsentAccepted', 'true');
       await AsyncStorage.setItem('dataConsentDate', new Date().toISOString());
 
-      console.log('✅ Consentement accepté et stocké localement');
+      console.log('Consentement accepte et stocke localement');
 
-      // TODO: Appeler l'API backend quand l'endpoint sera créé
+      // TODO: Appeler l'API backend quand l'endpoint sera cree
       // const response = await fetch(`${API_URL}/api/patient/consent/accept`, {
       //   method: 'POST',
-      //   headers: { 
+      //   headers: {
       //     'Content-Type': 'application/json',
       //     'Authorization': `Bearer ${token}`
       //   }
@@ -37,7 +35,7 @@ export default function FirstTimeConsentScreen() {
 
     } catch (error) {
       console.error('Erreur acceptation consentement:', error);
-      
+
       // Affichage d'erreur compatible web + mobile
       if (Platform.OS === 'web') {
         alert('Erreur lors de l\'enregistrement du consentement');
@@ -64,8 +62,8 @@ export default function FirstTimeConsentScreen() {
         'Sans consentement, vous ne pouvez pas utiliser l\'application. Souhaitez-vous vraiment refuser ?',
         [
           { text: 'Annuler', style: 'cancel' },
-          { 
-            text: 'Refuser', 
+          {
+            text: 'Refuser',
             style: 'destructive',
             onPress: () => router.replace('/auth/therapist-login')
           }
@@ -79,123 +77,177 @@ export default function FirstTimeConsentScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-surface-50">
       <View className={`flex-1 ${isWeb ? 'max-w-2xl mx-auto w-full' : ''}`}>
-        
-        {/* Header */}
-        <View className="bg-primary-600 px-6 py-8">
+
+        {/* Header area - bg patient-50, rounded-b-3xl */}
+        <View
+          className="px-6 py-8"
+          style={{
+            backgroundColor: '#EEF4FB',
+            borderBottomLeftRadius: 32,
+            borderBottomRightRadius: 32,
+          }}
+        >
           <View className="items-center mb-4">
-            <View className="w-20 h-20 bg-white/20 rounded-full items-center justify-center mb-4">
-              <Ionicons name="shield-checkmark" size={40} color="white" />
+            <View
+              className="w-20 h-20 rounded-full items-center justify-center mb-4"
+              style={{ backgroundColor: 'rgba(91, 155, 213, 0.2)' }}
+            >
+              <Ionicons name="shield-checkmark" size={40} color="#5B9BD5" />
             </View>
-            <Text className="text-white text-2xl font-bold text-center">
-              Protection de vos données
+            <Text className="text-2xl font-bold text-center" style={{ color: '#1A1A1A' }}>
+              Protection de vos donnees
             </Text>
-            <Text className="text-white/90 text-center mt-2">
-              Votre vie privée est notre priorité
+            <Text className="text-center mt-2" style={{ color: '#6B6B6B' }}>
+              Votre vie privee est notre priorite
             </Text>
           </View>
         </View>
 
         {/* Content */}
         <ScrollView className="flex-1 px-6 py-6">
-          
-          <View className="bg-white rounded-xl p-6 mb-6 shadow-sm">
-            <Text className="text-lg font-semibold text-gray-900 mb-4">
+
+          {/* Consent items - white cards with success-400 checkmark icons */}
+          <View
+            className="rounded-xl p-6 mb-6"
+            style={{
+              backgroundColor: '#FFFFFF',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.04,
+              shadowRadius: 4,
+              elevation: 2,
+            }}
+          >
+            <Text className="text-lg font-semibold mb-4" style={{ color: '#1A1A1A' }}>
               Pourquoi avons-nous besoin de votre consentement ?
             </Text>
-            
+
             <View className="space-y-4">
               <View className="flex-row items-start">
-                <Ionicons name="checkmark-circle" size={24} color="#22c55e" className="mr-3 mt-1" />
+                <Ionicons name="checkmark-circle" size={24} color="#4CAF82" style={{ marginTop: 2 }} />
                 <View className="flex-1 ml-3">
-                  <Text className="text-gray-900 font-medium mb-1">
-                    Conformité RGPD
+                  <Text className="font-medium mb-1" style={{ color: '#1A1A1A' }}>
+                    Conformite RGPD
                   </Text>
-                  <Text className="text-gray-600 text-sm">
-                    Nous respectons le Règlement Général sur la Protection des Données
+                  <Text className="text-sm" style={{ color: '#6B6B6B' }}>
+                    Nous respectons le Reglement General sur la Protection des Donnees
                   </Text>
                 </View>
               </View>
 
               <View className="flex-row items-start">
-                <Ionicons name="checkmark-circle" size={24} color="#22c55e" className="mr-3 mt-1" />
+                <Ionicons name="checkmark-circle" size={24} color="#4CAF82" style={{ marginTop: 2 }} />
                 <View className="flex-1 ml-3">
-                  <Text className="text-gray-900 font-medium mb-1">
+                  <Text className="font-medium mb-1" style={{ color: '#1A1A1A' }}>
                     Transparence totale
                   </Text>
-                  <Text className="text-gray-600 text-sm">
-                    Vous savez exactement quelles données sont collectées et pourquoi
+                  <Text className="text-sm" style={{ color: '#6B6B6B' }}>
+                    Vous savez exactement quelles donnees sont collectees et pourquoi
                   </Text>
                 </View>
               </View>
 
               <View className="flex-row items-start">
-                <Ionicons name="checkmark-circle" size={24} color="#22c55e" className="mr-3 mt-1" />
+                <Ionicons name="checkmark-circle" size={24} color="#4CAF82" style={{ marginTop: 2 }} />
                 <View className="flex-1 ml-3">
-                  <Text className="text-gray-900 font-medium mb-1">
-                    Contrôle de vos données
+                  <Text className="font-medium mb-1" style={{ color: '#1A1A1A' }}>
+                    Controle de vos donnees
                   </Text>
-                  <Text className="text-gray-600 text-sm">
-                    Vous pouvez retirer votre consentement à tout moment
+                  <Text className="text-sm" style={{ color: '#6B6B6B' }}>
+                    Vous pouvez retirer votre consentement a tout moment
                   </Text>
                 </View>
               </View>
             </View>
           </View>
 
-          <View className="bg-blue-50 rounded-xl p-6 mb-6 border border-blue-200">
+          {/* Data collected - bg patient-50, border patient-200 */}
+          <View
+            className="rounded-xl p-6 mb-6"
+            style={{
+              backgroundColor: '#EEF4FB',
+              borderWidth: 1,
+              borderColor: '#A9C9EB',
+            }}
+          >
             <View className="flex-row items-start">
-              <Ionicons name="information-circle" size={24} color="#3b82f6" className="mr-3" />
+              <Ionicons name="information-circle" size={24} color="#5B9BD5" style={{ marginTop: 2 }} />
               <View className="flex-1 ml-3">
-                <Text className="text-blue-900 font-medium mb-2">
-                  Données collectées
+                <Text className="font-medium mb-2" style={{ color: '#1A1A1A' }}>
+                  Donnees collectees
                 </Text>
-                <Text className="text-blue-800 text-sm mb-2">
-                  • Messages avec l'IA Jul-IA
+                <Text className="text-sm mb-2" style={{ color: '#404040' }}>
+                  {'\u2022'} Messages avec l'IA Jul-IA
                 </Text>
-                <Text className="text-blue-800 text-sm mb-2">
-                  • Auto-évaluations et suivis
+                <Text className="text-sm mb-2" style={{ color: '#404040' }}>
+                  {'\u2022'} Auto-evaluations et suivis
                 </Text>
-                <Text className="text-blue-800 text-sm mb-2">
-                  • Informations de profil
+                <Text className="text-sm mb-2" style={{ color: '#404040' }}>
+                  {'\u2022'} Informations de profil
                 </Text>
-                <Text className="text-blue-800 text-sm">
-                  • Données de navigation (anonymisées)
+                <Text className="text-sm" style={{ color: '#404040' }}>
+                  {'\u2022'} Donnees de navigation (anonymisees)
                 </Text>
               </View>
             </View>
           </View>
 
           <View className="mb-6">
-            <Button
-              variant="outline"
+            <TouchableOpacity
               onPress={handleViewPolicy}
-              className="mb-4"
+              className="flex-row items-center justify-center py-3.5 rounded-xl"
+              style={{
+                borderWidth: 2,
+                borderColor: '#A9C9EB',
+                backgroundColor: '#FFFFFF',
+              }}
+              activeOpacity={0.7}
             >
-              📄 Lire la politique complète
-            </Button>
+              <Ionicons name="document-text-outline" size={18} color="#5B9BD5" />
+              <Text className="font-semibold ml-2" style={{ color: '#5B9BD5' }}>
+                Lire la politique complete
+              </Text>
+            </TouchableOpacity>
           </View>
 
         </ScrollView>
 
         {/* Footer Actions */}
-        <View className="bg-white border-t border-gray-200 px-6 py-4">
-          <Button
+        <View
+          className="px-6 py-4"
+          style={{
+            backgroundColor: '#FAFAFA',
+            borderTopWidth: 1,
+            borderTopColor: '#EEECEB',
+          }}
+        >
+          {/* Accept button - bg patient-400 */}
+          <TouchableOpacity
             onPress={handleAccept}
-            loading={loading}
-            className="mb-3"
+            disabled={loading}
+            className="flex-row items-center justify-center py-4 rounded-xl mb-3"
+            style={{
+              backgroundColor: '#5B9BD5',
+              opacity: loading ? 0.6 : 1,
+            }}
+            activeOpacity={0.8}
           >
-            ✓ J'accepte et je continue
-          </Button>
-          
-          <Button
-            variant="ghost"
+            <Ionicons name="checkmark-circle" size={20} color="white" />
+            <Text className="text-white font-bold text-base ml-2">
+              {loading ? 'Enregistrement...' : 'J\'accepte et je continue'}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             onPress={handleDecline}
             disabled={loading}
+            className="flex-row items-center justify-center py-3.5 rounded-xl"
+            activeOpacity={0.7}
           >
-            Refuser
-          </Button>
+            <Text className="font-medium text-base" style={{ color: '#6B6B6B' }}>Refuser</Text>
+          </TouchableOpacity>
         </View>
 
       </View>

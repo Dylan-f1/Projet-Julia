@@ -7,8 +7,8 @@ import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { useAuth } from '../../contexts/AuthContext';
 
-const TherapistLoginScreen = () => { 
-  const router = useRouter(); 
+const TherapistLoginScreen = () => {
+  const router = useRouter();
   const { loginTherapist } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,85 +36,229 @@ const TherapistLoginScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* Conteneur centré pour desktop */}
       <View className={`flex-1 ${isWeb ? 'max-w-md mx-auto w-full' : ''}`}>
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ 
-            flexGrow: 1,
-            padding: isWeb ? 32 : 24,
-            justifyContent: 'center'
-          }}
+          contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={!isWeb}
+          bounces={false}
         >
-          {/* Logo et titre */}
-          <View className="items-center mb-12">
-            <View className="w-20 h-20 bg-secondary-100 rounded-full items-center justify-center mb-4">
-              <Ionicons name="medical" size={40} color="#c026d3" />
-            </View>
-            <Text className="text-3xl font-bold text-gray-900 mb-2">
-              Espace Thérapeute
-            </Text>
-            <Text className="text-base text-gray-600 text-center">
-              Connectez-vous pour accéder à votre dashboard
-            </Text>
-          </View>
-
-          <Text className="text-xl font-semibold text-gray-900 mb-6">
-            Connexion
-          </Text>
-
-          <Input
-            label="Email"
-            placeholder="votre@email.com"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-            icon={<Ionicons name="mail-outline" size={20} color="#6B7280" />}
-          />
-
-          <Input
-            label="Mot de passe"
-            placeholder="Votre mot de passe"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry={!showPassword}
-            autoCapitalize="none"
-            icon={<Ionicons name="lock-closed-outline" size={20} color="#6B7280" />}
-            rightIcon={
-              <Ionicons
-                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                size={20}
-                color="#6B7280"
-              />
-            }
-            onRightIconPress={() => setShowPassword(!showPassword)}
-          />
-
-          <Button
-            title="Se connecter"
-            onPress={handleLogin}
-            loading={loading}
-            size="large"
-            className="mt-4"
-          />
-
-          <View className="mt-6 flex-row justify-center">
-            <Text className="text-gray-600">Pas encore de compte ? </Text>
-            <TouchableOpacity onPress={() => router.push('/auth/therapist-register')}>
-              <Text className="text-primary-600 font-semibold">S'inscrire</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View className="mt-8 pt-8 border-t border-gray-200">
-            <Button
-              title="← Retour à l'accueil"
-              onPress={() => router.push('/')}
-              variant="ghost"
+          {/* ============================================ */}
+          {/* TOP 45% — Warm gold background with decoration */}
+          {/* ============================================ */}
+          <View
+            style={{
+              backgroundColor: '#FDF6EA',
+              minHeight: 340,
+              paddingTop: 48,
+              paddingHorizontal: 24,
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              position: 'relative',
+            }}
+          >
+            {/* Decorative circle — top-right, absolute */}
+            <View
+              style={{
+                position: 'absolute',
+                top: -40,
+                right: -40,
+                width: 200,
+                height: 200,
+                borderRadius: 100,
+                backgroundColor: '#FAE8C4',
+                opacity: 0.4,
+              }}
             />
+
+            {/* Second smaller decorative circle — bottom-left */}
+            <View
+              style={{
+                position: 'absolute',
+                bottom: 30,
+                left: -30,
+                width: 120,
+                height: 120,
+                borderRadius: 60,
+                backgroundColor: '#FAE8C4',
+                opacity: 0.25,
+              }}
+            />
+
+            {/* Icon in circle */}
+            <View
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 40,
+                backgroundColor: '#FAE8C4',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: 16,
+                shadowColor: '#E8A838',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.15,
+                shadowRadius: 12,
+                elevation: 4,
+              }}
+            >
+              <Ionicons name="leaf" size={38} color="#E8A838" />
+            </View>
+
+            {/* Julia branding */}
+            <Text
+              style={{
+                fontSize: 30,
+                fontWeight: '700',
+                color: '#1A1A1A',
+                marginBottom: 4,
+              }}
+            >
+              Julia
+            </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                color: '#6B6B6B',
+                fontWeight: '500',
+              }}
+            >
+              Espace Therapeute
+            </Text>
+          </View>
+
+          {/* ============================================ */}
+          {/* BOTTOM 55% — White card overlapping top section */}
+          {/* ============================================ */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              marginTop: -30,
+              borderTopLeftRadius: 28,
+              borderTopRightRadius: 28,
+              paddingHorizontal: 24,
+              paddingTop: 32,
+              paddingBottom: 40,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: -4 },
+              shadowOpacity: 0.06,
+              shadowRadius: 12,
+              elevation: 8,
+              flex: 1,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: '600',
+                color: '#1A1A1A',
+                marginBottom: 24,
+              }}
+            >
+              Connexion
+            </Text>
+
+            {/* Email input */}
+            <Input
+              label="Email"
+              placeholder="votre@email.com"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+              icon={<Ionicons name="mail-outline" size={20} color="#E8A838" />}
+            />
+
+            {/* Password input */}
+            <Input
+              label="Mot de passe"
+              placeholder="Votre mot de passe"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              autoCapitalize="none"
+              icon={<Ionicons name="lock-closed-outline" size={20} color="#E8A838" />}
+              rightIcon={
+                <Ionicons
+                  name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                  size={20}
+                  color="#E8A838"
+                />
+              }
+              onRightIconPress={() => setShowPassword(!showPassword)}
+            />
+
+            {/* Login button */}
+            <TouchableOpacity
+              onPress={handleLogin}
+              disabled={loading}
+              activeOpacity={0.8}
+              style={{
+                backgroundColor: '#E8A838',
+                borderRadius: 16,
+                paddingVertical: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: 8,
+                opacity: loading ? 0.5 : 1,
+                shadowColor: '#E8A838',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.25,
+                shadowRadius: 8,
+                elevation: 4,
+              }}
+            >
+              {loading ? (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Ionicons name="hourglass-outline" size={20} color="#ffffff" />
+                  <Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 16, marginLeft: 8 }}>
+                    Connexion...
+                  </Text>
+                </View>
+              ) : (
+                <Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 16 }}>
+                  Se connecter
+                </Text>
+              )}
+            </TouchableOpacity>
+
+            {/* Register link */}
+            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 24 }}>
+              <Text style={{ color: '#6B6B6B', fontSize: 14 }}>Pas encore de compte ? </Text>
+              <TouchableOpacity onPress={() => router.push('/auth/therapist-register')}>
+                <Text style={{ color: '#D4942A', fontWeight: '600', fontSize: 14 }}>
+                  S'inscrire
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Back to home */}
+            <View
+              style={{
+                paddingTop: 24,
+                marginTop: 24,
+                borderTopWidth: 1,
+                borderTopColor: '#EEECEB',
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => router.push('/')}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingVertical: 8,
+                }}
+              >
+                <Ionicons name="arrow-back-outline" size={18} color="#D4942A" />
+                <Text style={{ color: '#D4942A', fontWeight: '500', marginLeft: 8 }}>
+                  Retour a l'accueil
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </ScrollView>
       </View>

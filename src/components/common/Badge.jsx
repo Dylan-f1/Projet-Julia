@@ -1,20 +1,19 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-const Badge = ({ 
-  label, 
-  variant = 'default', 
+const Badge = ({
+  label,
+  variant = 'default',
   size = 'medium',
-  className = '' 
+  className = '',
 }) => {
   const variantClasses = {
-    default: 'bg-gray-100 text-gray-700',
-    primary: 'bg-primary-100 text-primary-700',
-    secondary: 'bg-secondary-100 text-secondary-700',
-    success: 'bg-green-100 text-green-700',
-    warning: 'bg-yellow-100 text-yellow-700',
-    danger: 'bg-red-100 text-red-700',
-    info: 'bg-blue-100 text-blue-700',
+    default: { bg: 'bg-surface-200', text: 'text-text-500' },
+    patient: { bg: 'bg-patient-100', text: 'text-patient-600' },
+    therapist: { bg: 'bg-therapist-100', text: 'text-therapist-600' },
+    ai: { bg: 'bg-ai-100', text: 'text-ai-600' },
+    success: { bg: 'bg-success-100', text: 'text-success-600' },
+    danger: { bg: 'bg-danger-100', text: 'text-danger-600' },
   };
 
   const sizeClasses = {
@@ -29,13 +28,11 @@ const Badge = ({
     large: 'text-base',
   };
 
-  const colors = variantClasses[variant].split(' ');
-  const bgColor = colors[0];
-  const textColor = colors[1];
+  const colors = variantClasses[variant] || variantClasses.default;
 
   return (
-    <View className={`${bgColor} ${sizeClasses[size]} rounded-full self-start ${className}`}>
-      <Text className={`${textColor} ${textSizeClasses[size]} font-semibold`}>
+    <View className={`${colors.bg} ${sizeClasses[size]} rounded-full self-start ${className}`}>
+      <Text className={`${colors.text} ${textSizeClasses[size]} font-semibold`}>
         {label}
       </Text>
     </View>

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { View } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useAuth } from '../src/contexts/AuthContext';
 import Loading from '../src/components/common/Loading';
@@ -7,11 +8,15 @@ export default function Index() {
   const { isAuthenticated, userRole, loading } = useAuth();
 
   if (loading) {
-    return <Loading message="Chargement..." />;
+    return (
+      <View className="flex-1 bg-surface-50">
+        <Loading message="Chargement..." />
+      </View>
+    );
   }
 
   if (!isAuthenticated) {
-    // Redirect vers login thérapeute
+    // Redirect vers login therapeute
     // Les patients arrivent directement via Magic Link
     return <Redirect href="/auth/therapist-login" />;
   }

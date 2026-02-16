@@ -7,8 +7,8 @@ import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { useAuth } from '../../contexts/AuthContext';
 
-const TherapistRegisterScreen = () => { 
-  const router = useRouter(); 
+const TherapistRegisterScreen = () => {
+  const router = useRouter();
   const { registerTherapist } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -28,7 +28,7 @@ const TherapistRegisterScreen = () => {
 
   const specialties = [
     'Psychiatre',
-    'Psychothérapeute',
+    'Psychotherapeute',
     'Psychologue',
   ];
 
@@ -37,14 +37,14 @@ const TherapistRegisterScreen = () => {
   };
 
   const validateForm = () => {
-    if (!formData.email || !formData.password || !formData.firstName || 
+    if (!formData.email || !formData.password || !formData.firstName ||
         !formData.lastName || !formData.specialty) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires');
       return false;
     }
 
     if (formData.password.length < 8) {
-      Alert.alert('Erreur', 'Le mot de passe doit contenir au moins 8 caractères');
+      Alert.alert('Erreur', 'Le mot de passe doit contenir au moins 8 caracteres');
       return false;
     }
 
@@ -67,9 +67,9 @@ const TherapistRegisterScreen = () => {
 
     setLoading(true);
     const { confirmPassword, ...registrationData } = formData;
-    
+
     const result = await registerTherapist(registrationData);
-    
+
     setLoading(false);
 
     if (!result.success) {
@@ -78,43 +78,94 @@ const TherapistRegisterScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      {/* Conteneur centré pour desktop */}
+    <SafeAreaView className="flex-1" style={{ backgroundColor: '#FAFAFA' }}>
       <View className={`flex-1 ${isWeb ? 'max-w-3xl mx-auto w-full' : ''}`}>
+        {/* Header strip with therapist-50 background */}
+        <View
+          style={{
+            backgroundColor: '#FDF6EA',
+            paddingHorizontal: isWeb ? 32 : 24,
+            paddingVertical: 24,
+            borderBottomWidth: 1,
+            borderBottomColor: '#FAE8C4',
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+            <View
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 24,
+                backgroundColor: '#FAE8C4',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 14,
+              }}
+            >
+              <Ionicons name="leaf" size={24} color="#E8A838" />
+            </View>
+            <View>
+              <Text style={{ fontSize: 24, fontWeight: '700', color: '#1A1A1A' }}>
+                Julia
+              </Text>
+              <Text style={{ fontSize: 14, color: '#6B6B6B' }}>
+                Inscription Therapeute
+              </Text>
+            </View>
+          </View>
+          <Text style={{ fontSize: 14, color: '#6B6B6B', lineHeight: 20 }}>
+            Creez votre compte professionnel
+          </Text>
+        </View>
+
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ padding: isWeb ? 32 : 24 }}
+          contentContainerStyle={{ padding: isWeb ? 32 : 20, paddingBottom: 40 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={!isWeb}
         >
-          {/* Header */}
-          <View className="items-center mb-8">
-            <View className="w-20 h-20 bg-secondary-100 rounded-full items-center justify-center mb-4">
-              <Ionicons name="medical" size={40} color="#c026d3" />
+          {/* ---- Section: Informations personnelles ---- */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: 16,
+              padding: isWeb ? 28 : 20,
+              marginBottom: 16,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              elevation: 2,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+              <View
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: '#FAE8C4',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 12,
+                }}
+              >
+                <Ionicons name="person-outline" size={18} color="#E8A838" />
+              </View>
+              <Text style={{ fontSize: 17, fontWeight: '600', color: '#1A1A1A' }}>
+                Informations personnelles
+              </Text>
             </View>
-            <Text className="text-3xl font-bold text-gray-900 mb-2">
-              Inscription Thérapeute
-            </Text>
-            <Text className="text-base text-gray-600 text-center">
-              Créez votre compte professionnel
-            </Text>
-          </View>
-
-          {/* Informations personnelles */}
-          <View className="mb-6">
-            <Text className="text-xl font-semibold text-gray-900 mb-4">
-              Informations personnelles
-            </Text>
 
             <View className={isWeb ? 'flex-row gap-4' : ''}>
               <View className={isWeb ? 'flex-1' : ''}>
                 <Input
-                  label="Prénom *"
+                  label="Prenom *"
                   placeholder="Jean"
                   value={formData.firstName}
                   onChangeText={(value) => updateField('firstName', value)}
                   autoCapitalize="words"
-                  icon={<Ionicons name="person-outline" size={20} color="#6B7280" />}
+                  icon={<Ionicons name="person-outline" size={20} color="#E8A838" />}
                 />
               </View>
 
@@ -125,7 +176,7 @@ const TherapistRegisterScreen = () => {
                   value={formData.lastName}
                   onChangeText={(value) => updateField('lastName', value)}
                   autoCapitalize="words"
-                  icon={<Ionicons name="person-outline" size={20} color="#6B7280" />}
+                  icon={<Ionicons name="person-outline" size={20} color="#E8A838" />}
                 />
               </View>
             </View>
@@ -138,44 +189,85 @@ const TherapistRegisterScreen = () => {
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
-              icon={<Ionicons name="mail-outline" size={20} color="#6B7280" />}
+              icon={<Ionicons name="mail-outline" size={20} color="#E8A838" />}
             />
 
             <Input
-              label="Téléphone"
+              label="Telephone"
               placeholder="+33 6 12 34 56 78"
               value={formData.phone}
               onChangeText={(value) => updateField('phone', value)}
               keyboardType="phone-pad"
-              icon={<Ionicons name="call-outline" size={20} color="#6B7280" />}
+              icon={<Ionicons name="call-outline" size={20} color="#E8A838" />}
             />
           </View>
 
-          {/* Informations professionnelles */}
-          <View className="mb-6">
-            <Text className="text-xl font-semibold text-gray-900 mb-4">
-              Informations professionnelles
-            </Text>
+          {/* ---- Section: Informations professionnelles ---- */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: 16,
+              padding: isWeb ? 28 : 20,
+              marginBottom: 16,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              elevation: 2,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+              <View
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: '#FAE8C4',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 12,
+                }}
+              >
+                <Ionicons name="briefcase-outline" size={18} color="#E8A838" />
+              </View>
+              <Text style={{ fontSize: 17, fontWeight: '600', color: '#1A1A1A' }}>
+                Informations professionnelles
+              </Text>
+            </View>
 
-            <View className="mb-4">
-              <Text className="text-gray-700 font-medium mb-2">Spécialité *</Text>
-              <View className={`flex-row flex-wrap ${isWeb ? 'gap-3' : ''}`}>
+            {/* Specialty pills */}
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ color: '#404040', fontWeight: '500', marginBottom: 12, fontSize: 14 }}>
+                Specialite *
+              </Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: isWeb ? 12 : 8 }}>
                 {specialties.map((specialty) => (
                   <TouchableOpacity
                     key={specialty}
                     onPress={() => updateField('specialty', specialty)}
-                    className={`px-4 py-2 rounded-full ${isWeb ? '' : 'mr-2'} mb-2 ${
-                      formData.specialty === specialty
-                        ? 'bg-secondary-600'
-                        : 'bg-gray-200'
-                    }`}
+                    activeOpacity={0.7}
+                    style={{
+                      paddingHorizontal: 20,
+                      paddingVertical: 12,
+                      borderRadius: 20,
+                      backgroundColor: formData.specialty === specialty ? '#E8A838' : '#F5F5F4',
+                      ...(formData.specialty === specialty
+                        ? {
+                            shadowColor: '#E8A838',
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: 0.25,
+                            shadowRadius: 6,
+                            elevation: 3,
+                          }
+                        : {}),
+                    }}
                   >
                     <Text
-                      className={`${
-                        formData.specialty === specialty
-                          ? 'text-white font-semibold'
-                          : 'text-gray-700'
-                      }`}
+                      style={{
+                        color: formData.specialty === specialty ? '#FFFFFF' : '#404040',
+                        fontWeight: formData.specialty === specialty ? '600' : '400',
+                        fontSize: 14,
+                      }}
                     >
                       {specialty}
                     </Text>
@@ -185,34 +277,61 @@ const TherapistRegisterScreen = () => {
             </View>
 
             <Input
-              label="Numéro ADELI ou RPPS"
+              label="Numero ADELI ou RPPS"
               placeholder="123456789"
               value={formData.licenseNumber}
               onChangeText={(value) => updateField('licenseNumber', value)}
               keyboardType="numeric"
-              icon={<Ionicons name="shield-checkmark-outline" size={20} color="#6B7280" />}
+              icon={<Ionicons name="shield-checkmark-outline" size={20} color="#E8A838" />}
             />
           </View>
 
-          {/* Sécurité */}
-          <View className="mb-6">
-            <Text className="text-xl font-semibold text-gray-900 mb-4">
-              Sécurité
-            </Text>
+          {/* ---- Section: Securite ---- */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: 16,
+              padding: isWeb ? 28 : 20,
+              marginBottom: 24,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              elevation: 2,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+              <View
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: '#FAE8C4',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 12,
+                }}
+              >
+                <Ionicons name="lock-closed-outline" size={18} color="#E8A838" />
+              </View>
+              <Text style={{ fontSize: 17, fontWeight: '600', color: '#1A1A1A' }}>
+                Securite
+              </Text>
+            </View>
 
             <Input
               label="Mot de passe *"
-              placeholder="Minimum 8 caractères"
+              placeholder="Minimum 8 caracteres"
               value={formData.password}
               onChangeText={(value) => updateField('password', value)}
               secureTextEntry={!showPassword}
               autoCapitalize="none"
-              icon={<Ionicons name="lock-closed-outline" size={20} color="#6B7280" />}
+              icon={<Ionicons name="lock-closed-outline" size={20} color="#E8A838" />}
               rightIcon={
                 <Ionicons
                   name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                   size={20}
-                  color="#6B7280"
+                  color="#E8A838"
                 />
               }
               onRightIconPress={() => setShowPassword(!showPassword)}
@@ -225,39 +344,84 @@ const TherapistRegisterScreen = () => {
               onChangeText={(value) => updateField('confirmPassword', value)}
               secureTextEntry={!showConfirmPassword}
               autoCapitalize="none"
-              icon={<Ionicons name="lock-closed-outline" size={20} color="#6B7280" />}
+              icon={<Ionicons name="lock-closed-outline" size={20} color="#E8A838" />}
               rightIcon={
                 <Ionicons
                   name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
                   size={20}
-                  color="#6B7280"
+                  color="#E8A838"
                 />
               }
               onRightIconPress={() => setShowConfirmPassword(!showConfirmPassword)}
             />
           </View>
 
-          <Button
-            title="Créer mon compte"
+          {/* Submit button */}
+          <TouchableOpacity
             onPress={handleRegister}
-            loading={loading}
-            size="large"
-            className="mb-4"
-          />
+            disabled={loading}
+            activeOpacity={0.8}
+            style={{
+              backgroundColor: '#E8A838',
+              borderRadius: 16,
+              paddingVertical: 16,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 16,
+              opacity: loading ? 0.5 : 1,
+              shadowColor: '#E8A838',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.25,
+              shadowRadius: 8,
+              elevation: 4,
+            }}
+          >
+            {loading ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name="hourglass-outline" size={20} color="#ffffff" />
+                <Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 16, marginLeft: 8 }}>
+                  Creation en cours...
+                </Text>
+              </View>
+            ) : (
+              <Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 16 }}>
+                Creer mon compte
+              </Text>
+            )}
+          </TouchableOpacity>
 
-          <View className="flex-row justify-center mb-6">
-            <Text className="text-gray-600">Déjà un compte ? </Text>
+          {/* Login link */}
+          <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 24 }}>
+            <Text style={{ color: '#6B6B6B', fontSize: 14 }}>Deja un compte ? </Text>
             <TouchableOpacity onPress={() => router.push('/auth/therapist-login')}>
-              <Text className="text-secondary-600 font-semibold">Se connecter</Text>
+              <Text style={{ color: '#D4942A', fontWeight: '600', fontSize: 14 }}>
+                Se connecter
+              </Text>
             </TouchableOpacity>
           </View>
 
-          <View className="pt-6 border-t border-gray-200">
-            <Button
-              title="← Retour à l'accueil"
+          {/* Back to home */}
+          <View
+            style={{
+              paddingTop: 20,
+              borderTopWidth: 1,
+              borderTopColor: '#EEECEB',
+            }}
+          >
+            <TouchableOpacity
               onPress={() => router.push('/')}
-              variant="ghost"
-            />
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingVertical: 8,
+              }}
+            >
+              <Ionicons name="arrow-back-outline" size={18} color="#D4942A" />
+              <Text style={{ color: '#D4942A', fontWeight: '500', marginLeft: 8 }}>
+                Retour a l'accueil
+              </Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </View>

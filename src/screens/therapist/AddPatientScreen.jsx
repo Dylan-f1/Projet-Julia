@@ -4,6 +4,7 @@ import {
   Text,
   ScrollView,
   Alert,
+  TouchableOpacity,
   useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -40,7 +41,7 @@ const AddPatientScreen = () => {
     ) {
       Alert.alert(
         'Erreur',
-        'Veuillez remplir tous les champs obligatoires (nom, prénom, email)'
+        'Veuillez remplir tous les champs obligatoires (nom, prenom, email)'
       );
       return false;
     }
@@ -63,8 +64,8 @@ const AddPatientScreen = () => {
 
     if (result.success) {
       Alert.alert(
-        'Succès',
-        'Le patient a été créé avec succès. Un email de connexion lui a été envoyé.',
+        'Succes',
+        'Le patient a ete cree avec succes. Un email de connexion lui a ete envoye.',
         [
           {
             text: 'OK',
@@ -78,7 +79,7 @@ const AddPatientScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: '#FAFAFA' }}>
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
@@ -87,55 +88,66 @@ const AddPatientScreen = () => {
         }}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Container centré en desktop */}
+        {/* Container centre en desktop */}
         <View style={isDesktop ? { width: '100%', maxWidth: 640 } : undefined}>
           {/* ---- Header ---- */}
-          <View className="mb-6">
+          <View style={{ marginBottom: 24 }}>
             {isDesktop && (
-              <View className="flex-row items-center mb-4">
-                <Ionicons
-                  name="arrow-back"
-                  size={22}
-                  color="#64748b"
-                  onPress={() => router.back()}
-                  style={{ marginRight: 12, cursor: 'pointer' }}
-                />
-                <Text className="text-sm text-gray-500">Retour</Text>
-              </View>
+              <TouchableOpacity
+                onPress={() => router.back()}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginBottom: 16,
+                }}
+              >
+                <Ionicons name="arrow-back" size={22} color="#E8A838" style={{ marginRight: 8 }} />
+                <Text style={{ fontSize: 14, color: '#E8A838' }}>Retour</Text>
+              </TouchableOpacity>
             )}
-            <Text className="text-2xl font-bold text-gray-900 mb-2">
+            <Text style={{ fontSize: 24, fontWeight: '700', color: '#1A1A1A', marginBottom: 8 }}>
               Ajouter un patient
             </Text>
-            <Text className="text-base text-gray-600">
-              Créez un nouveau dossier patient. Un email de connexion sera
-              automatiquement envoyé.
+            <Text style={{ fontSize: 15, color: '#6B6B6B', lineHeight: 22 }}>
+              Creez un nouveau dossier patient. Un email de connexion sera
+              automatiquement envoye.
             </Text>
           </View>
 
           {/* ---- Informations personnelles ---- */}
           <View
-            className={
-              isDesktop
-                ? 'bg-white rounded-2xl border border-gray-200 p-8 mb-6'
-                : 'mb-6'
-            }
-            style={
-              isDesktop
-                ? {
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 6,
-                    elevation: 2,
-                  }
-                : undefined
-            }
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: 16,
+              padding: isDesktop ? 28 : 20,
+              marginBottom: 16,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              elevation: 2,
+            }}
           >
-            <Text className="text-lg font-semibold text-gray-900 mb-4">
-              Informations personnelles
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+              <View
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: '#FAE8C4',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 12,
+                }}
+              >
+                <Ionicons name="person-outline" size={18} color="#E8A838" />
+              </View>
+              <Text style={{ fontSize: 17, fontWeight: '600', color: '#1A1A1A' }}>
+                Informations personnelles
+              </Text>
+            </View>
 
-            {/* Prénom / Nom — 2 colonnes desktop */}
+            {/* Prenom / Nom */}
             <View
               style={
                 isDesktop
@@ -145,14 +157,12 @@ const AddPatientScreen = () => {
             >
               <View style={isDesktop ? { flex: 1 } : undefined}>
                 <Input
-                  label="Prénom *"
+                  label="Prenom *"
                   placeholder="Marie"
                   value={formData.firstName}
                   onChangeText={(value) => updateField('firstName', value)}
                   autoCapitalize="words"
-                  icon={
-                    <Ionicons name="person-outline" size={20} color="#6B7280" />
-                  }
+                  icon={<Ionicons name="person-outline" size={20} color="#E8A838" />}
                 />
               </View>
               <View style={isDesktop ? { flex: 1 } : undefined}>
@@ -162,9 +172,7 @@ const AddPatientScreen = () => {
                   value={formData.lastName}
                   onChangeText={(value) => updateField('lastName', value)}
                   autoCapitalize="words"
-                  icon={
-                    <Ionicons name="person-outline" size={20} color="#6B7280" />
-                  }
+                  icon={<Ionicons name="person-outline" size={20} color="#E8A838" />}
                 />
               </View>
             </View>
@@ -177,12 +185,10 @@ const AddPatientScreen = () => {
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
-              icon={
-                <Ionicons name="mail-outline" size={20} color="#6B7280" />
-              }
+              icon={<Ionicons name="mail-outline" size={20} color="#E8A838" />}
             />
 
-            {/* Téléphone / Date de naissance — 2 colonnes desktop */}
+            {/* Telephone / Date de naissance */}
             <View
               style={
                 isDesktop
@@ -192,14 +198,12 @@ const AddPatientScreen = () => {
             >
               <View style={isDesktop ? { flex: 1 } : undefined}>
                 <Input
-                  label="Téléphone"
+                  label="Telephone"
                   placeholder="+33 6 12 34 56 78"
                   value={formData.phone}
                   onChangeText={(value) => updateField('phone', value)}
                   keyboardType="phone-pad"
-                  icon={
-                    <Ionicons name="call-outline" size={20} color="#6B7280" />
-                  }
+                  icon={<Ionicons name="call-outline" size={20} color="#E8A838" />}
                 />
               </View>
               <View style={isDesktop ? { flex: 1 } : undefined}>
@@ -209,40 +213,44 @@ const AddPatientScreen = () => {
                   value={formData.dateOfBirth}
                   onChangeText={(value) => updateField('dateOfBirth', value)}
                   keyboardType="numeric"
-                  icon={
-                    <Ionicons
-                      name="calendar-outline"
-                      size={20}
-                      color="#6B7280"
-                    />
-                  }
+                  icon={<Ionicons name="calendar-outline" size={20} color="#E8A838" />}
                 />
               </View>
             </View>
           </View>
 
-          {/* ---- Notes privées ---- */}
+          {/* ---- Notes privees ---- */}
           <View
-            className={
-              isDesktop
-                ? 'bg-white rounded-2xl border border-gray-200 p-8 mb-6'
-                : 'mb-6'
-            }
-            style={
-              isDesktop
-                ? {
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 6,
-                    elevation: 2,
-                  }
-                : undefined
-            }
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: 16,
+              padding: isDesktop ? 28 : 20,
+              marginBottom: 16,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              elevation: 2,
+            }}
           >
-            <Text className="text-lg font-semibold text-gray-900 mb-4">
-              Notes privées
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+              <View
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: '#FAE8C4',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 12,
+                }}
+              >
+                <Ionicons name="document-text-outline" size={18} color="#E8A838" />
+              </View>
+              <Text style={{ fontSize: 17, fontWeight: '600', color: '#1A1A1A' }}>
+                Notes privees
+              </Text>
+            </View>
 
             <Input
               label="Notes (visibles uniquement par vous)"
@@ -251,28 +259,31 @@ const AddPatientScreen = () => {
               onChangeText={(value) => updateField('notes', value)}
               multiline
               numberOfLines={isDesktop ? 8 : 6}
-              icon={
-                <Ionicons
-                  name="document-text-outline"
-                  size={20}
-                  color="#6B7280"
-                />
-              }
+              icon={<Ionicons name="document-text-outline" size={20} color="#E8A838" />}
             />
           </View>
 
           {/* ---- Info banner ---- */}
-          <View className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <View className="flex-row items-start">
-              <Ionicons name="information-circle" size={20} color="#0284c7" />
-              <Text className="text-sm text-blue-700 ml-2 flex-1">
+          <View
+            style={{
+              backgroundColor: '#EDFAF2',
+              borderWidth: 1,
+              borderColor: '#C8F0D6',
+              borderRadius: 14,
+              padding: 16,
+              marginBottom: 24,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+              <Ionicons name="information-circle" size={20} color="#4CAF82" />
+              <Text style={{ fontSize: 14, color: '#2E8B5E', marginLeft: 10, flex: 1, lineHeight: 20 }}>
                 Le patient recevra un email contenant un lien de connexion
-                sécurisé pour accéder à l'application.
+                securise pour acceder a l'application.
               </Text>
             </View>
           </View>
 
-          {/* ---- Actions — row-reverse en desktop ---- */}
+          {/* ---- Actions ---- */}
           <View
             style={
               isDesktop
@@ -281,13 +292,38 @@ const AddPatientScreen = () => {
             }
           >
             <View style={isDesktop ? { minWidth: 200 } : undefined}>
-              <Button
-                title="Créer le patient"
+              <TouchableOpacity
                 onPress={handleSubmit}
-                loading={loading}
-                size="large"
-                className={isDesktop ? '' : 'mb-4'}
-              />
+                disabled={loading}
+                activeOpacity={0.8}
+                style={{
+                  backgroundColor: '#E8A838',
+                  borderRadius: 14,
+                  paddingVertical: 16,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  opacity: loading ? 0.5 : 1,
+                  marginBottom: isDesktop ? 0 : 12,
+                  shadowColor: '#E8A838',
+                  shadowOffset: { width: 0, height: 3 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 8,
+                  elevation: 3,
+                }}
+              >
+                {loading ? (
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Ionicons name="hourglass-outline" size={18} color="#FFFFFF" />
+                    <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 16, marginLeft: 8 }}>
+                      Creation...
+                    </Text>
+                  </View>
+                ) : (
+                  <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 16 }}>
+                    Creer le patient
+                  </Text>
+                )}
+              </TouchableOpacity>
             </View>
             <View style={isDesktop ? { minWidth: 120 } : undefined}>
               <Button

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Platform, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -11,10 +11,11 @@ import patientService from '../../services/patientService';
 import { useAuth } from '../../contexts/AuthContext';
 
 const TherapistDashboardScreen = () => {
-  const router = useRouter();  
+  const router = useRouter();
   const { logout } = useAuth();
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const [stats, setStats] = useState({
     total: 0,
     active: 0,
@@ -34,7 +35,7 @@ const TherapistDashboardScreen = () => {
 
     if (result.success) {
       const patientsArray = result.data.patients || result.data || [];
-      
+
       setPatients(patientsArray);
       calculateStats(patientsArray);
     }
@@ -43,7 +44,7 @@ const TherapistDashboardScreen = () => {
   const calculateStats = (patientsData) => {
     const active = patientsData.filter(p => p.status === 'active').length;
     const critical = patientsData.filter(p => p.criticalStatus).length;
-    
+
     setStats({
       total: patientsData.length,
       active,
@@ -63,103 +64,345 @@ const TherapistDashboardScreen = () => {
     await logout();
   };
 
+  // Filtrage des patients par recherche
+  const filteredPatients = patients.filter((p) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      (p.firstName || '').toLowerCase().includes(q) ||
+      (p.lastName || '').toLowerCase().includes(q) ||
+      (p.email || '').toLowerCase().includes(q)
+    );
+  });
+
   if (loading) {
     return <Loading message="Chargement de vos patients..." />;
   }
 
-  const StatCard = ({ icon, title, value, color = 'primary' }) => (
-    <Card variant="elevated" className={`flex-1 ${isWeb ? 'min-w-[200px]' : 'mx-1'}`}>
-      <View className="items-center">
-        <View className={`w-12 h-12 bg-${color}-100 rounded-full items-center justify-center mb-2`}>
-          <Ionicons name={icon} size={24} color={color === 'primary' ? '#0284c7' : color === 'accent' ? '#22c55e' : '#ef4444'} />
-        </View>
-        <Text className="text-2xl font-bold text-gray-900">{value}</Text>
-        <Text className="text-sm text-gray-600 text-center">{title}</Text>
-      </View>
-    </Card>
-  );
+  // ---- Patient card with left border color based on status ----
+  const PatientCard = ({ patient }) => {
+    let borderLeftColor = '#EEECEB'; // surface-200 default
+    if (patient.criticalStatus) {
+      borderLeftColor = '#E05B5B'; // danger-400
+    } else if (patient.status === 'active') {
+      borderLeftColor = '#4CAF82'; // success-400
+    }
 
-  const PatientCard = ({ patient }) => (
-    <Card onPress={() => handlePatientPress(patient)} className={isWeb ? 'hover:shadow-lg transition-shadow' : ''}>
-      <View className="flex-row items-center justify-between">
-        <View className="flex-1">
-          <View className="flex-row items-center mb-2">
-            <Text className="text-lg font-semibold text-gray-900 flex-1">
-              {patient.firstName} {patient.lastName}
-            </Text>
-            {patient.criticalStatus && (
-              <View className="bg-red-100 px-2 py-1 rounded-full">
-                <Text className="text-red-600 text-xs font-semibold">
-                  CRITIQUE
+    return (
+      <TouchableOpacity
+        onPress={() => handlePatientPress(patient)}
+        activeOpacity={0.7}
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: 16,
+          padding: 16,
+          marginBottom: 12,
+          borderLeftWidth: 4,
+          borderLeftColor,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 8,
+          elevation: 2,
+          ...(isWeb ? { flex: 1, marginHorizontal: 0 } : {}),
+        }}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View style={{ flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+              {/* Avatar icon */}
+              <View
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 21,
+                  backgroundColor: '#FDF6EA',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 12,
+                }}
+              >
+                <Ionicons name="person" size={18} color="#E8A838" />
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 15, fontWeight: '600', color: '#1A1A1A' }}>
+                  {patient.firstName} {patient.lastName}
+                </Text>
+                <Text style={{ fontSize: 13, color: '#6B6B6B', marginTop: 2 }}>
+                  {patient.email}
                 </Text>
               </View>
+
+              {/* Status badge */}
+              {patient.criticalStatus ? (
+                <View
+                  style={{
+                    backgroundColor: '#FEF0F0',
+                    paddingHorizontal: 10,
+                    paddingVertical: 4,
+                    borderRadius: 12,
+                  }}
+                >
+                  <Text style={{ color: '#E05B5B', fontSize: 11, fontWeight: '700' }}>
+                    CRITIQUE
+                  </Text>
+                </View>
+              ) : patient.status === 'active' ? (
+                <View
+                  style={{
+                    backgroundColor: '#EDFAF2',
+                    paddingHorizontal: 10,
+                    paddingVertical: 4,
+                    borderRadius: 12,
+                  }}
+                >
+                  <Text style={{ color: '#4CAF82', fontSize: 11, fontWeight: '600' }}>
+                    ACTIF
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+
+            {patient.lastContact && (
+              <Text style={{ fontSize: 12, color: '#A0A0A0', marginLeft: 54 }}>
+                Dernier contact : {new Date(patient.lastContact).toLocaleDateString('fr-FR')}
+              </Text>
             )}
           </View>
-          
-          <Text className="text-sm text-gray-600 mb-1">
-            {patient.email}
-          </Text>
-          
-          {patient.lastContact && (
-            <Text className="text-xs text-gray-500">
-              Dernier contact: {new Date(patient.lastContact).toLocaleDateString('fr-FR')}
-            </Text>
-          )}
+
+          <Ionicons name="chevron-forward" size={20} color="#C8C4C0" />
         </View>
-        
-        <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-      </View>
-    </Card>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      {/* Conteneur responsive */}
+    <SafeAreaView className="flex-1" style={{ backgroundColor: '#FAFAFA' }}>
+      {/* Responsive container */}
       <View className={`flex-1 ${isWeb ? 'max-w-7xl mx-auto w-full' : ''}`}>
-        {/* Header */}
-        <View className={`bg-white px-4 py-4 border-b border-gray-200 ${isWeb ? 'px-8' : ''}`}>
-          <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-2xl font-bold text-gray-900">
-              Dashboard
-            </Text>
-            <TouchableOpacity onPress={handleLogout}>
-              <View className="flex-row items-center">
-                <Ionicons name="log-out-outline" size={24} color="#6B7280" />
-                {isWeb && <Text className="ml-2 text-gray-700">Déconnexion</Text>}
-              </View>
+        {/* ============================================ */}
+        {/* Header — therapist-50 bg, therapist-100 border */}
+        {/* ============================================ */}
+        <View
+          style={{
+            backgroundColor: '#FDF6EA',
+            paddingHorizontal: isWeb ? 32 : 16,
+            paddingTop: 20,
+            paddingBottom: 20,
+            borderBottomWidth: 1,
+            borderBottomColor: '#FAE8C4',
+          }}
+        >
+          {/* Title row */}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <View>
+              <Text style={{ fontSize: 24, fontWeight: '700', color: '#1A1A1A' }}>
+                Tableau de bord
+              </Text>
+              <Text style={{ fontSize: 14, color: '#6B6B6B', marginTop: 4 }}>
+                Suivi de vos patients
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={handleLogout}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: '#FEF0F0',
+                paddingHorizontal: 14,
+                paddingVertical: 8,
+                borderRadius: 12,
+              }}
+            >
+              <Ionicons name="log-out-outline" size={20} color="#E05B5B" />
+              {isWeb && (
+                <Text style={{ marginLeft: 8, color: '#E05B5B', fontWeight: '600', fontSize: 14 }}>
+                  Deconnexion
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
 
-          {/* Stats - Grille responsive */}
-          <View className={`flex-row mb-4 ${isWeb ? 'gap-4' : ''}`}>
-            <StatCard icon="people" title="Total" value={stats.total} />
-            <StatCard icon="checkmark-circle" title="Actifs" value={stats.active} color="accent" />
-            <StatCard icon="alert-circle" title="Critiques" value={stats.critical} color="red" />
+          {/* ============================================ */}
+          {/* STATS WITH VISUAL HIERARCHY                  */}
+          {/* ============================================ */}
+
+          {/* Main stat — full width, large */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: 16,
+              padding: 24,
+              marginBottom: 12,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.08,
+              shadowRadius: 16,
+              elevation: 4,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+              <View
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 22,
+                  backgroundColor: '#FDF6EA',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 14,
+                }}
+              >
+                <Ionicons name="people" size={22} color="#E8A838" />
+              </View>
+              <Text style={{ fontSize: 14, color: '#6B6B6B', fontWeight: '500' }}>
+                Total patients
+              </Text>
+            </View>
+            <Text style={{ fontSize: 40, fontWeight: '700', color: '#1A1A1A', marginLeft: 58 }}>
+              {stats.total}
+            </Text>
           </View>
 
-          <Button
-            title="Ajouter un patient"
-            onPress={handleAddPatient}
-            icon={<Ionicons name="person-add" size={20} color="white" />}
-            className={isWeb ? 'max-w-xs' : ''}
-          />
+          {/* Two small stats side by side */}
+          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 20 }}>
+            {/* Active stat — success left border */}
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: '#FFFFFF',
+                borderRadius: 14,
+                padding: 16,
+                borderLeftWidth: 4,
+                borderLeftColor: '#4CAF82',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.04,
+                shadowRadius: 6,
+                elevation: 2,
+              }}
+            >
+              <Text style={{ fontSize: 12, color: '#6B6B6B', fontWeight: '500', marginBottom: 4 }}>
+                Actifs
+              </Text>
+              <Text style={{ fontSize: 24, fontWeight: '700', color: '#1A1A1A' }}>
+                {stats.active}
+              </Text>
+            </View>
+
+            {/* Critical stat — danger left border */}
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: '#FFFFFF',
+                borderRadius: 14,
+                padding: 16,
+                borderLeftWidth: 4,
+                borderLeftColor: '#E05B5B',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.04,
+                shadowRadius: 6,
+                elevation: 2,
+              }}
+            >
+              <Text style={{ fontSize: 12, color: '#6B6B6B', fontWeight: '500', marginBottom: 4 }}>
+                Critiques
+              </Text>
+              <Text style={{ fontSize: 24, fontWeight: '700', color: '#1A1A1A' }}>
+                {stats.critical}
+              </Text>
+            </View>
+          </View>
+
+          {/* Search bar — rounded-full */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: 24,
+              borderWidth: 1,
+              borderColor: '#EEECEB',
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingHorizontal: 16,
+              paddingVertical: Platform.OS === 'ios' ? 12 : 6,
+              marginBottom: 16,
+            }}
+          >
+            <Ionicons name="search-outline" size={20} color="#A0A0A0" />
+            <TextInput
+              placeholder="Rechercher un patient..."
+              placeholderTextColor="#A0A0A0"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              style={{
+                flex: 1,
+                marginLeft: 10,
+                fontSize: 15,
+                color: '#1A1A1A',
+                ...(Platform.OS === 'web' ? { outlineStyle: 'none' } : {}),
+              }}
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery('')}>
+                <Ionicons name="close-circle" size={20} color="#C8C4C0" />
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Add patient button (web) */}
+          {isWeb && (
+            <TouchableOpacity
+              onPress={handleAddPatient}
+              activeOpacity={0.8}
+              style={{
+                backgroundColor: '#E8A838',
+                borderRadius: 14,
+                paddingVertical: 14,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                maxWidth: 280,
+                shadowColor: '#E8A838',
+                shadowOffset: { width: 0, height: 3 },
+                shadowOpacity: 0.2,
+                shadowRadius: 8,
+                elevation: 3,
+              }}
+            >
+              <Ionicons name="person-add" size={20} color="white" />
+              <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 15, marginLeft: 8 }}>
+                Ajouter un patient
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
-        {/* Liste des patients */}
-        {patients.length === 0 ? (
+        {/* ============================================ */}
+        {/* Patient list                                 */}
+        {/* ============================================ */}
+        {filteredPatients.length === 0 && patients.length === 0 ? (
           <EmptyState
-            icon={<Ionicons name="people-outline" size={80} color="#9CA3AF" />}
+            icon={<Ionicons name="people-outline" size={80} color="#C8C4C0" />}
             title="Aucun patient"
-            message="Commencez par ajouter votre premier patient pour suivre son parcours thérapeutique."
+            message="Commencez par ajouter votre premier patient pour suivre son parcours therapeutique."
             actionLabel="Ajouter un patient"
             onAction={handleAddPatient}
           />
+        ) : filteredPatients.length === 0 ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 }}>
+            <Ionicons name="search-outline" size={60} color="#C8C4C0" />
+            <Text style={{ color: '#6B6B6B', marginTop: 16, textAlign: 'center' }}>
+              Aucun patient ne correspond a votre recherche.
+            </Text>
+          </View>
         ) : (
           <FlatList
-            data={patients}
+            data={filteredPatients}
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => <PatientCard patient={item} />}
-            contentContainerStyle={{ 
+            contentContainerStyle={{
               padding: isWeb ? 32 : 16,
               ...(isWeb && { maxWidth: 1200, alignSelf: 'center', width: '100%' })
             }}
@@ -172,6 +415,34 @@ const TherapistDashboardScreen = () => {
           />
         )}
       </View>
+
+      {/* ============================================ */}
+      {/* FAB — mobile only, therapist-400 color        */}
+      {/* ============================================ */}
+      {!isWeb && (
+        <TouchableOpacity
+          onPress={handleAddPatient}
+          activeOpacity={0.85}
+          style={{
+            position: 'absolute',
+            bottom: 32,
+            right: 20,
+            width: 56,
+            height: 56,
+            borderRadius: 28,
+            backgroundColor: '#E8A838',
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadowColor: '#E8A838',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+            elevation: 8,
+          }}
+        >
+          <Ionicons name="person-add" size={24} color="white" />
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };

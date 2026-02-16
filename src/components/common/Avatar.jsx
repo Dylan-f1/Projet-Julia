@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const Avatar = ({ 
-  name, 
-  size = 'medium', 
+const Avatar = ({
+  name,
+  size = 'medium',
   imageUrl = null,
-  type = 'user', // user, therapist, patient
-  className = '' 
+  type = 'patient', // patient, therapist, ai
+  className = '',
 }) => {
   const sizeClasses = {
     small: 'w-8 h-8',
@@ -24,9 +24,9 @@ const Avatar = ({
   };
 
   const bgColorClasses = {
-    user: 'bg-primary-500',
-    therapist: 'bg-secondary-500',
-    patient: 'bg-accent-500',
+    patient: 'bg-patient-400',
+    therapist: 'bg-therapist-400',
+    ai: 'bg-ai-400',
   };
 
   const getInitials = (fullName) => {
@@ -43,13 +43,15 @@ const Avatar = ({
     xlarge: 48,
   };
 
+  const iconName = type === 'therapist' ? 'medical' : type === 'ai' ? 'sparkles' : 'person';
+
   return (
-    <View 
-      className={`${sizeClasses[size]} ${bgColorClasses[type]} rounded-full items-center justify-center ${className}`}
+    <View
+      className={`${sizeClasses[size]} ${bgColorClasses[type] || bgColorClasses.patient} rounded-full items-center justify-center shadow-sm ${className}`}
     >
       {imageUrl ? (
-        <Image 
-          source={{ uri: imageUrl }} 
+        <Image
+          source={{ uri: imageUrl }}
           className={`${sizeClasses[size]} rounded-full`}
         />
       ) : name ? (
@@ -57,10 +59,10 @@ const Avatar = ({
           {getInitials(name)}
         </Text>
       ) : (
-        <Ionicons 
-          name={type === 'therapist' ? 'medical' : 'person'} 
-          size={iconSizes[size]} 
-          color="white" 
+        <Ionicons
+          name={iconName}
+          size={iconSizes[size]}
+          color="white"
         />
       )}
     </View>

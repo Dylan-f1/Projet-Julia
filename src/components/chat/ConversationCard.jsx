@@ -6,8 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 const ConversationCard = ({ conversation, isActive, onPress }) => {
   const isWeb = Platform.OS === 'web';
 
-   console.log('🔍 Full conversation:', JSON.stringify(conversation, null, 2));
-
   const getKeywords = (conv) => {
     // summary.keywords
     if (conv.summary?.keywords && Array.isArray(conv.summary.keywords)) {
@@ -26,29 +24,39 @@ const ConversationCard = ({ conversation, isActive, onPress }) => {
 
   const keywords = getKeywords(conversation);
 
-  console.log('🔍 Extracted keywords:', keywords);
-  console.log('🔍 Keywords type:', typeof keywords, Array.isArray(keywords));
-  
-  // Couleur selon le degré de gravité
-  const getCrisisColor = (level) => {
+  // Crisis level dot colors
+  const getCrisisDotColor = (level) => {
     switch (level) {
-      case 'high': return { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300', icon: 'alert-circle' };
-      case 'medium': return { bg: 'bg-orange-100', text: 'text-orange-700', border: 'border-orange-300', icon: 'warning' };
-      case 'low': return { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-300', icon: 'checkmark-circle' };
-      default: return { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-300', icon: 'chatbubble' };
+      case 'high':
+        return '#E05B5B'; // danger-400
+      case 'medium':
+        return '#E8A838'; // therapist-400
+      case 'low':
+        return '#4CAF82'; // success-400
+      default:
+        return null;
     }
   };
 
-  const crisisStyle = getCrisisColor(conversation.crisisLevel);
+  const crisisDotColor = getCrisisDotColor(conversation.crisisLevel);
 
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`p-3 border-b border-gray-200 ${isActive ? 'bg-primary-50' : 'bg-white'} ${isWeb ? 'hover:bg-gray-50' : ''}`}
+      className={`bg-white rounded-xl border border-surface-200 ${
+        isActive ? 'bg-patient-50' : ''
+      }`}
+      style={{
+        padding: 14,
+        marginBottom: 8,
+        borderLeftWidth: 4,
+        borderLeftColor: isActive ? '#5B9BD5' : 'transparent', // patient-400 or transparent
+      }}
       activeOpacity={0.7}
     >
-      <View className="flex-row items-start justify-between mb-2">
-        <Text className="text-xs text-gray-500">
+      {/* Header: date + crisis dot */}
+      <View className="flex-row items-center justify-between mb-2">
+        <Text className="text-xs text-text-300 font-medium">
           {new Date(conversation.createdAt).toLocaleDateString('fr-FR', {
             day: 'numeric',
             month: 'short',
@@ -57,42 +65,50 @@ const ConversationCard = ({ conversation, isActive, onPress }) => {
           })}
         </Text>
 
-        {conversation.crisisLevel && conversation.crisisLevel !== 'none' && (
-          <View className={`px-2 py-1 rounded-full ${crisisStyle.bg} border ${crisisStyle.border} flex-row items-center`}>
-            <Ionicons name={crisisStyle.icon} size={12} color={crisisStyle.text.replace('text-', '#')} />
-            <Text className={`text-xs ml-1 ${crisisStyle.text} font-semibold`}>
-              {conversation.crisisLevel === 'high' ? 'Urgent' : conversation.crisisLevel === 'medium' ? 'Attention' : 'Normal'}
-            </Text>
-          </View>
+        {crisisDotColor && (
+          <View
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: crisisDotColor,
+            }}
+          />
         )}
       </View>
 
-      <Text className="text-sm text-gray-900 font-medium mb-2" numberOfLines={2}>
-        {typeof conversation.summary === 'string' 
-        ? conversation.summary 
-        : (conversation.summary?.text || conversation.summary?.content || 'Discussion avec Jul-IA')}
+      {/* Conversation summary */}
+      <Text className="text-sm text-text-700 font-medium mb-2 leading-5" numberOfLines={2}>
+        {typeof conversation.summary === 'string'
+          ? conversation.summary
+          : conversation.summary?.text ||
+            conversation.summary?.content ||
+            'Discussion avec Julia'}
       </Text>
 
+      {/* Keywords */}
       {keywords.length > 0 && (
-        <View className="flex-row flex-wrap gap-1">
+        <View className="flex-row flex-wrap gap-1.5 mb-2">
           {keywords.slice(0, 3).map((keyword, index) => (
-            <View key={index} className="bg-primary-100 px-2 py-1 rounded-full">
-              <Text className="text-xs text-primary-700">
-                {keyword}
-              </Text>
+            <View
+              key={index}
+              className="bg-surface-100 border border-surface-200 px-2.5 py-1 rounded-full"
+            >
+              <Text className="text-xs text-text-500 font-medium">{keyword}</Text>
             </View>
           ))}
           {keywords.length > 3 && (
-            <Text className="text-xs text-gray-500 self-center">
+            <Text className="text-xs text-text-300 self-center ml-0.5">
               +{keywords.length - 3}
             </Text>
           )}
         </View>
       )}
 
-      <View className="flex-row items-center mt-2">
-        <Ionicons name="chatbubble-outline" size={12} color="#9CA3AF" />
-        <Text className="text-xs text-gray-500 ml-1">
+      {/* Message count */}
+      <View className="flex-row items-center">
+        <Ionicons name="chatbubble-outline" size={13} color="#A0A0A0" />
+        <Text className="text-xs text-text-300 ml-1.5 font-medium">
           {conversation.messageCount || 0} messages
         </Text>
       </View>

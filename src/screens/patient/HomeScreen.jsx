@@ -21,7 +21,7 @@ const HomeScreen = () => {
   const [patientData, setPatientData] = useState(null);
   const [lastEvaluation, setLastEvaluation] = useState(null);
 
-  // VÉRIFICATION DU CONSENTEMENT EN PREMIER
+  // VERIFICATION DU CONSENTEMENT EN PREMIER
   useEffect(() => {
     checkConsent();
   }, []);
@@ -29,19 +29,19 @@ const HomeScreen = () => {
   const checkConsent = async () => {
     try {
       const consentAccepted = await AsyncStorage.getItem('dataConsentAccepted');
-      
+
       console.log('🏠 Vérification consentement depuis HomeScreen:', consentAccepted);
-      
+
       if (!consentAccepted || consentAccepted !== 'true') {
         console.log('❌ Pas de consentement, redirection vers first-time-consent');
         router.replace('/patient/first-time-consent');
         return;
       }
-      
+
       console.log('✅ Consentement OK, chargement des données');
       setCheckingConsent(false);
       loadPatientData();
-      
+
     } catch (error) {
       console.error('Erreur vérification consentement:', error);
       setCheckingConsent(false);
@@ -51,7 +51,7 @@ const HomeScreen = () => {
 
   const loadPatientData = async () => {
     setLoading(true);
-    
+
     setTimeout(() => {
       setPatientData({
         firstName: user?.firstName || 'Patient',
@@ -91,13 +91,13 @@ const HomeScreen = () => {
     router.push('/patient/chat');
   };
 
-  // Afficher un loader pendant la vérification du consentement
+  // Afficher un loader pendant la verification du consentement
   if (checkingConsent) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50">
+      <SafeAreaView className="flex-1 bg-surface-50">
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#0284c7" />
-          <Text className="mt-4 text-gray-600">Vérification...</Text>
+          <ActivityIndicator size="large" color="#5B9BD5" />
+          <Text className="mt-4 text-text-500 text-base font-medium">Vérification...</Text>
         </View>
       </SafeAreaView>
     );
@@ -108,225 +108,354 @@ const HomeScreen = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-surface-50">
       <View className={`flex-1 ${isWeb ? 'max-w-4xl mx-auto w-full' : ''}`}>
-        
-        {/* Header */}
-        <View className="bg-gradient-to-r from-primary-600 to-secondary-600 px-4 py-6">
-          <View className="flex-row items-center justify-between mb-4">
-            <View className="flex-1">
-              <Text className="text-white text-sm opacity-90">Bonjour,</Text>
-              <Text className="text-white text-2xl font-bold">
-                {patientData?.firstName} {patientData?.lastName}
-              </Text>
-            </View>
-            
-            <TouchableOpacity 
-              onPress={handleLogout}
-              className={`bg-white/20 p-2 rounded-lg ${isWeb ? 'hover:bg-white/30' : ''}`}
-            >
-              <Ionicons name="log-out-outline" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
-
-          {/* Quick stats */}
-          <View className={`bg-white/10 rounded-xl p-4 ${isWeb ? 'flex-row justify-around' : ''}`}>
-            <View className={`items-center ${isWeb ? 'flex-1' : 'mb-3'}`}>
-              <Text className="text-white text-3xl font-bold">7</Text>
-              <Text className="text-white text-xs opacity-90">Jours de suivi</Text>
-            </View>
-            <View className={`items-center ${isWeb ? 'flex-1' : 'mb-3'}`}>
-              <Text className="text-white text-3xl font-bold">3</Text>
-              <Text className="text-white text-xs opacity-90">Évaluations</Text>
-            </View>
-            <View className={`items-center ${isWeb ? 'flex-1' : ''}`}>
-              <Text className="text-white text-3xl font-bold">85%</Text>
-              <Text className="text-white text-xs opacity-90">Objectif atteint</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Content */}
-        <ScrollView 
+        <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={!isWeb}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={['#5B9BD5']} tintColor="#5B9BD5" />
           }
         >
-          <View className="p-4">
-            
-            {/* Actions rapides */}
-            <View className="mb-6">
-              <Text className="text-lg font-bold text-gray-900 mb-3">
-                Actions rapides
-              </Text>
-              
-              <View className={isWeb ? 'flex-row flex-wrap gap-3' : 'space-y-3'}>
-                <View className={isWeb ? 'flex-1 min-w-[280px]' : ''}>
-                  <Card onPress={handleNewEvaluation}>
-                    <View className="flex-row items-center">
-                      <View className="w-12 h-12 bg-primary-100 rounded-full items-center justify-center mr-4">
-                        <Ionicons name="clipboard-outline" size={24} color="#0284c7" />
-                      </View>
-                      <View className="flex-1">
-                        <Text className="text-base font-semibold text-gray-900">
-                          Nouvelle évaluation
-                        </Text>
-                        <Text className="text-sm text-gray-600">
-                          Comment vous sentez-vous aujourd'hui ?
-                        </Text>
-                      </View>
-                      <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-                    </View>
-                  </Card>
-                </View>
 
-                <View className={isWeb ? 'flex-1 min-w-[280px]' : ''}>
-                  <Card onPress={handleChat}>
-                    <View className="flex-row items-center">
-                      <View className="w-12 h-12 bg-secondary-100 rounded-full items-center justify-center mr-4">
-                        <Ionicons name="chatbubbles-outline" size={24} color="#c026d3" />
-                      </View>
-                      <View className="flex-1">
-                        <Text className="text-base font-semibold text-gray-900">
-                          Discuter avec Jul-IA
-                        </Text>
-                        <Text className="text-sm text-gray-600">
-                          Votre assistante IA disponible 24/7
-                        </Text>
-                      </View>
-                      <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-                    </View>
-                  </Card>
+          {/* ========== HERO BANNER ========== */}
+          <View
+            className="px-6 pt-8 pb-10"
+            style={{
+              backgroundColor: '#EEF4FB',
+              borderBottomLeftRadius: 28,
+              borderBottomRightRadius: 28,
+              overflow: 'hidden',
+            }}
+          >
+            {/* Decorative circle */}
+            <View
+              style={{
+                position: 'absolute',
+                top: -30,
+                right: -30,
+                width: 150,
+                height: 150,
+                borderRadius: 9999,
+                backgroundColor: '#A9C9EB',
+                opacity: 0.2,
+              }}
+            />
+
+            {/* Logout icon top-right */}
+            <View className="flex-row justify-end mb-4">
+              <TouchableOpacity
+                onPress={handleLogout}
+                className="p-2 rounded-xl"
+                style={{ backgroundColor: 'rgba(255,255,255,0.5)' }}
+              >
+                <Ionicons name="log-out-outline" size={22} color="#1F4F7A" />
+              </TouchableOpacity>
+            </View>
+
+            <Text className="text-2xl font-bold mb-1" style={{ color: '#1A1A1A' }}>
+              Bonjour, {patientData?.firstName} !
+            </Text>
+            <Text className="text-base mb-5" style={{ color: '#6B6B6B' }}>
+              Comment allez-vous ?
+            </Text>
+
+            {/* Evaluation rapide button */}
+            <TouchableOpacity
+              onPress={handleNewEvaluation}
+              activeOpacity={0.8}
+              className="py-3.5 px-6 self-start"
+              style={{
+                backgroundColor: '#5B9BD5',
+                borderRadius: 14,
+              }}
+            >
+              <Text className="text-white font-bold text-base">
+                Évaluation rapide
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View className="px-5 pt-5 pb-6">
+
+            {/* ========== STATS ROW — ASYMMETRIC ========== */}
+            <View className="flex-row mb-6" style={{ gap: 12 }}>
+              {/* Stat 1 — Tall */}
+              <View
+                className="items-center justify-center rounded-2xl p-4"
+                style={{
+                  flex: 1.5,
+                  backgroundColor: '#FFFFFF',
+                  minHeight: 120,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.06,
+                  shadowRadius: 8,
+                  elevation: 3,
+                }}
+              >
+                <View className="w-10 h-10 rounded-xl items-center justify-center mb-2" style={{ backgroundColor: '#EEF4FB' }}>
+                  <Ionicons name="calendar-outline" size={20} color="#5B9BD5" />
                 </View>
+                <Text className="text-3xl font-bold" style={{ color: '#1A1A1A' }}>7</Text>
+                <Text className="text-xs mt-1 text-center" style={{ color: '#6B6B6B' }}>jours{'\n'}de suivi</Text>
+              </View>
+
+              {/* Stat 2 */}
+              <View
+                className="items-center justify-center rounded-2xl p-4"
+                style={{
+                  flex: 1,
+                  backgroundColor: '#FFFFFF',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.06,
+                  shadowRadius: 8,
+                  elevation: 3,
+                }}
+              >
+                <Text className="text-2xl font-bold" style={{ color: '#1A1A1A' }}>3</Text>
+                <Text className="text-xs mt-1" style={{ color: '#6B6B6B' }}>éval.</Text>
+              </View>
+
+              {/* Stat 3 */}
+              <View
+                className="items-center justify-center rounded-2xl p-4"
+                style={{
+                  flex: 1,
+                  backgroundColor: '#FFFFFF',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.06,
+                  shadowRadius: 8,
+                  elevation: 3,
+                }}
+              >
+                <Text className="text-2xl font-bold" style={{ color: '#4CAF82' }}>85%</Text>
+                <Text className="text-xs mt-1" style={{ color: '#6B6B6B' }}>objectif</Text>
               </View>
             </View>
 
-            {/* Prochain rendez-vous */}
-            {patientData?.nextAppointment && (
-              <Card className="mb-6 bg-blue-50 border border-blue-200">
-                <View className="flex-row items-start">
-                  <View className="w-12 h-12 bg-blue-100 rounded-full items-center justify-center mr-4">
-                    <Ionicons name="calendar" size={24} color="#3b82f6" />
-                  </View>
-                  <View className="flex-1">
-                    <Text className="text-sm font-medium text-blue-900 mb-1">
-                      Prochain rendez-vous
-                    </Text>
-                    <Text className="text-lg font-bold text-blue-900">
-                      {patientData.nextAppointment.toLocaleDateString('fr-FR', {
-                        weekday: 'long',
-                        day: 'numeric',
-                        month: 'long',
-                      })}
-                    </Text>
-                    <Text className="text-sm text-blue-700 mt-1">
-                      Avec {patientData.therapistName}
-                    </Text>
-                  </View>
+            {/* ========== CTA CHAT — FLOATING CARD WITH LEFT BORDER ========== */}
+            <TouchableOpacity
+              onPress={handleChat}
+              activeOpacity={0.8}
+              className="mb-6"
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: 14,
+                borderLeftWidth: 4,
+                borderLeftColor: '#F0A8A0',
+                paddingVertical: 18,
+                paddingHorizontal: 18,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.1,
+                shadowRadius: 12,
+                elevation: 6,
+              }}
+            >
+              <View className="flex-row items-center">
+                <View
+                  className="w-11 h-11 rounded-full items-center justify-center mr-4"
+                  style={{ backgroundColor: '#FEF4F3' }}
+                >
+                  <Ionicons name="heart" size={22} color="#F0A8A0" />
                 </View>
-              </Card>
-            )}
-
-            {/* Objectif de la semaine */}
-            {patientData?.weeklyGoal && (
-              <Card className="mb-6">
-                <View className="flex-row items-center justify-between mb-3">
-                  <Text className="text-base font-semibold text-gray-900">
-                    Objectif de la semaine
+                <View className="flex-1">
+                  <Text className="text-lg font-bold" style={{ color: '#1A1A1A' }}>
+                    Jul-IA
                   </Text>
-                  <Ionicons name="flag-outline" size={20} color="#22c55e" />
+                  <Text className="text-sm" style={{ color: '#6B6B6B' }}>
+                    Votre assistante disponible 24/7
+                  </Text>
                 </View>
-                <Text className="text-gray-700 mb-3">
-                  {patientData.weeklyGoal}
-                </Text>
-                <View className="bg-gray-200 rounded-full h-2 mb-2">
-                  <View className="bg-green-500 h-2 rounded-full" style={{ width: '85%' }} />
-                </View>
-                <Text className="text-xs text-gray-600">85% complété</Text>
-              </Card>
-            )}
-
-            {/* Mes outils */}
-            <View className="mb-6">
-              <Text className="text-lg font-bold text-gray-900 mb-3">
-                Mes outils
-              </Text>
-              
-              <View className={isWeb ? 'flex-row flex-wrap gap-3' : 'space-y-3'}>
-                <View className={isWeb ? 'flex-1 min-w-[280px]' : ''}>
-                  <Card onPress={handleViewJournal}>
-                    <View className="flex-row items-center justify-between">
-                      <View className="flex-row items-center flex-1">
-                        <View className="w-10 h-10 bg-yellow-100 rounded-full items-center justify-center mr-3">
-                          <Ionicons name="book-outline" size={20} color="#eab308" />
-                        </View>
-                        <Text className="text-base font-medium text-gray-900">
-                          Mon journal
-                        </Text>
-                      </View>
-                      <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-                    </View>
-                  </Card>
-                </View>
-
-                <View className={isWeb ? 'flex-1 min-w-[280px]' : ''}>
-                  <Card onPress={handleViewExercises}>
-                    <View className="flex-row items-center justify-between">
-                      <View className="flex-row items-center flex-1">
-                        <View className="w-10 h-10 bg-green-100 rounded-full items-center justify-center mr-3">
-                          <Ionicons name="fitness-outline" size={20} color="#22c55e" />
-                        </View>
-                        <Text className="text-base font-medium text-gray-900">
-                          Exercices
-                        </Text>
-                      </View>
-                      <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-                    </View>
-                  </Card>
+                <View
+                  className="w-9 h-9 rounded-full items-center justify-center"
+                  style={{ backgroundColor: '#EEF4FB' }}
+                >
+                  <Ionicons name="arrow-forward" size={18} color="#5B9BD5" />
                 </View>
               </View>
+            </TouchableOpacity>
+
+            {/* ========== TWO COLUMNS ASYMMETRIC (60% / 40%) ========== */}
+            <View className="flex-row mb-6" style={{ gap: 12 }}>
+              {/* Rendez-vous — 60% */}
+              {patientData?.nextAppointment && (
+                <View
+                  className="rounded-2xl p-5"
+                  style={{
+                    flex: 3,
+                    backgroundColor: '#FDF6EA',
+                  }}
+                >
+                  <View className="flex-row items-center mb-3">
+                    <View className="w-9 h-9 rounded-xl items-center justify-center mr-2" style={{ backgroundColor: '#FAE8C4' }}>
+                      <Ionicons name="calendar" size={18} color="#E8A838" />
+                    </View>
+                    <Text className="text-sm font-semibold" style={{ color: '#8C5C18' }}>
+                      Rendez-vous
+                    </Text>
+                  </View>
+                  <Text className="text-base font-bold mb-1" style={{ color: '#1A1A1A' }}>
+                    {patientData.nextAppointment.toLocaleDateString('fr-FR', {
+                      weekday: 'long',
+                      day: 'numeric',
+                      month: 'long',
+                    })}
+                  </Text>
+                  <Text className="text-sm" style={{ color: '#6B6B6B' }}>
+                    Avec {patientData.therapistName}
+                  </Text>
+                </View>
+              )}
+
+              {/* Objectif semaine — 40% */}
+              {patientData?.weeklyGoal && (
+                <View
+                  className="rounded-2xl p-5"
+                  style={{
+                    flex: 2,
+                    backgroundColor: '#EEF4FB',
+                  }}
+                >
+                  <View className="w-8 h-8 rounded-lg items-center justify-center mb-2" style={{ backgroundColor: '#D4E4F5' }}>
+                    <Ionicons name="flag" size={16} color="#5B9BD5" />
+                  </View>
+                  <Text className="text-sm font-semibold mb-1" style={{ color: '#1F4F7A' }}>
+                    Objectif
+                  </Text>
+                  <Text className="text-xs leading-4" style={{ color: '#404040' }} numberOfLines={3}>
+                    {patientData.weeklyGoal}
+                  </Text>
+                  {/* Small progress bar */}
+                  <View className="mt-3 rounded-full h-2" style={{ backgroundColor: '#D4E4F5' }}>
+                    <View className="h-2 rounded-full" style={{ width: '85%', backgroundColor: '#5B9BD5' }} />
+                  </View>
+                </View>
+              )}
             </View>
 
-            {/* Dernière évaluation */}
-            <Card className="mb-6">
-              <View className="flex-row items-center justify-between mb-4">
-                <Text className="text-base font-semibold text-gray-900">
+            {/* ========== TOOLS — HORIZONTAL ScrollView ========== */}
+            <Text className="text-lg font-bold mb-3" style={{ color: '#1A1A1A' }}>
+              Mes outils
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="mb-6"
+              contentContainerStyle={{ gap: 12 }}
+            >
+              {/* Journal */}
+              <TouchableOpacity
+                onPress={handleViewJournal}
+                activeOpacity={0.7}
+                className="items-center justify-center"
+                style={{
+                  width: 120,
+                  height: 120,
+                  backgroundColor: '#FAFAFA',
+                  borderRadius: 20,
+                }}
+              >
+                <View className="w-12 h-12 rounded-xl items-center justify-center mb-2" style={{ backgroundColor: '#FDF6EA' }}>
+                  <Ionicons name="book-outline" size={24} color="#E8A838" />
+                </View>
+                <Text className="text-sm font-medium" style={{ color: '#1A1A1A' }}>Journal</Text>
+              </TouchableOpacity>
+
+              {/* Exercices */}
+              <TouchableOpacity
+                onPress={handleViewExercises}
+                activeOpacity={0.7}
+                className="items-center justify-center"
+                style={{
+                  width: 120,
+                  height: 120,
+                  backgroundColor: '#FAFAFA',
+                  borderRadius: 20,
+                }}
+              >
+                <View className="w-12 h-12 rounded-xl items-center justify-center mb-2" style={{ backgroundColor: '#EDFAF2' }}>
+                  <Ionicons name="fitness-outline" size={24} color="#4CAF82" />
+                </View>
+                <Text className="text-sm font-medium" style={{ color: '#1A1A1A' }}>Exercices</Text>
+              </TouchableOpacity>
+
+              {/* Historique */}
+              <TouchableOpacity
+                onPress={() => router.push('/patient/history')}
+                activeOpacity={0.7}
+                className="items-center justify-center"
+                style={{
+                  width: 120,
+                  height: 120,
+                  backgroundColor: '#FAFAFA',
+                  borderRadius: 20,
+                }}
+              >
+                <View className="w-12 h-12 rounded-xl items-center justify-center mb-2" style={{ backgroundColor: '#EEF4FB' }}>
+                  <Ionicons name="bar-chart-outline" size={24} color="#5B9BD5" />
+                </View>
+                <Text className="text-sm font-medium" style={{ color: '#1A1A1A' }}>Historique</Text>
+              </TouchableOpacity>
+            </ScrollView>
+
+            {/* ========== DERNIERE EVALUATION ========== */}
+            <View
+              className="rounded-2xl p-5 mb-4"
+              style={{
+                backgroundColor: '#FFFFFF',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.05,
+                shadowRadius: 8,
+                elevation: 2,
+              }}
+            >
+              <View className="flex-row items-center justify-between mb-5">
+                <Text className="text-base font-semibold" style={{ color: '#1A1A1A' }}>
                   Dernière évaluation
                 </Text>
-                <Text className="text-sm text-gray-500">Il y a 2 jours</Text>
+                <Text className="text-sm font-medium" style={{ color: '#A0A0A0' }}>Il y a 2 jours</Text>
               </View>
-              
+
               <View className="flex-row justify-between">
                 <View className="items-center flex-1">
-                  <Text className="text-xs text-gray-600 mb-1">Humeur</Text>
-                  <View className="flex-row items-center">
-                    <Text className="text-2xl font-bold text-gray-900">4</Text>
-                    <Text className="text-gray-500">/5</Text>
+                  <Text className="text-xs mb-2 font-medium" style={{ color: '#6B6B6B' }}>Humeur</Text>
+                  <View className="flex-row items-center mb-1">
+                    <Text className="text-2xl font-bold" style={{ color: '#1A1A1A' }}>4</Text>
+                    <Text style={{ color: '#A0A0A0' }}>/5</Text>
                   </View>
-                  <Ionicons name="happy" size={20} color="#22c55e" />
+                  <View className="w-9 h-9 rounded-xl items-center justify-center" style={{ backgroundColor: '#EDFAF2' }}>
+                    <Ionicons name="happy" size={18} color="#4CAF82" />
+                  </View>
                 </View>
-                
+
                 <View className="items-center flex-1">
-                  <Text className="text-xs text-gray-600 mb-1">Anxiété</Text>
-                  <View className="flex-row items-center">
-                    <Text className="text-2xl font-bold text-gray-900">2</Text>
-                    <Text className="text-gray-500">/5</Text>
+                  <Text className="text-xs mb-2 font-medium" style={{ color: '#6B6B6B' }}>Anxiété</Text>
+                  <View className="flex-row items-center mb-1">
+                    <Text className="text-2xl font-bold" style={{ color: '#1A1A1A' }}>2</Text>
+                    <Text style={{ color: '#A0A0A0' }}>/5</Text>
                   </View>
-                  <Ionicons name="pulse" size={20} color="#22c55e" />
+                  <View className="w-9 h-9 rounded-xl items-center justify-center" style={{ backgroundColor: '#EEF4FB' }}>
+                    <Ionicons name="pulse" size={18} color="#5B9BD5" />
+                  </View>
                 </View>
-                
+
                 <View className="items-center flex-1">
-                  <Text className="text-xs text-gray-600 mb-1">Sommeil</Text>
-                  <View className="flex-row items-center">
-                    <Text className="text-2xl font-bold text-gray-900">3</Text>
-                    <Text className="text-gray-500">/5</Text>
+                  <Text className="text-xs mb-2 font-medium" style={{ color: '#6B6B6B' }}>Sommeil</Text>
+                  <View className="flex-row items-center mb-1">
+                    <Text className="text-2xl font-bold" style={{ color: '#1A1A1A' }}>3</Text>
+                    <Text style={{ color: '#A0A0A0' }}>/5</Text>
                   </View>
-                  <Ionicons name="moon" size={20} color="#3b82f6" />
+                  <View className="w-9 h-9 rounded-xl items-center justify-center" style={{ backgroundColor: '#FEF4F3' }}>
+                    <Ionicons name="moon" size={18} color="#F0A8A0" />
+                  </View>
                 </View>
               </View>
-            </Card>
+            </View>
 
           </View>
         </ScrollView>
