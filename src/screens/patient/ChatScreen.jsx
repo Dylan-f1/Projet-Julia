@@ -9,149 +9,65 @@ import ChatInput from '../../components/chat/ChatInput';
 import TypingIndicator from '../../components/chat/TypingIndicator';
 import ConversationCard from '../../components/chat/ConversationCard';
 
-import chatService from '../../services/chatService';
 import { useChat } from '../../contexts/ChatContext';
 
 const ChatScreen = () => {
-  const { activeConversation, setActiveConversation } = useChat();
-  const [messages, setMessages] = useState([]);
-  const [conversations, setConversations] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(true);
+  // Utiliser le ChatContext comme source de vérité unique
+  const {
+    conversations,
+    currentConversation,
+    messages,
+    loading,
+    sending,
+    loadConversations,
+    sendMessage,
+    startNewConversation,
+    activeConversation,
+    setActiveConversation,
+  } = useChat();
 
+  const [showSidebar, setShowSidebar] = useState(true);
   const scrollViewRef = useRef(null);
   const isWeb = Platform.OS === 'web';
 
   useEffect(() => {
     loadConversations();
-    if (activeConversation) {
-      loadMessages(activeConversation);
-    }
   }, []);
 
-  const loadConversations = async () => {
-    console.log('📂 Chargement des conversations...');
-    const result = await chatService.getMyConversations();
-    console.log('📂 Résultat:', result);
-
-    if (result.success) {
-      const convArray = result.data?.conversation
-        ? [result.data.conversation]
-        : Array.isArray(result.data)
-          ? result.data
-          : [];
-
-      console.log('📂 Conversations:', convArray);
-      setConversations(convArray);
-
-      if (convArray.length > 0 && !activeConversation) {
-        console.log('📂 Sélection conversation active:', convArray[0]._id);
-        setActiveConversation(convArray[0]._id);
-        loadMessages(convArray[0]._id);
-      }
+  // Auto-scroll quand les messages changent
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollToBottom();
     }
-  };
-
-  const loadMessages = async (conversationId) => {
-    console.log('💬 Chargement messages pour:', conversationId);
-    setLoading(true);
-    const result = await chatService.getMessages(conversationId);
-    console.log('💬 Résultat:', result);
-
-    if (result.success) {
-      const msgArray = Array.isArray(result.data)
-        ? result.data
-        : result.data?.messages || [];
-      console.log('💬 Messages:', msgArray);
-      setMessages(msgArray);
-      setTimeout(() => scrollToBottom(), 100);
-    }
-    setLoading(false);
-  };
+  }, [messages]);
 
   const handleSendMessage = async (content) => {
     if (!content.trim()) return;
 
     console.log('📤 Envoi message:', content);
-    console.log('📤 Conversation active:', activeConversation);
 
-    // Si pas de conversation active, en creer une avec le premier message
-    if (!activeConversation) {
-      console.log('📝 Création nouvelle conversation avec premier message');
-
-      setIsTyping(true);
-      const createResult = await chatService.createConversation(content);
-      setIsTyping(false);
-
-      console.log('📝 Résultat création:', createResult);
-
-      if (createResult.success) {
-        const newConv = createResult.data.conversation || createResult.data;
-        console.log('✅ Conversation créée:', newConv);
-
-        setActiveConversation(newConv._id);
-        setMessages(newConv.messages || []);
-        loadConversations();
-        scrollToBottom();
-      } else {
-        console.error('❌ Erreur création conversation:', createResult.error);
-      }
-      return;
-    }
-
-    // Sinon, envoyer le message dans la conversation active
-    const userMessage = {
-      _id: Date.now().toString(),
-      content,
-      sender: 'patient',
-      timestamp: new Date().toISOString(),
-    };
-
-    setMessages(prev => [...prev, userMessage]);
+    // sendMessage du contexte gère tout :
+    // - Création de conversation si besoin
+    // - Optimistic update
+    // - Appel API avec le bon conversationId
+    // - Mise à jour des messages avec la réponse IA
+    await sendMessage(content);
     scrollToBottom();
-
-    setIsTyping(true);
-
-    console.log('📤 Envoi vers conversation:', activeConversation);
-    const result = await chatService.sendMessage(activeConversation, content);
-
-    setIsTyping(false);
-
-    console.log('📤 Résultat envoi:', result);
-
-    if (result.success) {
-      const aiMessage = result.data.message || result.data;
-      console.log('✅ Message AI reçu:', aiMessage);
-      setMessages(prev => [...prev, aiMessage]);
-      scrollToBottom();
-      loadConversations();
-    } else {
-      console.error('❌ Erreur envoi message:', result.error);
-    }
   };
 
   const handleSelectConversation = (conversationId) => {
     setActiveConversation(conversationId);
-    loadMessages(conversationId);
   };
 
-  const handleNewConversation = async () => {
+  const handleNewConversation = () => {
     console.log('🆕 Nouvelle conversation');
-    const result = await chatService.createConversation('Bonjour');
-
-    if (result.success) {
-      const newConv = result.data.conversation || result.data;
-      setActiveConversation(newConv._id);
-      setMessages(newConv.messages || []);
-      loadConversations();
-    }
+    startNewConversation();
   };
 
   const scrollToBottom = () => {
     setTimeout(() => {
       scrollViewRef.current?.scrollToEnd({ animated: true });
-    }, 100);
+    }, 150);
   };
 
   return (
@@ -204,7 +120,7 @@ const ChatScreen = () => {
                     onPress={() => handleSelectConversation(conv._id)}
                     activeOpacity={0.7}
                     style={{
-                      borderLeftWidth: isActive ? 4 : 4,
+                      borderLeftWidth: 4,
                       borderLeftColor: isActive ? '#5B9BD5' : 'transparent',
                       backgroundColor: isActive ? '#EEF4FB' : 'transparent',
                       borderRadius: 8,
@@ -296,20 +212,9 @@ const ChatScreen = () => {
                   Je suis Jul-IA, votre compagnon d'écoute disponible 24/7.
                   {'\n'}Comment puis-je vous aider aujourd'hui ?
                 </Text>
-                {/* CTA button */}
-                <TouchableOpacity
-                  onPress={() => {}}
-                  activeOpacity={0.8}
-                  className="py-3 px-6"
-                  style={{
-                    backgroundColor: '#5B9BD5',
-                    borderRadius: 14,
-                  }}
-                >
-                  <Text className="text-white font-semibold text-base">
-                    Commencer une discussion
-                  </Text>
-                </TouchableOpacity>
+                <Text className="text-sm text-center px-12" style={{ color: '#A0A0A0' }}>
+                  Tapez votre message ci-dessous pour commencer
+                </Text>
               </View>
             ) : (
               <>
@@ -320,7 +225,7 @@ const ChatScreen = () => {
                     isUser={msg.sender === 'patient'}
                   />
                 ))}
-                {isTyping && <TypingIndicator />}
+                {sending && <TypingIndicator />}
               </>
             )}
           </ScrollView>
@@ -333,7 +238,7 @@ const ChatScreen = () => {
               borderTopColor: '#EEECEB',
             }}
           >
-            <ChatInput onSend={handleSendMessage} disabled={isTyping} />
+            <ChatInput onSend={handleSendMessage} disabled={sending} />
           </View>
         </View>
       </View>
