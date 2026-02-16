@@ -7,7 +7,7 @@ const QRCodeTab = ({ patientId, patientEmail }) => {
 
   return (
     <View className={`p-4 ${isWeb ? 'pb-8' : ''}`}>
-      <PatientQRCode 
+      <PatientQRCode
         patientId={patientId}
         patientEmail={patientEmail}
       />

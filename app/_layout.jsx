@@ -1,5 +1,6 @@
 import "../global.css";
 import { useEffect } from 'react';
+import { StatusBar } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { AuthProvider, useAuth } from '../src/contexts/AuthContext';
 
@@ -32,11 +33,20 @@ function RootLayoutNav() {
   }, [isAuthenticated, userRole, loading, segments]);
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="auth" />
-      <Stack.Screen name="therapist" />
-      <Stack.Screen name="patient" />
-    </Stack>
+    <>
+      <StatusBar barStyle="dark-content" backgroundColor="#FAFAFA" />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: '#FAFAFA' },
+          animation: 'fade',
+        }}
+      >
+        <Stack.Screen name="auth" />
+        <Stack.Screen name="therapist" />
+        <Stack.Screen name="patient" />
+      </Stack>
+    </>
   );
 }
 

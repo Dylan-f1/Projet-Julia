@@ -5,7 +5,7 @@ const ProgressBar = ({
   progress = 0, // 0-100
   label,
   showPercentage = true,
-  color = 'primary',
+  color = 'patient',
   size = 'medium',
   className = '',
 }) => {
@@ -15,14 +15,22 @@ const ProgressBar = ({
   const clampedProgress = Math.min(Math.max(progress, 0), 100);
 
   const colorClasses = {
-    primary: 'bg-primary-600',
-    secondary: 'bg-secondary-600',
-    success: 'bg-green-600',
-    warning: 'bg-yellow-600',
-    danger: 'bg-red-600',
+    patient: 'bg-patient-400',
+    therapist: 'bg-therapist-400',
+    ai: 'bg-ai-400',
+    success: 'bg-success-400',
+    danger: 'bg-danger-400',
   };
 
-  // Desktop : barres légèrement plus épaisses
+  const percentageTextColors = {
+    patient: 'text-patient-500',
+    therapist: 'text-therapist-500',
+    ai: 'text-ai-500',
+    success: 'text-success-600',
+    danger: 'text-danger-600',
+  };
+
+  // Desktop: slightly thicker bars
   const sizeClasses = {
     small: isDesktop ? 'h-1.5' : 'h-1',
     medium: isDesktop ? 'h-2.5' : 'h-2',
@@ -34,10 +42,10 @@ const ProgressBar = ({
       {(label || showPercentage) && (
         <View className="flex-row justify-between items-center mb-2">
           {label && (
-            <Text className="text-sm text-gray-700">{label}</Text>
+            <Text className="text-sm text-text-500">{label}</Text>
           )}
           {showPercentage && (
-            <Text className="text-sm text-gray-600 font-semibold">
+            <Text className={`text-sm ${percentageTextColors[color] || percentageTextColors.patient} font-semibold`}>
               {Math.round(clampedProgress)}%
             </Text>
           )}
@@ -45,7 +53,7 @@ const ProgressBar = ({
       )}
 
       <View
-        className={`w-full bg-gray-200 rounded-full overflow-hidden ${sizeClasses[size]}`}
+        className={`w-full bg-surface-200 rounded-full overflow-hidden ${sizeClasses[size]}`}
         style={
           isDesktop
             ? { transition: 'all 0.3s ease' }
@@ -53,7 +61,7 @@ const ProgressBar = ({
         }
       >
         <View
-          className={`${colorClasses[color]} ${sizeClasses[size]} rounded-full`}
+          className={`${colorClasses[color] || colorClasses.patient} ${sizeClasses[size]} rounded-full`}
           style={{
             width: `${clampedProgress}%`,
             ...(isDesktop ? { transition: 'width 0.4s ease-out' } : {}),

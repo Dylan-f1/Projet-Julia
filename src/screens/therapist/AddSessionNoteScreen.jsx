@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   useWindowDimensions,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -37,6 +38,9 @@ const AddSessionNoteScreen = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
+  // Animated scale for success checkmark
+  const [scaleAnim] = useState(new Animated.Value(0));
+
   // Step actuel pour l'indicateur de progression
   const currentStep = uploadSuccess ? 3 : selectedFile ? 2 : sessionDate ? 1 : 0;
 
@@ -59,8 +63,8 @@ const AddSessionNoteScreen = () => {
 
     if (!permissionResult.granted) {
       Alert.alert(
-        'Permission refusée',
-        "Vous devez autoriser l'accès à la caméra"
+        'Permission refusee',
+        "Vous devez autoriser l'acces a la camera"
       );
       return;
     }
@@ -82,8 +86,8 @@ const AddSessionNoteScreen = () => {
 
     if (!permissionResult.granted) {
       Alert.alert(
-        'Permission refusée',
-        "Vous devez autoriser l'accès à la galerie"
+        'Permission refusee',
+        "Vous devez autoriser l'acces a la galerie"
       );
       return;
     }
@@ -110,19 +114,19 @@ const AddSessionNoteScreen = () => {
         setSelectedFile(result.assets[0]);
       }
     } catch (error) {
-      Alert.alert('Erreur', 'Impossible de sélectionner le document');
+      Alert.alert('Erreur', 'Impossible de selectionner le document');
     }
   };
 
   // --- Upload ---
   const handleUpload = async () => {
     if (!selectedFile) {
-      Alert.alert('Erreur', 'Veuillez sélectionner un fichier');
+      Alert.alert('Erreur', 'Veuillez selectionner un fichier');
       return;
     }
 
     if (!sessionDate) {
-      Alert.alert('Erreur', 'Veuillez sélectionner une date de séance');
+      Alert.alert('Erreur', 'Veuillez selectionner une date de seance');
       return;
     }
 
@@ -136,6 +140,13 @@ const AddSessionNoteScreen = () => {
 
     if (result.success) {
       setUploadSuccess(true);
+      // Animate the checkmark with spring
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 4,
+        tension: 60,
+        useNativeDriver: true,
+      }).start();
     } else {
       Alert.alert('Erreur', result.error);
     }
@@ -150,26 +161,44 @@ const AddSessionNoteScreen = () => {
   };
 
   // ============================================================
-  // ÉCRAN DE SUCCÈS
+  // ECRAN DE SUCCES
   // ============================================================
   if (uploadSuccess) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50">
+      <SafeAreaView className="flex-1" style={{ backgroundColor: '#FAFAFA' }}>
         <View
           className="flex-1 justify-center items-center px-6"
           style={isDesktop ? { alignSelf: 'center', maxWidth: 480 } : undefined}
         >
-          <View className="w-20 h-20 bg-green-100 rounded-full items-center justify-center mb-4">
-            <Ionicons name="checkmark-circle" size={50} color="#22c55e" />
-          </View>
-          <Text className="text-2xl font-bold text-gray-900 mb-3 text-center">
-            Note uploadée !
+          {/* Animated success checkmark */}
+          <Animated.View
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 40,
+              backgroundColor: '#EDFAF2',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 20,
+              transform: [{ scale: scaleAnim }],
+              shadowColor: '#4CAF82',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.15,
+              shadowRadius: 12,
+              elevation: 4,
+            }}
+          >
+            <Ionicons name="checkmark-circle" size={50} color="#4CAF82" />
+          </Animated.View>
+
+          <Text style={{ fontSize: 24, fontWeight: '700', color: '#1A1A1A', marginBottom: 12, textAlign: 'center' }}>
+            Note uploadee !
           </Text>
-          <Text className="text-base text-gray-600 text-center mb-2">
-            La note de séance a été uploadée avec succès.
+          <Text style={{ fontSize: 15, color: '#6B6B6B', textAlign: 'center', marginBottom: 8 }}>
+            La note de seance a ete uploadee avec succes.
           </Text>
-          <Text className="text-sm text-gray-500 text-center mb-8">
-            L'OCR va extraire le texte et générer un résumé automatiquement.
+          <Text style={{ fontSize: 13, color: '#A0A0A0', textAlign: 'center', marginBottom: 32 }}>
+            L'OCR va extraire le texte et generer un resume automatiquement.
           </Text>
 
           <View
@@ -183,9 +212,7 @@ const AddSessionNoteScreen = () => {
               title="Retour au patient"
               onPress={goToPatient}
               variant="primary"
-              icon={
-                <Ionicons name="person-outline" size={18} color="white" />
-              }
+              icon={<Ionicons name="person-outline" size={18} color="white" />}
               className={isDesktop ? '' : 'mb-3'}
               style={isDesktop ? { minWidth: 180 } : undefined}
             />
@@ -193,9 +220,7 @@ const AddSessionNoteScreen = () => {
               title="Retour au dashboard"
               onPress={goToDashboard}
               variant="outline"
-              icon={
-                <Ionicons name="grid-outline" size={18} color="#0284c7" />
-              }
+              icon={<Ionicons name="grid-outline" size={18} color="#E8A838" />}
               style={isDesktop ? { minWidth: 180 } : undefined}
             />
           </View>
@@ -208,7 +233,7 @@ const AddSessionNoteScreen = () => {
   // FORMULAIRE PRINCIPAL
   // ============================================================
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: '#FAFAFA' }}>
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
@@ -218,120 +243,130 @@ const AddSessionNoteScreen = () => {
       >
         <View style={isDesktop ? { width: '100%', maxWidth: 640 } : undefined}>
           {/* ---- Breadcrumb ---- */}
-          <View className="flex-row items-center mb-2" style={{ gap: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 8 }}>
             <TouchableOpacity
               onPress={goToDashboard}
-              className="flex-row items-center"
+              style={{ flexDirection: 'row', alignItems: 'center' }}
               activeOpacity={0.7}
-              style={isDesktop ? { cursor: 'pointer' } : undefined}
             >
-              <Ionicons name="grid-outline" size={16} color="#94a3b8" />
-              <Text className="text-sm text-gray-400 ml-1">Dashboard</Text>
+              <Ionicons name="grid-outline" size={16} color="#A0A0A0" />
+              <Text style={{ fontSize: 13, color: '#A0A0A0', marginLeft: 4 }}>Dashboard</Text>
             </TouchableOpacity>
 
-            <Ionicons name="chevron-forward" size={14} color="#cbd5e1" />
+            <Ionicons name="chevron-forward" size={14} color="#E2DFDD" />
 
             <TouchableOpacity
               onPress={goToPatient}
-              className="flex-row items-center"
+              style={{ flexDirection: 'row', alignItems: 'center' }}
               activeOpacity={0.7}
-              style={isDesktop ? { cursor: 'pointer' } : undefined}
             >
-              <Ionicons name="person-outline" size={16} color="#94a3b8" />
-              <Text className="text-sm text-gray-400 ml-1">Patient</Text>
+              <Ionicons name="person-outline" size={16} color="#A0A0A0" />
+              <Text style={{ fontSize: 13, color: '#A0A0A0', marginLeft: 4 }}>Patient</Text>
             </TouchableOpacity>
 
-            <Ionicons name="chevron-forward" size={14} color="#cbd5e1" />
+            <Ionicons name="chevron-forward" size={14} color="#E2DFDD" />
 
-            <Text className="text-sm text-gray-700 font-medium">
+            <Text style={{ fontSize: 13, color: '#1A1A1A', fontWeight: '500' }}>
               Nouvelle note
             </Text>
           </View>
 
           {/* ---- Header ---- */}
-          <View className="mb-6">
-            <Text className="text-2xl font-bold text-gray-900 mb-2">
-              Ajouter une note de séance
+          <View style={{ marginBottom: 24 }}>
+            <Text style={{ fontSize: 24, fontWeight: '700', color: '#1A1A1A', marginBottom: 8 }}>
+              Ajouter une note de seance
             </Text>
-            <Text className="text-base text-gray-600">
+            <Text style={{ fontSize: 15, color: '#6B6B6B', lineHeight: 22 }}>
               Prenez en photo ou uploadez vos notes manuscrites. L'OCR extraira
               automatiquement le texte.
             </Text>
           </View>
 
-          {/* ---- Stepper ---- */}
-          <View className="flex-row items-center mb-8" style={{ gap: 4 }}>
+          {/* ---- Step indicator ---- */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 32, gap: 4 }}>
             {STEPS.map((step, index) => (
               <React.Fragment key={step.id}>
-                <View className="flex-row items-center">
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View
-                    className={`w-7 h-7 rounded-full items-center justify-center ${
-                      currentStep >= step.id
-                        ? 'bg-primary-600'
-                        : 'bg-gray-200'
-                    }`}
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: 14,
+                      backgroundColor: currentStep >= step.id ? '#E8A838' : '#EEECEB',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                   >
                     {currentStep > step.id ? (
                       <Ionicons name="checkmark" size={14} color="white" />
                     ) : (
                       <Text
-                        className={`text-xs font-bold ${
-                          currentStep >= step.id
-                            ? 'text-white'
-                            : 'text-gray-500'
-                        }`}
+                        style={{
+                          fontSize: 12,
+                          fontWeight: '700',
+                          color: currentStep >= step.id ? 'white' : '#A0A0A0',
+                        }}
                       >
                         {step.id}
                       </Text>
                     )}
                   </View>
                   <Text
-                    className={`text-xs ml-1.5 ${
-                      currentStep >= step.id
-                        ? 'text-primary-600 font-semibold'
-                        : 'text-gray-400'
-                    }`}
+                    style={{
+                      fontSize: 12,
+                      marginLeft: 6,
+                      color: currentStep >= step.id ? '#E8A838' : '#A0A0A0',
+                      fontWeight: currentStep >= step.id ? '600' : '400',
+                    }}
                   >
                     {step.label}
                   </Text>
                 </View>
                 {index < STEPS.length - 1 && (
                   <View
-                    className={`flex-1 h-0.5 mx-2 rounded-full ${
-                      currentStep > step.id ? 'bg-primary-600' : 'bg-gray-200'
-                    }`}
+                    style={{
+                      flex: 1,
+                      height: 2,
+                      marginHorizontal: 8,
+                      borderRadius: 1,
+                      backgroundColor: currentStep > step.id ? '#E8A838' : '#EEECEB',
+                    }}
                   />
                 )}
               </React.Fragment>
             ))}
           </View>
 
-          {/* ---- Date de séance ---- */}
-          <Card
-            className="mb-6"
-            style={
-              isDesktop
-                ? {
-                    backgroundColor: '#fff',
-                    borderRadius: 16,
-                    borderWidth: 1,
-                    borderColor: '#e5e7eb',
-                    padding: 32,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 6,
-                    elevation: 2,
-                  }
-                : undefined
-            }
+          {/* ---- Date de seance ---- */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: 16,
+              padding: isDesktop ? 28 : 20,
+              marginBottom: 16,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              elevation: 2,
+            }}
           >
-            <View className="flex-row items-center mb-3">
-              <View className="w-8 h-8 bg-primary-100 rounded-full items-center justify-center mr-3">
-                <Ionicons name="calendar-outline" size={16} color="#0284c7" />
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+              <View
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: '#FAE8C4',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 12,
+                }}
+              >
+                <Ionicons name="calendar-outline" size={16} color="#E8A838" />
               </View>
-              <Text className="text-lg font-semibold text-gray-900">
-                Date de la séance
+              <Text style={{ fontSize: 17, fontWeight: '600', color: '#1A1A1A' }}>
+                Date de la seance
               </Text>
             </View>
             <Input
@@ -339,37 +374,39 @@ const AddSessionNoteScreen = () => {
               value={sessionDate}
               onChangeText={setSessionDate}
               keyboardType="default"
-              icon={
-                <Ionicons name="calendar-outline" size={20} color="#6B7280" />
-              }
+              icon={<Ionicons name="calendar-outline" size={20} color="#E8A838" />}
             />
-          </Card>
+          </View>
 
-          {/* ---- Sélection de fichier ---- */}
-          <Card
-            className="mb-6"
-            style={
-              isDesktop
-                ? {
-                    backgroundColor: '#fff',
-                    borderRadius: 16,
-                    borderWidth: 1,
-                    borderColor: '#e5e7eb',
-                    padding: 32,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 6,
-                    elevation: 2,
-                  }
-                : undefined
-            }
+          {/* ---- Selection de fichier ---- */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: 16,
+              padding: isDesktop ? 28 : 20,
+              marginBottom: 16,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              elevation: 2,
+            }}
           >
-            <View className="flex-row items-center mb-4">
-              <View className="w-8 h-8 bg-primary-100 rounded-full items-center justify-center mr-3">
-                <Ionicons name="document-outline" size={16} color="#0284c7" />
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+              <View
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: '#FAE8C4',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 12,
+                }}
+              >
+                <Ionicons name="document-outline" size={16} color="#E8A838" />
               </View>
-              <Text className="text-lg font-semibold text-gray-900">
+              <Text style={{ fontSize: 17, fontWeight: '600', color: '#1A1A1A' }}>
                 Document
               </Text>
             </View>
@@ -381,41 +418,57 @@ const AddSessionNoteScreen = () => {
                   selectedFile.uri && (
                     <Image
                       source={{ uri: selectedFile.uri }}
-                      className="w-full rounded-lg mb-3"
-                      resizeMode="contain"
                       style={{
-                        backgroundColor: '#f8fafc',
+                        width: '100%',
+                        borderRadius: 12,
+                        marginBottom: 12,
+                        backgroundColor: '#F5F5F4',
                         height: isDesktop ? 320 : 256,
                       }}
+                      resizeMode="contain"
                     />
                   )}
 
                 {/* PDF indicator */}
                 {selectedFile.mimeType === 'application/pdf' && (
-                  <View className="bg-red-50 border border-red-200 rounded-lg p-6 mb-3 items-center">
-                    <Ionicons name="document" size={40} color="#ef4444" />
-                    <Text className="text-red-700 font-medium mt-2">
+                  <View
+                    style={{
+                      backgroundColor: '#FEF0F0',
+                      borderWidth: 1,
+                      borderColor: '#FCCECE',
+                      borderRadius: 12,
+                      padding: 24,
+                      marginBottom: 12,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Ionicons name="document" size={40} color="#E05B5B" />
+                    <Text style={{ color: '#E05B5B', fontWeight: '600', marginTop: 8 }}>
                       Document PDF
                     </Text>
                   </View>
                 )}
 
                 {/* File info */}
-                <View className="bg-green-50 border border-green-200 rounded-lg p-3">
-                  <View className="flex-row items-center">
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={20}
-                      color="#22c55e"
-                    />
-                    <Text className="text-green-700 font-semibold ml-2 flex-1">
-                      Fichier sélectionné
+                <View
+                  style={{
+                    backgroundColor: '#EDFAF2',
+                    borderWidth: 1,
+                    borderColor: '#C8F0D6',
+                    borderRadius: 12,
+                    padding: 12,
+                  }}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Ionicons name="checkmark-circle" size={20} color="#4CAF82" />
+                    <Text style={{ color: '#2E8B5E', fontWeight: '600', marginLeft: 8, flex: 1 }}>
+                      Fichier selectionne
                     </Text>
                   </View>
-                  <Text className="text-green-600 text-sm mt-1">
+                  <Text style={{ color: '#2E8B5E', fontSize: 13, marginTop: 4, opacity: 0.8 }}>
                     {selectedFile.name || 'Image'}
                     {selectedFile.fileSize
-                      ? ` · ${formatFileSize(selectedFile.fileSize)}`
+                      ? ` - ${formatFileSize(selectedFile.fileSize)}`
                       : ''}
                   </Text>
                 </View>
@@ -430,7 +483,26 @@ const AddSessionNoteScreen = () => {
               </View>
             ) : (
               <View>
-                {/* Desktop : boutons en row / Mobile : empilés */}
+                {/* Upload zone — dashed border */}
+                <View
+                  style={{
+                    borderWidth: 2,
+                    borderStyle: 'dashed',
+                    borderColor: '#E2DFDD',
+                    borderRadius: 14,
+                    padding: 24,
+                    alignItems: 'center',
+                    marginBottom: 16,
+                    backgroundColor: '#FAFAFA',
+                  }}
+                >
+                  <Ionicons name="cloud-upload-outline" size={40} color="#C8C4C0" />
+                  <Text style={{ color: '#A0A0A0', marginTop: 8, fontSize: 14, textAlign: 'center' }}>
+                    Selectionnez un fichier ci-dessous
+                  </Text>
+                </View>
+
+                {/* Buttons */}
                 <View
                   style={
                     isDesktop
@@ -442,13 +514,7 @@ const AddSessionNoteScreen = () => {
                     <Button
                       title="Prendre une photo"
                       onPress={pickImage}
-                      icon={
-                        <Ionicons
-                          name="camera-outline"
-                          size={20}
-                          color="white"
-                        />
-                      }
+                      icon={<Ionicons name="camera-outline" size={20} color="white" />}
                       className={isDesktop ? '' : 'mb-3'}
                     />
                   </View>
@@ -458,13 +524,7 @@ const AddSessionNoteScreen = () => {
                       title="Galerie"
                       onPress={pickFromGallery}
                       variant="outline"
-                      icon={
-                        <Ionicons
-                          name="images-outline"
-                          size={20}
-                          color="#0284c7"
-                        />
-                      }
+                      icon={<Ionicons name="images-outline" size={20} color="#E8A838" />}
                       className={isDesktop ? '' : 'mb-3'}
                     />
                   </View>
@@ -474,39 +534,80 @@ const AddSessionNoteScreen = () => {
                       title="Document"
                       onPress={pickDocument}
                       variant="outline"
-                      icon={
-                        <Ionicons
-                          name="document-outline"
-                          size={20}
-                          color="#0284c7"
-                        />
-                      }
+                      icon={<Ionicons name="document-outline" size={20} color="#E8A838" />}
                     />
                   </View>
                 </View>
 
-                <Text className="text-xs text-gray-400 mt-3 text-center">
-                  Formats acceptés : JPG, PNG, PDF · 10 Mo max
+                <Text style={{ fontSize: 12, color: '#A0A0A0', marginTop: 12, textAlign: 'center' }}>
+                  Formats acceptes : JPG, PNG, PDF - 10 Mo max
                 </Text>
               </View>
             )}
-          </Card>
+          </View>
 
           {/* ---- Info OCR ---- */}
-          <View className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <View className="flex-row items-start">
-              <Ionicons name="information-circle" size={20} color="#0284c7" />
-              <View className="ml-2 flex-1">
-                <Text className="text-sm text-blue-700 font-semibold mb-1">
+          <View
+            style={{
+              backgroundColor: '#FDF6EA',
+              borderWidth: 1,
+              borderColor: '#FAE8C4',
+              borderRadius: 14,
+              padding: 16,
+              marginBottom: 16,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+              <Ionicons name="information-circle" size={20} color="#E8A838" />
+              <View style={{ marginLeft: 10, flex: 1 }}>
+                <Text style={{ fontSize: 14, color: '#8C5C18', fontWeight: '600', marginBottom: 4 }}>
                   Analyse automatique par OCR
                 </Text>
-                <Text className="text-sm text-blue-600">
-                  Le texte sera extrait automatiquement et un résumé sera généré
+                <Text style={{ fontSize: 14, color: '#B07820', lineHeight: 20 }}>
+                  Le texte sera extrait automatiquement et un resume sera genere
                   par l'IA pour faciliter le suivi.
                 </Text>
               </View>
             </View>
           </View>
+
+          {/* ---- Progress bar during upload ---- */}
+          {uploading && (
+            <View
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: 14,
+                padding: 16,
+                marginBottom: 16,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.04,
+                shadowRadius: 6,
+                elevation: 2,
+              }}
+            >
+              <Text style={{ fontSize: 14, color: '#E8A838', fontWeight: '600', marginBottom: 8 }}>
+                Upload en cours...
+              </Text>
+              <View
+                style={{
+                  height: 6,
+                  backgroundColor: '#EEECEB',
+                  borderRadius: 3,
+                  overflow: 'hidden',
+                }}
+              >
+                <View
+                  style={{
+                    width: '60%',
+                    height: '100%',
+                    backgroundColor: '#E8A838',
+                    borderRadius: 3,
+                  }}
+                />
+              </View>
+            </View>
+          )}
 
           {/* ---- Actions ---- */}
           <View
@@ -516,28 +617,58 @@ const AddSessionNoteScreen = () => {
                 : undefined
             }
           >
-            {/* Bouton principal */}
+            {/* Main button */}
             <View style={isDesktop ? { minWidth: 200 } : undefined}>
-              <Button
-                title="Uploader la note"
+              <TouchableOpacity
                 onPress={handleUpload}
-                loading={uploading}
-                disabled={!selectedFile}
-                size="large"
-                className={isDesktop ? '' : 'mb-3'}
-                icon={
-                  !uploading ? (
+                disabled={!selectedFile || uploading}
+                activeOpacity={0.8}
+                style={{
+                  backgroundColor: selectedFile && !uploading ? '#E8A838' : '#C8C4C0',
+                  borderRadius: 14,
+                  paddingVertical: 16,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: isDesktop ? 0 : 12,
+                  opacity: uploading ? 0.6 : 1,
+                  shadowColor: selectedFile ? '#E8A838' : 'transparent',
+                  shadowOffset: { width: 0, height: 3 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 8,
+                  elevation: selectedFile ? 3 : 0,
+                }}
+              >
+                {uploading ? (
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Ionicons name="hourglass-outline" size={18} color="#FFFFFF" />
+                    <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 16, marginLeft: 8 }}>
+                      Upload...
+                    </Text>
+                  </View>
+                ) : (
+                  <>
                     <Ionicons
                       name="cloud-upload-outline"
                       size={20}
-                      color={selectedFile ? 'white' : '#9ca3af'}
+                      color={selectedFile ? '#FFFFFF' : '#A0A0A0'}
                     />
-                  ) : undefined
-                }
-              />
+                    <Text
+                      style={{
+                        color: selectedFile ? '#FFFFFF' : '#A0A0A0',
+                        fontWeight: '600',
+                        fontSize: 16,
+                        marginLeft: 8,
+                      }}
+                    >
+                      Uploader la note
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
             </View>
 
-            {/* Boutons secondaires */}
+            {/* Secondary buttons */}
             <View
               style={
                 isDesktop
@@ -555,9 +686,7 @@ const AddSessionNoteScreen = () => {
                 title="Dashboard"
                 onPress={goToDashboard}
                 variant="outline"
-                icon={
-                  <Ionicons name="grid-outline" size={16} color="#0284c7" />
-                }
+                icon={<Ionicons name="grid-outline" size={16} color="#E8A838" />}
               />
             </View>
           </View>

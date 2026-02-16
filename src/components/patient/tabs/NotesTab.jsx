@@ -2,7 +2,6 @@
 import React from 'react';
 import { View, Text, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Card from '../../common/Card';
 import Button from '../../common/Button';
 
 const NotesTab = ({ sessionNotes = [], onAddNote }) => {
@@ -19,41 +18,53 @@ const NotesTab = ({ sessionNotes = [], onAddNote }) => {
       />
 
       {safeNotes.length === 0 ? (
-        <Card>
-          <Text className="text-gray-600 text-center">
-            Aucune note de séance
+        <View className="bg-white rounded-xl p-8 items-center border border-surface-200">
+          <View className="w-14 h-14 bg-therapist-50 rounded-full items-center justify-center mb-3">
+            <Ionicons name="document-text-outline" size={28} color="#E8A838" />
+          </View>
+          <Text className="text-text-300 text-center">
+            Aucune note de seance
           </Text>
-        </Card>
+        </View>
       ) : (
         <View className={isWeb ? 'flex-row flex-wrap gap-3' : ''}>
           {safeNotes.map((note) => (
-            <View 
+            <View
               key={note._id}
               className={isWeb ? 'flex-1 min-w-[300px] mb-3' : 'mb-3'}
             >
-              <Card>
-                <View className="flex-row justify-between items-start mb-2">
-                  <Text className="text-base font-semibold text-gray-900">
-                    Séance du {new Date(note.sessionDate).toLocaleDateString('fr-FR')}
+              <View
+                className="bg-white rounded-xl p-5"
+                style={{ borderLeftWidth: 4, borderLeftColor: '#E8A838' }}
+              >
+                <View className="flex-row items-center mb-2">
+                  <View className="w-8 h-8 bg-therapist-50 rounded-full items-center justify-center mr-3">
+                    <Ionicons name="document-text-outline" size={16} color="#E8A838" />
+                  </View>
+                  <Text className="text-base font-semibold text-text-900">
+                    Seance du {new Date(note.sessionDate).toLocaleDateString('fr-FR')}
                   </Text>
                 </View>
-                
+
                 {note.summary && (
-                  <Text className="text-sm text-gray-700 mb-2" numberOfLines={3}>
+                  <Text className="text-sm text-text-500 mb-3 ml-11 leading-5" numberOfLines={3}>
                     {note.summary}
                   </Text>
                 )}
 
                 {note.tags && note.tags.length > 0 && (
-                  <View className="flex-row flex-wrap mt-2">
+                  <View className="flex-row flex-wrap mt-2 ml-11">
                     {note.tags.map((tag, idx) => (
-                      <View key={idx} className="bg-primary-100 px-2 py-1 rounded mr-2 mb-2">
-                        <Text className="text-xs text-primary-700">{tag}</Text>
+                      <View
+                        key={idx}
+                        className="bg-therapist-100 px-3 py-1 rounded-full mr-2 mb-2"
+                      >
+                        <Text className="text-xs text-therapist-600 font-medium">{tag}</Text>
                       </View>
                     ))}
                   </View>
                 )}
-              </Card>
+              </View>
             </View>
           ))}
         </View>

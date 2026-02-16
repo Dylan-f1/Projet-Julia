@@ -40,7 +40,7 @@ const Skeleton = ({
         width,
         height,
         borderRadius,
-        backgroundColor: '#E5E7EB',
+        backgroundColor: '#EEECEB',
         opacity,
       }}
       className={className}
@@ -48,7 +48,7 @@ const Skeleton = ({
   );
 };
 
-// Skeleton pré-configurés
+// Skeleton pre-configured variants
 export const SkeletonText = ({ lines = 3, className = '' }) => (
   <View className={className}>
     {Array.from({ length: lines }).map((_, index) => (
@@ -63,7 +63,7 @@ export const SkeletonText = ({ lines = 3, className = '' }) => (
 );
 
 export const SkeletonCard = ({ className = '' }) => (
-  <View className={`bg-white rounded-xl p-4 ${className}`}>
+  <View className={`bg-surface-50 rounded-2xl p-4 border border-surface-200 ${className}`}>
     <View className="flex-row items-center mb-4">
       <Skeleton width={48} height={48} borderRadius={24} className="mr-3" />
       <View className="flex-1">
@@ -79,7 +79,7 @@ export const SkeletonList = ({ count = 3, className = '' }) => {
   const { width } = useWindowDimensions();
   const isDesktop = width >= 768;
 
-  // Desktop : grille 2 colonnes
+  // Desktop: 2-column grid
   if (isDesktop) {
     return (
       <View
@@ -125,13 +125,13 @@ export const SkeletonAvatar = ({ size = 'medium', className = '' }) => {
 };
 
 export const SkeletonButton = ({ className = '' }) => (
-  <Skeleton width="100%" height={48} borderRadius={8} className={className} />
+  <Skeleton width="100%" height={48} borderRadius={16} className={className} />
 );
 
 export const SkeletonInput = ({ className = '' }) => (
   <View className={className}>
     <Skeleton width="30%" height={14} className="mb-2" />
-    <Skeleton width="100%" height={48} borderRadius={8} />
+    <Skeleton width="100%" height={48} borderRadius={12} />
   </View>
 );
 
@@ -142,7 +142,7 @@ export const SkeletonChart = ({ className = '' }) => {
   const barWidth = isDesktop ? 40 : 30;
 
   return (
-    <View className={`bg-white rounded-xl p-4 ${className}`}>
+    <View className={`bg-surface-50 rounded-2xl p-4 border border-surface-200 ${className}`}>
       <Skeleton width="50%" height={20} className="mb-4" />
       <View
         className="flex-row items-end justify-between"
@@ -162,7 +162,7 @@ export const SkeletonChart = ({ className = '' }) => {
 };
 
 export const SkeletonPatientCard = ({ className = '' }) => (
-  <View className={`bg-white rounded-xl p-4 ${className}`}>
+  <View className={`bg-surface-50 rounded-2xl p-4 border border-surface-200 ${className}`}>
     <View className="flex-row items-start mb-3">
       <SkeletonAvatar size="medium" className="mr-3" />
       <View className="flex-1">
@@ -171,7 +171,7 @@ export const SkeletonPatientCard = ({ className = '' }) => (
       </View>
       <Skeleton width={60} height={24} borderRadius={12} />
     </View>
-    <View className="flex-row justify-between pt-3 border-t border-gray-100">
+    <View className="flex-row justify-between pt-3 border-t border-surface-200">
       <View className="flex-1 mr-2">
         <Skeleton width="60%" height={12} className="mb-1" />
         <Skeleton width="40%" height={16} />
@@ -190,7 +190,7 @@ export const SkeletonMessageBubble = ({ isUser = false, className = '' }) => (
   >
     <View
       className={`max-w-[80%] ${
-        isUser ? 'bg-primary-100' : 'bg-gray-100'
+        isUser ? 'bg-patient-100' : 'bg-surface-100'
       } rounded-2xl p-3`}
     >
       <SkeletonText lines={2} />
@@ -233,7 +233,7 @@ export const SkeletonDashboard = ({ className = '' }) => {
           : undefined
       }
     >
-      {/* Stats cards — 4 colonnes desktop, 2 mobile */}
+      {/* Stats cards */}
       <View
         style={
           isDesktop
@@ -242,13 +242,13 @@ export const SkeletonDashboard = ({ className = '' }) => {
         }
       >
         <View style={{ flex: 1, marginRight: isDesktop ? 0 : 8 }}>
-          <View className="bg-white rounded-xl p-4">
+          <View className="bg-surface-50 rounded-2xl p-4 border border-surface-200">
             <Skeleton width="60%" height={14} className="mb-2" />
             <Skeleton width="40%" height={32} />
           </View>
         </View>
         <View style={{ flex: 1, marginLeft: isDesktop ? 0 : 8 }}>
-          <View className="bg-white rounded-xl p-4">
+          <View className="bg-surface-50 rounded-2xl p-4 border border-surface-200">
             <Skeleton width="60%" height={14} className="mb-2" />
             <Skeleton width="40%" height={32} />
           </View>
@@ -256,13 +256,13 @@ export const SkeletonDashboard = ({ className = '' }) => {
         {isDesktop && (
           <>
             <View style={{ flex: 1 }}>
-              <View className="bg-white rounded-xl p-4">
+              <View className="bg-surface-50 rounded-2xl p-4 border border-surface-200">
                 <Skeleton width="60%" height={14} className="mb-2" />
                 <Skeleton width="40%" height={32} />
               </View>
             </View>
             <View style={{ flex: 1 }}>
-              <View className="bg-white rounded-xl p-4">
+              <View className="bg-surface-50 rounded-2xl p-4 border border-surface-200">
                 <Skeleton width="60%" height={14} className="mb-2" />
                 <Skeleton width="40%" height={32} />
               </View>

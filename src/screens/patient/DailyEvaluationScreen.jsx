@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  ScrollView,
   Alert,
   useWindowDimensions,
+  TouchableOpacity,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,9 +24,30 @@ const DailyEvaluationScreen = ({ navigation }) => {
   const [anxiety, setAnxiety] = useState(null);
   const [sleep, setSleep] = useState(null);
 
+  // Step wizard state: 0=mood, 1=anxiety, 2=sleep, 3=success
+  const [currentStep, setCurrentStep] = useState(0);
+
+  // Animation refs for emoji/pill selection bounce
+  const scaleAnims = useRef([1, 2, 3, 4, 5].map(() => new Animated.Value(1))).current;
+
+  // Animation ref for success checkmark
+  const successScale = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     checkTodayEvaluation();
   }, []);
+
+  // Animate success checkmark when reaching step 3
+  useEffect(() => {
+    if (currentStep === 3) {
+      Animated.spring(successScale, {
+        toValue: 1,
+        friction: 4,
+        tension: 60,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [currentStep]);
 
   const checkTodayEvaluation = async () => {
     setLoading(true);
@@ -38,11 +60,11 @@ const DailyEvaluationScreen = ({ navigation }) => {
   };
 
   const moods = [
-    { value: 1, emoji: '😢', label: 'Très mauvais' },
-    { value: 2, emoji: '😕', label: 'Mauvais' },
-    { value: 3, emoji: '😐', label: 'Neutre' },
-    { value: 4, emoji: '🙂', label: 'Bon' },
-    { value: 5, emoji: '😊', label: 'Très bon' },
+    { value: 1, emoji: '\u{1F622}', label: 'Très mauvais' },
+    { value: 2, emoji: '\u{1F615}', label: 'Mauvais' },
+    { value: 3, emoji: '\u{1F610}', label: 'Neutre' },
+    { value: 4, emoji: '\u{1F642}', label: 'Bon' },
+    { value: 5, emoji: '\u{1F60A}', label: 'Très bon' },
   ];
 
   const anxietyLevels = [
@@ -61,6 +83,58 @@ const DailyEvaluationScreen = ({ navigation }) => {
     { value: 5, label: 'Excellent' },
   ];
 
+  const animateSelection = (index) => {
+    const anim = scaleAnims[index];
+    anim.setValue(1);
+    Animated.spring(anim, {
+      toValue: 1.15,
+      friction: 3,
+      tension: 120,
+      useNativeDriver: true,
+    }).start(() => {
+      Animated.spring(anim, {
+        toValue: 1,
+        friction: 5,
+        tension: 80,
+        useNativeDriver: true,
+      }).start();
+    });
+  };
+
+  const handleMoodSelect = (value, index) => {
+    setMood(value);
+    animateSelection(index);
+  };
+
+  const handleAnxietySelect = (value, index) => {
+    setAnxiety(value);
+    animateSelection(index);
+  };
+
+  const handleSleepSelect = (value, index) => {
+    setSleep(value);
+    animateSelection(index);
+  };
+
+  const handleNext = () => {
+    if (currentStep === 0 && mood === null) {
+      Alert.alert('Attention', 'Veuillez sélectionner votre humeur');
+      return;
+    }
+    if (currentStep === 1 && anxiety === null) {
+      Alert.alert('Attention', 'Veuillez sélectionner votre niveau d\'anxiété');
+      return;
+    }
+    // Reset scale anims for the next step
+    scaleAnims.forEach(a => a.setValue(1));
+    setCurrentStep(prev => prev + 1);
+  };
+
+  const handleBack = () => {
+    scaleAnims.forEach(a => a.setValue(1));
+    setCurrentStep(prev => prev - 1);
+  };
+
   const handleSubmit = async () => {
     if (mood === null || anxiety === null || sleep === null) {
       Alert.alert('Attention', 'Veuillez répondre à toutes les questions');
@@ -76,21 +150,51 @@ const DailyEvaluationScreen = ({ navigation }) => {
     setSubmitting(false);
 
     if (result.success) {
-      Alert.alert(
-        'Merci !',
-        'Votre évaluation quotidienne a été enregistrée.',
-        [{ text: 'OK', onPress: () => navigation.goBack() }]
-      );
+      // Move to success screen
+      setCurrentStep(3);
     } else {
       Alert.alert('Erreur', result.error);
     }
   };
 
+  // Step indicator component
+  const StepIndicator = ({ step, total }) => (
+    <View className="flex-row items-center justify-center mb-3">
+      <Text className="text-sm font-medium mr-3" style={{ color: '#6B6B6B' }}>
+        Étape {step + 1} sur {total}
+      </Text>
+      <View className="flex-row" style={{ gap: 8 }}>
+        {Array.from({ length: total }).map((_, i) => (
+          <View
+            key={i}
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: 5,
+              backgroundColor: i === step ? '#5B9BD5' : '#EEECEB',
+            }}
+          />
+        ))}
+      </View>
+    </View>
+  );
+
   // ---- Loading state ----
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50 justify-center items-center">
-        <Text className="text-gray-500">Chargement...</Text>
+      <SafeAreaView className="flex-1 justify-center items-center" style={{ backgroundColor: '#FAFAFA' }}>
+        <View
+          className="items-center justify-center mb-3"
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: 16,
+            backgroundColor: '#EEF4FB',
+          }}
+        >
+          <Ionicons name="clipboard-outline" size={28} color="#5B9BD5" />
+        </View>
+        <Text className="font-medium text-base" style={{ color: '#6B6B6B' }}>Chargement...</Text>
       </SafeAreaView>
     );
   }
@@ -98,28 +202,30 @@ const DailyEvaluationScreen = ({ navigation }) => {
   // ---- Already completed state ----
   if (alreadyCompleted) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50">
+      <SafeAreaView className="flex-1" style={{ backgroundColor: '#FAFAFA' }}>
         <View
           className="flex-1 justify-center items-center px-6"
           style={isDesktop ? { alignSelf: 'center', maxWidth: 480 } : undefined}
         >
           <View
-            className={`items-center justify-center mb-4 ${
-              isDesktop
-                ? 'w-24 h-24 bg-green-100 rounded-full'
-                : 'w-20 h-20 bg-green-100 rounded-full'
-            }`}
+            className="items-center justify-center mb-5"
+            style={{
+              width: isDesktop ? 96 : 80,
+              height: isDesktop ? 96 : 80,
+              borderRadius: 24,
+              backgroundColor: '#C8F0D6',
+            }}
           >
             <Ionicons
               name="checkmark-circle"
-              size={isDesktop ? 60 : 50}
-              color="#22c55e"
+              size={isDesktop ? 56 : 46}
+              color="#4CAF82"
             />
           </View>
-          <Text className="text-2xl font-bold text-gray-900 mb-3 text-center">
+          <Text className="text-2xl font-bold mb-3 text-center" style={{ color: '#1A1A1A' }}>
             C'est fait !
           </Text>
-          <Text className="text-base text-gray-600 text-center mb-8">
+          <Text className="text-base text-center mb-8 leading-5" style={{ color: '#6B6B6B' }}>
             Vous avez déjà complété votre évaluation quotidienne aujourd'hui.
             Revenez demain !
           </Text>
@@ -133,199 +239,321 @@ const DailyEvaluationScreen = ({ navigation }) => {
     );
   }
 
-  // ---- Main evaluation form ----
-  return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{
-          padding: isDesktop ? 40 : 16,
-          paddingVertical: isDesktop ? 40 : 24,
-          alignItems: isDesktop ? 'center' : undefined,
-        }}
-      >
-        {/* Container centré en desktop */}
-        <View style={isDesktop ? { width: '100%', maxWidth: 600 } : undefined}>
-          {/* ---- Header ---- */}
-          <View className="mb-6">
+  // ========== STEP 3: SUCCESS ==========
+  if (currentStep === 3) {
+    return (
+      <SafeAreaView className="flex-1" style={{ backgroundColor: '#EDFAF2' }}>
+        <View
+          className="flex-1 justify-center items-center px-6"
+          style={isDesktop ? { alignSelf: 'center', maxWidth: 480 } : undefined}
+        >
+          <Animated.View
+            style={{
+              transform: [{ scale: successScale }],
+              width: 100,
+              height: 100,
+              borderRadius: 50,
+              backgroundColor: '#C8F0D6',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 24,
+            }}
+          >
+            <Ionicons name="checkmark-circle" size={64} color="#4CAF82" />
+          </Animated.View>
+
+          <Text className="text-3xl font-bold mb-3 text-center" style={{ color: '#1A1A1A' }}>
+            Merci !
+          </Text>
+          <Text className="text-base text-center mb-8 leading-5" style={{ color: '#6B6B6B' }}>
+            Votre évaluation quotidienne a été enregistrée avec succès.
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.8}
+            className="py-4 px-8"
+            style={{
+              backgroundColor: '#4CAF82',
+              borderRadius: 14,
+            }}
+          >
+            <Text className="text-white font-bold text-base">Retour</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // ========== STEP 0: MOOD ==========
+  if (currentStep === 0) {
+    return (
+      <SafeAreaView className="flex-1" style={{ backgroundColor: '#FAFAFA' }}>
+        <View
+          className="flex-1 px-6"
+          style={isDesktop ? { alignSelf: 'center', maxWidth: 540, width: '100%' } : undefined}
+        >
+          {/* Top bar with back + step indicator */}
+          <View className="pt-6 pb-4">
             {isDesktop && (
-              <View className="flex-row items-center mb-4">
-                <Ionicons
-                  name="arrow-back"
-                  size={22}
-                  color="#64748b"
-                  onPress={() => navigation.goBack()}
-                  style={{ marginRight: 12, cursor: 'pointer' }}
-                />
-                <Text className="text-sm text-gray-500">Retour</Text>
-              </View>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                className="flex-row items-center mb-4"
+              >
+                <Ionicons name="arrow-back" size={20} color="#5B9BD5" style={{ marginRight: 8 }} />
+                <Text className="text-sm font-medium" style={{ color: '#6B6B6B' }}>Retour</Text>
+              </TouchableOpacity>
             )}
-            <Text className="text-2xl font-bold text-gray-900 mb-2">
-              Évaluation quotidienne
-            </Text>
-            <Text className="text-base text-gray-600">
-              Prenez quelques instants pour évaluer votre état aujourd'hui
-            </Text>
+            <StepIndicator step={0} total={3} />
           </View>
 
-          {/* ---- Humeur ---- */}
-          <Card
-            className="mb-6"
-            style={
-              isDesktop
-                ? {
-                    backgroundColor: '#fff',
-                    borderRadius: 16,
-                    borderWidth: 1,
-                    borderColor: '#e5e7eb',
-                    padding: 32,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 6,
-                    elevation: 2,
-                  }
-                : undefined
-            }
-          >
-            <Text className="text-lg font-semibold text-gray-900 mb-4">
+          {/* Content */}
+          <View className="flex-1 justify-center items-center">
+            <Text className="text-2xl font-bold text-center mb-10" style={{ color: '#1A1A1A' }}>
               Comment vous sentez-vous aujourd'hui ?
             </Text>
-            <View className="flex-row justify-between">
-              {moods.map((item) => (
-                <View key={item.value} className="items-center">
-                  <Button
-                    title={item.emoji}
-                    onPress={() => setMood(item.value)}
-                    variant={mood === item.value ? 'primary' : 'outline'}
-                    size="large"
-                    className="w-14 h-14 rounded-full mb-2"
-                  />
-                  <Text className="text-xs text-gray-600 text-center">
-                    {item.label}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </Card>
 
-          {/* ---- Anxiété & Sommeil : côte à côte en desktop ---- */}
-          <View
-            style={
-              isDesktop
-                ? { flexDirection: 'row', gap: 16, marginBottom: 24 }
-                : undefined
-            }
-          >
-            {/* Anxiété */}
-            <View style={isDesktop ? { flex: 1 } : undefined}>
-              <Card
-                className={isDesktop ? '' : 'mb-6'}
-                style={
-                  isDesktop
-                    ? {
-                        backgroundColor: '#fff',
-                        borderRadius: 16,
-                        borderWidth: 1,
-                        borderColor: '#e5e7eb',
-                        padding: 32,
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 1 },
-                        shadowOpacity: 0.05,
-                        shadowRadius: 6,
-                        elevation: 2,
-                        flex: 1,
-                      }
-                    : undefined
-                }
-              >
-                <Text className="text-lg font-semibold text-gray-900 mb-4">
-                  Niveau d'anxiété
-                </Text>
-                <View className="space-y-2">
-                  {anxietyLevels.map((item) => (
-                    <Button
-                      key={item.value}
-                      title={item.label}
-                      onPress={() => setAnxiety(item.value)}
-                      variant={anxiety === item.value ? 'primary' : 'outline'}
-                      className="mb-2"
-                    />
-                  ))}
-                </View>
-              </Card>
-            </View>
-
-            {/* Sommeil */}
-            <View style={isDesktop ? { flex: 1 } : undefined}>
-              <Card
-                className={isDesktop ? '' : 'mb-6'}
-                style={
-                  isDesktop
-                    ? {
-                        backgroundColor: '#fff',
-                        borderRadius: 16,
-                        borderWidth: 1,
-                        borderColor: '#e5e7eb',
-                        padding: 32,
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 1 },
-                        shadowOpacity: 0.05,
-                        shadowRadius: 6,
-                        elevation: 2,
-                        flex: 1,
-                      }
-                    : undefined
-                }
-              >
-                <Text className="text-lg font-semibold text-gray-900 mb-4">
-                  Qualité du sommeil
-                </Text>
-                <View className="space-y-2">
-                  {sleepQualities.map((item) => (
-                    <Button
-                      key={item.value}
-                      title={item.label}
-                      onPress={() => setSleep(item.value)}
-                      variant={sleep === item.value ? 'primary' : 'outline'}
-                      className="mb-2"
-                    />
-                  ))}
-                </View>
-              </Card>
+            <View className="flex-row justify-center" style={{ gap: 16 }}>
+              {moods.map((item, index) => {
+                const isSelected = mood === item.value;
+                return (
+                  <TouchableOpacity
+                    key={item.value}
+                    onPress={() => handleMoodSelect(item.value, index)}
+                    activeOpacity={0.7}
+                    className="items-center"
+                  >
+                    <Animated.View
+                      style={{
+                        transform: [{ scale: scaleAnims[index] }],
+                        width: 64,
+                        height: 64,
+                        borderRadius: 32,
+                        backgroundColor: isSelected ? '#D4E4F5' : '#F5F5F4',
+                        borderWidth: isSelected ? 2 : 0,
+                        borderColor: isSelected ? '#5B9BD5' : 'transparent',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Text style={{ fontSize: 28 }}>{item.emoji}</Text>
+                    </Animated.View>
+                    <Text
+                      className="text-xs mt-2 text-center"
+                      style={{
+                        color: isSelected ? '#3D85C6' : '#6B6B6B',
+                        fontWeight: isSelected ? '600' : '400',
+                        maxWidth: 64,
+                      }}
+                    >
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
 
-          {/* ---- Submit ---- */}
-          <View
-            style={
-              isDesktop
-                ? { flexDirection: 'row-reverse', gap: 12 }
-                : undefined
-            }
-          >
-            <View style={isDesktop ? { minWidth: 200 } : { marginBottom: 24 }}>
-              <Button
-                title="Enregistrer"
-                onPress={handleSubmit}
-                loading={submitting}
-                size="large"
-              />
-            </View>
-            {isDesktop && (
-              <View style={{ minWidth: 120 }}>
-                <Button
-                  title="Annuler"
-                  onPress={() => navigation.goBack()}
-                  variant="outline"
-                />
-              </View>
-            )}
+          {/* Bottom button */}
+          <View className="pb-8 pt-4">
+            <TouchableOpacity
+              onPress={handleNext}
+              activeOpacity={0.8}
+              className="py-4 items-center justify-center"
+              style={{
+                backgroundColor: '#5B9BD5',
+                borderRadius: 14,
+                opacity: mood === null ? 0.5 : 1,
+              }}
+            >
+              <Text className="text-white font-bold text-lg">Suivant</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+      </SafeAreaView>
+    );
+  }
+
+  // ========== STEP 1: ANXIETY ==========
+  if (currentStep === 1) {
+    return (
+      <SafeAreaView className="flex-1" style={{ backgroundColor: '#FAFAFA' }}>
+        <View
+          className="flex-1 px-6"
+          style={isDesktop ? { alignSelf: 'center', maxWidth: 540, width: '100%' } : undefined}
+        >
+          {/* Top bar */}
+          <View className="pt-6 pb-4">
+            <StepIndicator step={1} total={3} />
+          </View>
+
+          {/* Content */}
+          <View className="flex-1 justify-center">
+            <Text className="text-2xl font-bold text-center mb-10" style={{ color: '#1A1A1A' }}>
+              Quel est votre niveau d'anxiété ?
+            </Text>
+
+            <View style={{ gap: 12 }}>
+              {anxietyLevels.map((item, index) => {
+                const isSelected = anxiety === item.value;
+                return (
+                  <TouchableOpacity
+                    key={item.value}
+                    onPress={() => handleAnxietySelect(item.value, index)}
+                    activeOpacity={0.7}
+                  >
+                    <Animated.View
+                      style={{
+                        transform: [{ scale: scaleAnims[index] }],
+                        paddingVertical: 16,
+                        paddingHorizontal: 20,
+                        borderRadius: 14,
+                        backgroundColor: isSelected ? '#D4E4F5' : '#FFFFFF',
+                        borderWidth: isSelected ? 2 : 1,
+                        borderColor: isSelected ? '#5B9BD5' : '#EEECEB',
+                      }}
+                    >
+                      <Text
+                        className="text-center text-base"
+                        style={{
+                          color: isSelected ? '#3D85C6' : '#404040',
+                          fontWeight: isSelected ? '600' : '400',
+                        }}
+                      >
+                        {item.label}
+                      </Text>
+                    </Animated.View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Bottom buttons */}
+          <View className="pb-8 pt-4 flex-row" style={{ gap: 12 }}>
+            <TouchableOpacity
+              onPress={handleBack}
+              activeOpacity={0.7}
+              className="py-4 items-center justify-center flex-1"
+              style={{
+                backgroundColor: 'transparent',
+                borderRadius: 14,
+                borderWidth: 1.5,
+                borderColor: '#EEECEB',
+              }}
+            >
+              <Text className="font-semibold text-base" style={{ color: '#6B6B6B' }}>Précédent</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleNext}
+              activeOpacity={0.8}
+              className="py-4 items-center justify-center flex-1"
+              style={{
+                backgroundColor: '#5B9BD5',
+                borderRadius: 14,
+                opacity: anxiety === null ? 0.5 : 1,
+              }}
+            >
+              <Text className="text-white font-bold text-base">Suivant</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // ========== STEP 2: SLEEP ==========
+  if (currentStep === 2) {
+    return (
+      <SafeAreaView className="flex-1" style={{ backgroundColor: '#FAFAFA' }}>
+        <View
+          className="flex-1 px-6"
+          style={isDesktop ? { alignSelf: 'center', maxWidth: 540, width: '100%' } : undefined}
+        >
+          {/* Top bar */}
+          <View className="pt-6 pb-4">
+            <StepIndicator step={2} total={3} />
+          </View>
+
+          {/* Content */}
+          <View className="flex-1 justify-center">
+            <Text className="text-2xl font-bold text-center mb-10" style={{ color: '#1A1A1A' }}>
+              Comment avez-vous dormi ?
+            </Text>
+
+            <View style={{ gap: 12 }}>
+              {sleepQualities.map((item, index) => {
+                const isSelected = sleep === item.value;
+                return (
+                  <TouchableOpacity
+                    key={item.value}
+                    onPress={() => handleSleepSelect(item.value, index)}
+                    activeOpacity={0.7}
+                  >
+                    <Animated.View
+                      style={{
+                        transform: [{ scale: scaleAnims[index] }],
+                        paddingVertical: 16,
+                        paddingHorizontal: 20,
+                        borderRadius: 14,
+                        backgroundColor: isSelected ? '#D4E4F5' : '#FFFFFF',
+                        borderWidth: isSelected ? 2 : 1,
+                        borderColor: isSelected ? '#5B9BD5' : '#EEECEB',
+                      }}
+                    >
+                      <Text
+                        className="text-center text-base"
+                        style={{
+                          color: isSelected ? '#3D85C6' : '#404040',
+                          fontWeight: isSelected ? '600' : '400',
+                        }}
+                      >
+                        {item.label}
+                      </Text>
+                    </Animated.View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Bottom buttons */}
+          <View className="pb-8 pt-4 flex-row" style={{ gap: 12 }}>
+            <TouchableOpacity
+              onPress={handleBack}
+              activeOpacity={0.7}
+              className="py-4 items-center justify-center flex-1"
+              style={{
+                backgroundColor: 'transparent',
+                borderRadius: 14,
+                borderWidth: 1.5,
+                borderColor: '#EEECEB',
+              }}
+            >
+              <Text className="font-semibold text-base" style={{ color: '#6B6B6B' }}>Précédent</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleSubmit}
+              activeOpacity={0.8}
+              disabled={submitting}
+              className="py-4 items-center justify-center flex-1"
+              style={{
+                backgroundColor: '#5B9BD5',
+                borderRadius: 14,
+                opacity: submitting || sleep === null ? 0.5 : 1,
+              }}
+            >
+              <Text className="text-white font-bold text-base">
+                {submitting ? 'Enregistrement...' : 'Enregistrer'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return null;
 };
 
 export default DailyEvaluationScreen;

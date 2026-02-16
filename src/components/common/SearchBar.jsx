@@ -31,29 +31,29 @@ const SearchBar = ({
     if (onSearch) onSearch(searchValue);
   };
 
-  const borderColor = isFocused ? 'border-primary-600' : 'border-gray-300';
+  const borderColor = isFocused ? 'border-patient-300' : 'border-surface-200';
 
   return (
     <View
-      className={`flex-row items-center bg-white border rounded-lg ${borderColor} ${className}`}
+      className={`flex-row items-center bg-surface-50 border rounded-2xl ${borderColor} ${isFocused ? 'shadow-sm' : ''} ${className}`}
       style={{
         paddingHorizontal: isDesktop ? 16 : 12,
         paddingVertical: isDesktop ? 10 : 8,
       }}
     >
-      <Ionicons name="search-outline" size={20} color="#6B7280" />
+      <Ionicons name="search-outline" size={20} color="#5B9BD5" />
 
       <TextInput
         value={searchValue}
         onChangeText={handleChange}
         placeholder={placeholder}
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#A0A0A0"
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onSubmitEditing={handleSearch}
         autoFocus={autoFocus}
         returnKeyType="search"
-        className="flex-1 mx-3 text-gray-900 text-base"
+        className="flex-1 mx-3 text-text-900 text-base"
         style={isDesktop ? { outlineStyle: 'none' } : undefined}
       />
 
@@ -62,7 +62,7 @@ const SearchBar = ({
           onPress={handleClear}
           style={isDesktop ? { cursor: 'pointer' } : undefined}
         >
-          <Ionicons name="close-circle" size={20} color="#9CA3AF" />
+          <Ionicons name="close-circle" size={20} color="#A0A0A0" />
         </TouchableOpacity>
       )}
     </View>

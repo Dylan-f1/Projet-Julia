@@ -3,10 +3,10 @@ import { View, Text, Modal as RNModal, TouchableOpacity, ScrollView } from 'reac
 import { Ionicons } from '@expo/vector-icons';
 import Button from './Button';
 
-const Modal = ({ 
-  visible, 
-  onClose, 
-  title, 
+const Modal = ({
+  visible,
+  onClose,
+  title,
   children,
   footer,
   size = 'medium',
@@ -26,21 +26,30 @@ const Modal = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View className="flex-1 bg-black/50 justify-center items-center p-4">
-        <View className={`bg-white rounded-xl ${sizeClasses[size]} max-h-[90%]`}>
+      <View className="flex-1 bg-black/30 justify-center items-center p-4">
+        <View
+          className={`bg-white rounded-3xl ${sizeClasses[size]} max-h-[90%]`}
+          style={{
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.15,
+            shadowRadius: 24,
+            elevation: 10,
+          }}
+        >
           {/* Header */}
-          <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-200">
+          <View className="flex-row items-center justify-between px-6 py-4 border-b border-surface-200">
             {title && (
-              <Text className="text-xl font-bold text-gray-900 flex-1">
+              <Text className="text-xl font-bold text-text-900 flex-1">
                 {title}
               </Text>
             )}
             {showCloseButton && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={onClose}
-                className="w-8 h-8 items-center justify-center"
+                className="w-8 h-8 items-center justify-center rounded-full bg-surface-100"
               >
-                <Ionicons name="close" size={24} color="#6B7280" />
+                <Ionicons name="close" size={20} color="#6B6B6B" />
               </TouchableOpacity>
             )}
           </View>
@@ -52,7 +61,7 @@ const Modal = ({
 
           {/* Footer */}
           {footer && (
-            <View className="px-6 py-4 border-t border-gray-200">
+            <View className="px-6 py-4 border-t border-surface-200">
               {footer}
             </View>
           )}

@@ -3,113 +3,128 @@ import { View, Text, ScrollView, Platform, TouchableOpacity } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import Card from '../../src/components/common/Card';
 
 export default function DataPolicy() {
   const router = useRouter();
   const isWeb = Platform.OS === 'web';
 
+  const SectionCard = ({ title, number, children }) => (
+    <View
+      className="mb-4 rounded-xl p-5"
+      style={{
+        backgroundColor: '#FFFFFF',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.04,
+        shadowRadius: 4,
+        elevation: 2,
+      }}
+    >
+      <Text className="text-lg font-bold mb-3" style={{ color: '#1A1A1A' }}>
+        {number}. {title}
+      </Text>
+      <Text className="leading-6" style={{ color: '#404040' }}>
+        {children}
+      </Text>
+    </View>
+  );
+
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-surface-50">
       <View className={`flex-1 ${isWeb ? 'max-w-4xl mx-auto w-full' : ''}`}>
         {/* Header */}
-        <View className="bg-white border-b border-gray-200 px-6 py-4">
+        <View
+          className="px-6 py-4"
+          style={{
+            backgroundColor: '#FAFAFA',
+            borderBottomWidth: 1,
+            borderBottomColor: '#EEECEB',
+          }}
+        >
           <View className="flex-row items-center">
-            <TouchableOpacity onPress={() => router.back()} className="mr-4">
-              <Ionicons name="arrow-back" size={24} color="#0284c7" />
+            <TouchableOpacity
+              onPress={() => router.back()}
+              className="mr-4 w-10 h-10 rounded-xl items-center justify-center"
+              style={{ backgroundColor: '#EEF4FB' }}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="arrow-back" size={22} color="#5B9BD5" />
             </TouchableOpacity>
-            <Text className="text-xl font-bold text-gray-900">
-              Politique de confidentialité
+            <Text className="text-xl font-bold" style={{ color: '#1A1A1A' }}>
+              Politique de confidentialite
             </Text>
           </View>
         </View>
 
-        <ScrollView 
+        <ScrollView
           className="flex-1"
           contentContainerStyle={{ padding: isWeb ? 32 : 16 }}
         >
-          <Card className="mb-4">
-            <Text className="text-sm text-gray-500 mb-6">
-              Dernière mise à jour : {new Date().toLocaleDateString('fr-FR')}
+          {/* Date card */}
+          <View
+            className="mb-4 rounded-xl p-4"
+            style={{
+              backgroundColor: '#FFFFFF',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.04,
+              shadowRadius: 4,
+              elevation: 2,
+            }}
+          >
+            <Text className="text-sm" style={{ color: '#6B6B6B' }}>
+              Derniere mise a jour : {new Date().toLocaleDateString('fr-FR')}
             </Text>
+          </View>
 
-            <Text className="text-lg font-bold text-gray-900 mb-3">1. Données collectées</Text>
-            <Text className="text-gray-700 leading-6 mb-4">
-              Julia App collecte les données suivantes :{'\n\n'}
-              • Vos conversations avec Julia (assistant IA){'\n'}
-              • Vos données de suivi d'humeur et bien-être{'\n'}
-              • Les notes de session partagées par votre thérapeute{'\n'}
-              • Votre adresse email (uniquement pour l'authentification){'\n'}
-              • Métadonnées techniques (logs de connexion, adresse IP)
-            </Text>
+          <SectionCard title="Donnees collectees" number="1">
+            {`Julia App collecte les donnees suivantes :\n\n\u2022 Vos conversations avec Julia (assistant IA)\n\u2022 Vos donnees de suivi d'humeur et bien-etre\n\u2022 Les notes de session partagees par votre therapeute\n\u2022 Votre adresse email (uniquement pour l'authentification)\n\u2022 Metadonnees techniques (logs de connexion, adresse IP)`}
+          </SectionCard>
 
-            <Text className="text-lg font-bold text-gray-900 mb-3">2. Utilisation des données</Text>
-            <Text className="text-gray-700 leading-6 mb-4">
-              Vos données sont utilisées exclusivement pour :{'\n\n'}
-              • Fournir un support thérapeutique via l'assistant IA{'\n'}
-              • Permettre le suivi et l'analyse par votre thérapeute{'\n'}
-              • Améliorer la qualité de nos services{'\n'}
-              • Respecter nos obligations légales{'\n\n'}
-              Nous ne vendons JAMAIS vos données à des tiers.
-            </Text>
+          <SectionCard title="Utilisation des donnees" number="2">
+            {`Vos donnees sont utilisees exclusivement pour :\n\n\u2022 Fournir un support therapeutique via l'assistant IA\n\u2022 Permettre le suivi et l'analyse par votre therapeute\n\u2022 Ameliorer la qualite de nos services\n\u2022 Respecter nos obligations legales\n\nNous ne vendons JAMAIS vos donnees a des tiers.`}
+          </SectionCard>
 
-            <Text className="text-lg font-bold text-gray-900 mb-3">3. Partage des données</Text>
-            <Text className="text-gray-700 leading-6 mb-4">
-              Vos données thérapeutiques sont partagées uniquement avec :{'\n\n'}
-              • Votre thérapeute assigné{'\n'}
-              • Les services d'IA (Google Gemini) pour générer les réponses{'\n'}
-              • Les services d'infrastructure (AWS, MongoDB) avec chiffrement{'\n\n'}
-              Aucun partage à des fins commerciales ou publicitaires.
-            </Text>
+          <SectionCard title="Partage des donnees" number="3">
+            {`Vos donnees therapeutiques sont partagees uniquement avec :\n\n\u2022 Votre therapeute assigne\n\u2022 Les services d'IA (Google Gemini) pour generer les reponses\n\u2022 Les services d'infrastructure (AWS, MongoDB) avec chiffrement\n\nAucun partage a des fins commerciales ou publicitaires.`}
+          </SectionCard>
 
-            <Text className="text-lg font-bold text-gray-900 mb-3">4. Vos droits (RGPD)</Text>
-            <Text className="text-gray-700 leading-6 mb-4">
-              Conformément au RGPD, vous disposez des droits suivants :{'\n\n'}
-              • Droit d'accès à vos données personnelles{'\n'}
-              • Droit de rectification de vos données{'\n'}
-              • Droit à l'effacement ("droit à l'oubli"){'\n'}
-              • Droit à la portabilité de vos données{'\n'}
-              • Droit de retirer votre consentement{'\n'}
-              • Droit d'opposition au traitement{'\n\n'}
-              Pour exercer ces droits, contactez-nous à privacy@juliaapp.com
-            </Text>
+          <SectionCard title="Vos droits (RGPD)" number="4">
+            {`Conformement au RGPD, vous disposez des droits suivants :\n\n\u2022 Droit d'acces a vos donnees personnelles\n\u2022 Droit de rectification de vos donnees\n\u2022 Droit a l'effacement ("droit a l'oubli")\n\u2022 Droit a la portabilite de vos donnees\n\u2022 Droit de retirer votre consentement\n\u2022 Droit d'opposition au traitement\n\nPour exercer ces droits, contactez-nous a privacy@juliaapp.com`}
+          </SectionCard>
 
-            <Text className="text-lg font-bold text-gray-900 mb-3">5. Sécurité</Text>
-            <Text className="text-gray-700 leading-6 mb-4">
-              Nous mettons en œuvre des mesures de sécurité avancées :{'\n\n'}
-              • Chiffrement end-to-end des conversations{'\n'}
-              • Stockage sécurisé avec AWS S3 et MongoDB{'\n'}
-              • Authentification sécurisée par magic link{'\n'}
-              • Accès restreint au personnel autorisé uniquement{'\n'}
-              • Audits de sécurité réguliers{'\n'}
-              • Conformité aux normes médicales (HIPAA)
-            </Text>
+          <SectionCard title="Securite" number="5">
+            {`Nous mettons en oeuvre des mesures de securite avancees :\n\n\u2022 Chiffrement end-to-end des conversations\n\u2022 Stockage securise avec AWS S3 et MongoDB\n\u2022 Authentification securisee par magic link\n\u2022 Acces restreint au personnel autorise uniquement\n\u2022 Audits de securite reguliers\n\u2022 Conformite aux normes medicales (HIPAA)`}
+          </SectionCard>
 
-            <Text className="text-lg font-bold text-gray-900 mb-3">6. Conservation des données</Text>
-            <Text className="text-gray-700 leading-6 mb-4">
-              • Les conversations sont conservées pendant la durée de votre accompagnement{'\n'}
-              • Les données sont supprimées 30 jours après la demande de suppression{'\n'}
-              • Certaines données peuvent être conservées pour obligations légales
-            </Text>
+          <SectionCard title="Conservation des donnees" number="6">
+            {`\u2022 Les conversations sont conservees pendant la duree de votre accompagnement\n\u2022 Les donnees sont supprimees 30 jours apres la demande de suppression\n\u2022 Certaines donnees peuvent etre conservees pour obligations legales`}
+          </SectionCard>
 
-            <Text className="text-lg font-bold text-gray-900 mb-3">7. Cookies et tracking</Text>
-            <Text className="text-gray-700 leading-6 mb-4">
-              Julia App n'utilise pas de cookies de tracking publicitaire. Nous utilisons uniquement des cookies techniques nécessaires au fonctionnement de l'application.
-            </Text>
+          <SectionCard title="Cookies et tracking" number="7">
+            {`Julia App n'utilise pas de cookies de tracking publicitaire. Nous utilisons uniquement des cookies techniques necessaires au fonctionnement de l'application.`}
+          </SectionCard>
 
-            <Text className="text-lg font-bold text-gray-900 mb-3">8. Contact</Text>
-            <Text className="text-gray-700 leading-6 mb-6">
-              Pour toute question concernant vos données :{'\n\n'}
-              Email : privacy@juliaapp.com{'\n'}
-              DPO : dpo@juliaapp.com
-            </Text>
+          <SectionCard title="Contact" number="8">
+            {`Pour toute question concernant vos donnees :\n\nEmail : privacy@juliaapp.com\nDPO : dpo@juliaapp.com`}
+          </SectionCard>
 
-            <View className="bg-blue-50 p-4 rounded-lg">
-              <Text className="text-sm text-blue-800">
-                💡 Vous pouvez exporter ou supprimer vos données à tout moment depuis votre profil.
+          {/* Info card */}
+          <View
+            className="mb-4 rounded-xl p-4"
+            style={{
+              backgroundColor: '#EEF4FB',
+              borderWidth: 1,
+              borderColor: '#A9C9EB',
+            }}
+          >
+            <View className="flex-row items-start">
+              <Ionicons name="bulb-outline" size={20} color="#5B9BD5" />
+              <Text className="text-sm flex-1 ml-3" style={{ color: '#404040' }}>
+                Vous pouvez exporter ou supprimer vos donnees a tout moment depuis votre profil.
               </Text>
             </View>
-          </Card>
+          </View>
         </ScrollView>
       </View>
     </SafeAreaView>

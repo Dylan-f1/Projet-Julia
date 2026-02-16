@@ -2,79 +2,79 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const Alert = ({ 
-  type = 'info', 
-  title, 
-  message, 
+const Alert = ({
+  type = 'info',
+  title,
+  message,
   onClose,
   icon = true,
-  className = '' 
+  className = '',
 }) => {
   const typeConfig = {
     info: {
-      bg: 'bg-blue-50',
-      border: 'border-blue-200',
-      iconColor: '#0284c7',
+      bg: 'bg-patient-50',
+      border: 'border-patient-200',
+      iconColor: '#5B9BD5',
       iconName: 'information-circle',
-      titleColor: 'text-blue-700',
-      messageColor: 'text-blue-600',
+      titleColor: 'text-patient-600',
+      messageColor: 'text-patient-500',
     },
     success: {
-      bg: 'bg-green-50',
-      border: 'border-green-200',
-      iconColor: '#22c55e',
+      bg: 'bg-success-50',
+      border: 'border-success-100',
+      iconColor: '#4CAF82',
       iconName: 'checkmark-circle',
-      titleColor: 'text-green-700',
-      messageColor: 'text-green-600',
+      titleColor: 'text-success-600',
+      messageColor: 'text-success-400',
     },
     warning: {
-      bg: 'bg-yellow-50',
-      border: 'border-yellow-200',
-      iconColor: '#f59e0b',
+      bg: 'bg-therapist-50',
+      border: 'border-therapist-200',
+      iconColor: '#E8A838',
       iconName: 'alert-circle',
-      titleColor: 'text-yellow-700',
-      messageColor: 'text-yellow-600',
+      titleColor: 'text-therapist-600',
+      messageColor: 'text-therapist-500',
     },
     danger: {
-      bg: 'bg-red-50',
-      border: 'border-red-200',
-      iconColor: '#ef4444',
+      bg: 'bg-danger-50',
+      border: 'border-danger-100',
+      iconColor: '#E05B5B',
       iconName: 'warning',
-      titleColor: 'text-red-700',
-      messageColor: 'text-red-600',
+      titleColor: 'text-danger-600',
+      messageColor: 'text-danger-400',
     },
   };
 
   const config = typeConfig[type];
 
   return (
-    <View className={`${config.bg} border ${config.border} rounded-lg p-4 ${className}`}>
+    <View className={`${config.bg} border ${config.border} rounded-2xl p-4 ${className}`}>
       <View className="flex-row items-start">
         {icon && (
-          <Ionicons 
-            name={config.iconName} 
-            size={20} 
-            color={config.iconColor} 
+          <Ionicons
+            name={config.iconName}
+            size={20}
+            color={config.iconColor}
           />
         )}
-        
+
         <View className="flex-1 ml-3">
           {title && (
             <Text className={`${config.titleColor} font-semibold mb-1`}>
               {title}
             </Text>
           )}
-          
+
           {message && (
-            <Text className={`${config.messageColor} text-sm`}>
+            <Text className={`${config.messageColor} text-sm leading-5`}>
               {message}
             </Text>
           )}
         </View>
 
         {onClose && (
-          <TouchableOpacity onPress={onClose} className="ml-2">
-            <Ionicons name="close" size={20} color={config.iconColor} />
+          <TouchableOpacity onPress={onClose} className="ml-2 p-1 rounded-full">
+            <Ionicons name="close" size={18} color={config.iconColor} />
           </TouchableOpacity>
         )}
       </View>

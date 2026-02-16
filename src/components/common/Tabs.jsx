@@ -35,7 +35,7 @@ const Tabs = ({
             className={`px-4 py-2 rounded-full ${
               isDesktop ? '' : 'mr-2'
             } ${
-              activeTab === tab.id ? 'bg-primary-600' : 'bg-gray-100'
+              activeTab === tab.id ? 'bg-patient-400 shadow-sm' : 'bg-surface-100'
             }`}
             style={isDesktop ? { cursor: 'pointer' } : undefined}
           >
@@ -43,7 +43,7 @@ const Tabs = ({
               {tab.icon && <View className="mr-2">{tab.icon}</View>}
               <Text
                 className={`font-medium ${
-                  activeTab === tab.id ? 'text-white' : 'text-gray-700'
+                  activeTab === tab.id ? 'text-white' : 'text-text-500'
                 }`}
               >
                 {tab.label}
@@ -56,7 +56,7 @@ const Tabs = ({
   }
 
   return (
-    <View className={`flex-row border-b border-gray-200 ${className}`}>
+    <View className={`flex-row border-b border-surface-200 ${className}`}>
       {tabs.map((tab) => (
         <TouchableOpacity
           key={tab.id}
@@ -64,7 +64,7 @@ const Tabs = ({
           activeOpacity={isDesktop ? 0.8 : 0.6}
           className={`flex-1 border-b-2 ${
             activeTab === tab.id
-              ? 'border-primary-600'
+              ? 'border-patient-400'
               : 'border-transparent'
           }`}
           style={
@@ -87,8 +87,8 @@ const Tabs = ({
             <Text
               className={`text-sm font-medium ${
                 activeTab === tab.id
-                  ? 'text-primary-600'
-                  : 'text-gray-600'
+                  ? 'text-patient-400'
+                  : 'text-text-300'
               }`}
             >
               {tab.label}

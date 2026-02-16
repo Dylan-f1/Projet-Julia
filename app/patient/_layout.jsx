@@ -8,20 +8,25 @@ export default function PatientLayout() {
     <ChatProvider>
       <Tabs
         screenOptions={{
-          headerShown: false,  
-          tabBarActiveTintColor: '#0284c7',
-          tabBarInactiveTintColor: '#9CA3AF',
+          headerShown: false,
+          tabBarActiveTintColor: '#5B9BD5',
+          tabBarInactiveTintColor: '#A0A0A0',
           tabBarStyle: {
-            backgroundColor: 'white',
-            borderTopWidth: 1,
-            borderTopColor: '#E5E7EB',
-            paddingBottom: 5,
-            paddingTop: 5,
-            height: 60,
+            backgroundColor: '#FFFFFF',
+            borderTopWidth: 0,
+            paddingBottom: 6,
+            paddingTop: 6,
+            height: 64,
+            elevation: 8,
+            shadowColor: '#000000',
+            shadowOffset: { width: 0, height: -3 },
+            shadowOpacity: 0.06,
+            shadowRadius: 12,
           },
           tabBarLabelStyle: {
-            fontSize: 12,
+            fontSize: 11,
             fontWeight: '600',
+            letterSpacing: 0.2,
           },
         }}
       >
@@ -48,7 +53,7 @@ export default function PatientLayout() {
         <Tabs.Screen
           name="evaluation"
           options={{
-            title: 'Évaluation',
+            title: 'Bilan',
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="analytics" size={size} color={color} />
             ),

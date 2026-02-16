@@ -5,6 +5,7 @@ export default function AuthLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
+        contentStyle: { backgroundColor: '#FAFAFA' },
       }}
     >
       <Stack.Screen name="verify-magic-link" />

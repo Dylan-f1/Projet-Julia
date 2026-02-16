@@ -2,12 +2,12 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const Checkbox = ({ 
-  label, 
-  checked, 
+const Checkbox = ({
+  label,
+  checked,
   onChange,
   disabled = false,
-  className = '' 
+  className = '',
 }) => {
   return (
     <TouchableOpacity
@@ -17,12 +17,12 @@ const Checkbox = ({
       activeOpacity={0.7}
     >
       <View
-        className={`w-6 h-6 rounded border-2 items-center justify-center mr-3 ${
+        className={`w-6 h-6 rounded-md border-2 items-center justify-center mr-3 ${
           checked
-            ? 'bg-primary-600 border-primary-600'
+            ? 'bg-patient-400 border-patient-400'
             : disabled
-            ? 'bg-gray-100 border-gray-300'
-            : 'bg-white border-gray-300'
+            ? 'bg-surface-100 border-surface-300'
+            : 'bg-white border-surface-300'
         }`}
       >
         {checked && (
@@ -33,7 +33,7 @@ const Checkbox = ({
       {label && (
         <Text
           className={`flex-1 ${
-            disabled ? 'text-gray-400' : 'text-gray-900'
+            disabled ? 'text-text-300' : 'text-text-700'
           }`}
         >
           {label}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Dimensions } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { LineChart } from 'react-native-chart-kit';
 
 const EvaluationChart = ({ evaluations, type = 'mood' }) => {
@@ -8,46 +9,67 @@ const EvaluationChart = ({ evaluations, type = 'mood' }) => {
   if (!evaluations || evaluations.length === 0) {
     return (
       <View className="items-center justify-center py-8">
-        <Text className="text-gray-500">Pas de données à afficher</Text>
+        <View className="w-14 h-14 bg-patient-50 rounded-full items-center justify-center mb-3">
+          <Ionicons name="analytics-outline" size={28} color="#5B9BD5" />
+        </View>
+        <Text className="text-text-300">Pas de donnees a afficher</Text>
       </View>
     );
   }
 
-  // Préparer les données pour le graphique
+  // Preparer les donnees pour le graphique
   const sortedEvaluations = [...evaluations]
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .slice(-14); // Garder les 14 derniers jours
 
-  const labels = sortedEvaluations.map((eval) => {
-    const date = new Date(eval.date);
+  const labels = sortedEvaluations.map((ev) => {
+    const date = new Date(ev.date);
     return `${date.getDate()}/${date.getMonth() + 1}`;
   });
 
-  const dataPoints = sortedEvaluations.map((eval) => eval[type] || 0);
+  const dataPoints = sortedEvaluations.map((ev) => ev[type] || 0);
+
+  const chartColors = {
+    mood: {
+      line: (opacity = 1) => `rgba(91, 155, 213, ${opacity})`,
+      label: 'Humeur',
+      icon: 'happy-outline',
+      dotColor: '#5B9BD5',
+    },
+    anxiety: {
+      line: (opacity = 1) => `rgba(232, 168, 56, ${opacity})`,
+      label: 'Anxiete',
+      icon: 'pulse-outline',
+      dotColor: '#E8A838',
+    },
+    sleep: {
+      line: (opacity = 1) => `rgba(240, 168, 160, ${opacity})`,
+      label: 'Sommeil',
+      icon: 'moon-outline',
+      dotColor: '#F0A8A0',
+    },
+  };
+
+  const currentColor = chartColors[type] || chartColors.mood;
 
   const chartConfig = {
-    backgroundColor: '#ffffff',
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
+    backgroundColor: '#FFFFFF',
+    backgroundGradientFrom: '#FFFFFF',
+    backgroundGradientTo: '#FFFFFF',
     decimalPlaces: 0,
-    color: (opacity = 1) => {
-      if (type === 'mood') return `rgba(34, 197, 94, ${opacity})`; // Vert
-      if (type === 'anxiety') return `rgba(239, 68, 68, ${opacity})`; // Rouge
-      if (type === 'sleep') return `rgba(59, 130, 246, ${opacity})`; // Bleu
-      return `rgba(2, 132, 199, ${opacity})`;
-    },
-    labelColor: (opacity = 1) => `rgba(107, 114, 128, ${opacity})`,
+    color: currentColor.line,
+    labelColor: (opacity = 1) => `rgba(160, 160, 160, ${opacity})`,
     style: {
       borderRadius: 16,
     },
     propsForDots: {
-      r: '4',
+      r: '5',
       strokeWidth: '2',
-      stroke: '#fff',
+      stroke: '#FFFFFF',
     },
     propsForBackgroundLines: {
-      strokeDasharray: '', // solid background lines
-      stroke: '#e5e7eb',
+      strokeDasharray: '4 4',
+      stroke: '#EEECEB',
     },
   };
 
@@ -56,17 +78,17 @@ const EvaluationChart = ({ evaluations, type = 'mood' }) => {
     datasets: [
       {
         data: dataPoints,
-        color: (opacity = 1) => chartConfig.color(opacity),
-        strokeWidth: 2,
+        color: currentColor.line,
+        strokeWidth: 2.5,
       },
     ],
   };
 
   const getTitle = () => {
-    if (type === 'mood') return 'Évolution de l\'humeur';
-    if (type === 'anxiety') return 'Évolution de l\'anxiété';
-    if (type === 'sleep') return 'Qualité du sommeil';
-    return 'Évaluation';
+    if (type === 'mood') return 'Evolution de l\'humeur';
+    if (type === 'anxiety') return 'Evolution de l\'anxiete';
+    if (type === 'sleep') return 'Qualite du sommeil';
+    return 'Evaluation';
   };
 
   const getAverage = () => {
@@ -75,12 +97,17 @@ const EvaluationChart = ({ evaluations, type = 'mood' }) => {
   };
 
   return (
-    <View className="mb-4">
-      <View className="flex-row justify-between items-center mb-3">
-        <Text className="text-base font-semibold text-gray-900">{getTitle()}</Text>
-        <View className="bg-gray-100 px-3 py-1 rounded-full">
-          <Text className="text-sm text-gray-700">
-            Moyenne: <Text className="font-bold">{getAverage()}/5</Text>
+    <View className="bg-white rounded-xl p-5 mb-4 border border-surface-200">
+      <View className="flex-row justify-between items-center mb-4">
+        <View className="flex-row items-center">
+          <View className="w-9 h-9 bg-surface-100 rounded-full items-center justify-center mr-3">
+            <Ionicons name={currentColor.icon} size={18} color={currentColor.dotColor} />
+          </View>
+          <Text className="text-base font-semibold text-text-900">{getTitle()}</Text>
+        </View>
+        <View className="bg-surface-50 border border-surface-200 px-3 py-1.5 rounded-xl">
+          <Text className="text-sm text-text-500">
+            Moyenne: <Text className="font-bold text-text-900">{getAverage()}/5</Text>
           </Text>
         </View>
       </View>
@@ -102,6 +129,21 @@ const EvaluationChart = ({ evaluations, type = 'mood' }) => {
         fromZero={true}
         yAxisInterval={1}
       />
+
+      {/* Legend */}
+      <View className="flex-row justify-center mt-4 pt-3 border-t border-surface-200">
+        {Object.entries(chartColors).map(([key, val]) => (
+          <View key={key} className="flex-row items-center mx-3">
+            <View
+              className="w-3 h-3 rounded-full mr-1.5"
+              style={{ backgroundColor: val.dotColor }}
+            />
+            <Text className={`text-xs ${key === type ? 'text-text-700 font-medium' : 'text-text-300'}`}>
+              {val.label}
+            </Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 };

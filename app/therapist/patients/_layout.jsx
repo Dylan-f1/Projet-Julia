@@ -5,16 +5,31 @@ export default function PatientsLayout() {
     <Stack
       screenOptions={{
         headerShown: true,
+        headerStyle: {
+          backgroundColor: '#FAFAFA',
+          elevation: 0,
+          shadowOpacity: 0,
+          borderBottomWidth: 0,
+        },
+        headerTintColor: '#D4942A',
+        headerTitleStyle: {
+          fontWeight: '700',
+          fontSize: 17,
+          color: '#1A1A1A',
+        },
+        contentStyle: {
+          backgroundColor: '#FAFAFA',
+        },
       }}
     >
-      <Stack.Screen 
-        name="[id]" 
+      <Stack.Screen
+        name="[id]"
         options={{
-          title: 'Détail patient',
+          title: 'Detail patient',
         }}
       />
-      <Stack.Screen 
-        name="add" 
+      <Stack.Screen
+        name="add"
         options={{
           title: 'Ajouter un patient',
           presentation: 'modal',

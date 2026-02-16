@@ -1,13 +1,11 @@
 // app/patient/delete-account.jsx
 import React, { useState } from 'react';
-import { View, Text, Platform, Alert, TextInput } from 'react-native';
+import { View, Text, Platform, Alert, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
-import Button from '../../src/components/common/Button';
-import Card from '../../src/components/common/Card';
 
 export default function DeleteAccount() {
   const router = useRouter();
@@ -46,10 +44,10 @@ export default function DeleteAccount() {
           await SecureStore.deleteItemAsync('patientEmail');
           await SecureStore.deleteItemAsync('patientId');
         }
-        
+
         Alert.alert(
-          'Compte supprimé',
-          'Votre compte et toutes vos données ont été supprimés.',
+          'Compte supprime',
+          'Votre compte et toutes vos donnees ont ete supprimes.',
           [
             {
               text: 'OK',
@@ -69,69 +67,131 @@ export default function DeleteAccount() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-surface-50">
       <View className={`flex-1 ${isWeb ? 'max-w-2xl mx-auto w-full' : ''}`}>
         {/* Header */}
-        <View className="bg-white border-b border-gray-200 px-6 py-4">
+        <View
+          className="px-6 py-4"
+          style={{
+            backgroundColor: '#FAFAFA',
+            borderBottomWidth: 1,
+            borderBottomColor: '#EEECEB',
+          }}
+        >
           <View className="flex-row items-center">
-            <Button
-              title="← Retour"
+            <TouchableOpacity
               onPress={() => router.back()}
-              variant="ghost"
-            />
-            <Text className="text-xl font-bold text-gray-900 ml-4">
+              className="w-10 h-10 rounded-xl items-center justify-center mr-3"
+              style={{ backgroundColor: '#FEF0F0' }}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="arrow-back" size={22} color="#E05B5B" />
+            </TouchableOpacity>
+            <Text className="text-xl font-bold" style={{ color: '#1A1A1A' }}>
               Supprimer le compte
             </Text>
           </View>
         </View>
 
         <View className="flex-1 p-6">
-          <Card className="mb-4 bg-red-50 border-red-200">
+          {/* Danger card - bg danger-50, left border 4px danger-400 */}
+          <View
+            className="mb-4 rounded-xl p-5"
+            style={{
+              backgroundColor: '#FEF0F0',
+              borderLeftWidth: 4,
+              borderLeftColor: '#E05B5B',
+            }}
+          >
             <View className="flex-row items-start">
-              <Ionicons name="alert-circle" size={24} color="#ef4444" />
+              <View
+                className="w-10 h-10 rounded-xl items-center justify-center"
+                style={{ backgroundColor: '#FCCECE' }}
+              >
+                <Ionicons name="alert-circle" size={22} color="#E05B5B" />
+              </View>
               <View className="flex-1 ml-3">
-                <Text className="text-sm font-semibold text-red-900 mb-1">
-                  Action irréversible
+                <Text className="text-sm font-semibold mb-1" style={{ color: '#E05B5B' }}>
+                  Action irreversible
                 </Text>
-                <Text className="text-xs text-red-700 leading-5">
-                  Cette action supprimera définitivement votre compte et toutes vos données. 
-                  Cette action ne peut pas être annulée.
+                <Text className="text-xs leading-5" style={{ color: '#B83A3A' }}>
+                  Cette action supprimera definitivement votre compte et toutes vos donnees.
+                  Cette action ne peut pas etre annulee.
                 </Text>
               </View>
             </View>
-          </Card>
+          </View>
 
-          <Card className="mb-4">
-            <Text className="text-base font-semibold text-gray-900 mb-3">
+          {/* What will happen card */}
+          <View
+            className="mb-4 rounded-xl p-5"
+            style={{
+              backgroundColor: '#FFFFFF',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.04,
+              shadowRadius: 4,
+              elevation: 2,
+            }}
+          >
+            <Text className="text-base font-semibold mb-3" style={{ color: '#1A1A1A' }}>
               Que va-t-il se passer ?
             </Text>
-            <Text className="text-gray-700 leading-6">
-              • Suppression immédiate de votre compte{'\n'}
-              • Suppression de toutes vos conversations{'\n'}
-              • Suppression de vos données de suivi{'\n'}
-              • Suppression de vos notes de session{'\n'}
-              • Votre thérapeute sera notifié
+            <Text className="leading-7" style={{ color: '#404040' }}>
+              {'\u2022'} Suppression immediate de votre compte{'\n'}
+              {'\u2022'} Suppression de toutes vos conversations{'\n'}
+              {'\u2022'} Suppression de vos donnees de suivi{'\n'}
+              {'\u2022'} Suppression de vos notes de session{'\n'}
+              {'\u2022'} Votre therapeute sera notifie
             </Text>
-          </Card>
+          </View>
 
-          <Card className="mb-4">
-            <Text className="text-base font-semibold text-gray-900 mb-3">
+          {/* Confirmation input - border danger-200 */}
+          <View
+            className="mb-4 rounded-xl p-5"
+            style={{
+              backgroundColor: '#FFFFFF',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.04,
+              shadowRadius: 4,
+              elevation: 2,
+            }}
+          >
+            <Text className="text-base font-semibold mb-3" style={{ color: '#1A1A1A' }}>
               Pour confirmer, tapez "SUPPRIMER"
             </Text>
             <TextInput
               value={confirmation}
               onChangeText={setConfirmation}
               placeholder="SUPPRIMER"
-              className="border border-gray-300 rounded-lg p-3 text-gray-900 bg-white"
+              placeholderTextColor="#FCCECE"
+              className="rounded-xl p-4"
+              style={{
+                borderWidth: 1,
+                borderColor: '#FCCECE',
+                color: '#1A1A1A',
+                backgroundColor: '#FAFAFA',
+              }}
             />
-          </Card>
+          </View>
 
-          <Button
-            title={loading ? 'Suppression...' : 'Supprimer définitivement mon compte'}
+          {/* Delete button - bg danger-400 */}
+          <TouchableOpacity
             onPress={handleDelete}
             disabled={loading || confirmation !== 'SUPPRIMER'}
-            variant="danger"
-          />
+            className="flex-row items-center justify-center py-4 rounded-xl"
+            style={{
+              backgroundColor: '#E05B5B',
+              opacity: (loading || confirmation !== 'SUPPRIMER') ? 0.5 : 1,
+            }}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="trash" size={20} color="white" />
+            <Text className="text-white font-bold text-base ml-2">
+              {loading ? 'Suppression...' : 'Supprimer definitivement mon compte'}
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>

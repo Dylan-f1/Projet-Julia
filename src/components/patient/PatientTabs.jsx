@@ -5,23 +5,26 @@ import { Ionicons } from '@expo/vector-icons';
 
 const TabButton = ({ id, label, icon, activeTab, onPress }) => {
   const isWeb = Platform.OS === 'web';
-  
+  const isActive = activeTab === id;
+
   return (
     <TouchableOpacity
       onPress={() => onPress(id)}
-      className={`py-3 border-b-2 ${
-        activeTab === id ? 'border-secondary-600' : 'border-gray-200'
-      } ${isWeb ? 'flex-1 hover:bg-gray-50' : 'min-w-[140px]'}`}
+      className={`py-3.5 border-b-2 ${
+        isActive ? 'border-therapist-400' : 'border-transparent'
+      } ${isWeb ? 'flex-1 hover:bg-surface-50' : 'min-w-[140px]'}`}
     >
       <View className="items-center">
-        <Ionicons 
-          name={icon} 
-          size={20} 
-          color={activeTab === id ? '#c026d3' : '#9CA3AF'} 
+        <Ionicons
+          name={icon}
+          size={20}
+          color={isActive ? '#E8A838' : '#A0A0A0'}
         />
-        <Text className={`text-sm mt-1 ${
-          activeTab === id ? 'text-secondary-600 font-semibold' : 'text-gray-600'
-        }`}>
+        <Text
+          className={`text-sm mt-1 ${
+            isActive ? 'text-text-900 font-semibold' : 'text-text-300'
+          }`}
+        >
           {label}
         </Text>
       </View>
@@ -35,14 +38,14 @@ const PatientTabs = ({ activeTab, onTabChange }) => {
   const tabs = [
     { id: 'overview', label: 'Vue d\'ensemble', icon: 'grid-outline' },
     { id: 'conversations', label: 'Conversations', icon: 'chatbubbles-outline' },
-    { id: 'evaluations', label: 'Évaluations', icon: 'analytics-outline' },
+    { id: 'evaluations', label: 'Evaluations', icon: 'analytics-outline' },
     { id: 'notes', label: 'Notes', icon: 'document-text-outline' },
   ];
 
   if (isWeb) {
     return (
-      <View className="flex-row bg-white">
-        {tabs.map(tab => (
+      <View className="flex-row bg-white border-b border-surface-200">
+        {tabs.map((tab) => (
           <TabButton
             key={tab.id}
             {...tab}
@@ -55,14 +58,14 @@ const PatientTabs = ({ activeTab, onTabChange }) => {
   }
 
   return (
-    <ScrollView 
-      horizontal 
+    <ScrollView
+      horizontal
       showsHorizontalScrollIndicator={false}
-      className="bg-white"
+      className="bg-white border-b border-surface-200"
       contentContainerStyle={{ flexGrow: 1 }}
     >
       <View className="flex-row">
-        {tabs.map(tab => (
+        {tabs.map((tab) => (
           <TabButton
             key={tab.id}
             {...tab}

@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Platform, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Card from '../common/Card';
 import Button from '../common/Button';
 import patientService from '../../services/patientService';
 import { Clipboard } from 'react-native';
@@ -20,7 +19,7 @@ const PatientQRCode = ({ patientId, patientEmail }) => {
   const loadQRCode = async () => {
     setLoading(true);
     const result = await patientService.getMagicLink(patientId);
-    
+
     if (result.success) {
       setQrData(result.data);
       setExpired(false);
@@ -37,7 +36,7 @@ const PatientQRCode = ({ patientId, patientEmail }) => {
       } else {
         Clipboard.setString(qrData.magicLink);
       }
-      Alert.alert('Succès', 'Lien copié !');
+      Alert.alert('Succes', 'Lien copie !');
     } catch (error) {
       Alert.alert('Erreur', 'Impossible de copier le lien');
     }
@@ -45,11 +44,11 @@ const PatientQRCode = ({ patientId, patientEmail }) => {
 
   const handleResend = async () => {
     const result = await patientService.resendMagicLink(patientId);
-    
+
     if (result.success) {
       setQrData(result.data);
       setExpired(false);
-      Alert.alert('Succès', 'Nouveau lien généré et envoyé par email');
+      Alert.alert('Succes', 'Nouveau lien genere et envoye par email');
     } else {
       Alert.alert('Erreur', result.error);
     }
@@ -57,39 +56,44 @@ const PatientQRCode = ({ patientId, patientEmail }) => {
 
   if (loading) {
     return (
-      <Card className="mb-4">
+      <View className="bg-white rounded-xl p-5 mb-4">
         <View className="items-center py-8">
-          <Text className="text-gray-500">Chargement...</Text>
+          <View className="w-12 h-12 bg-surface-100 rounded-full items-center justify-center mb-3">
+            <Ionicons name="qr-code-outline" size={24} color="#5B9BD5" />
+          </View>
+          <Text className="text-text-300">Chargement...</Text>
         </View>
-      </Card>
+      </View>
     );
   }
 
   if (expired || !qrData) {
     return (
-      <Card className="mb-4">
-        <View className="flex-row items-center justify-between mb-3">
-          <Text className="text-lg font-semibold text-gray-900">
-            QR Code d'accès
+      <View className="bg-white rounded-xl p-5 mb-4">
+        <View className="flex-row items-center justify-between mb-4">
+          <Text className="text-lg font-semibold text-text-900">
+            QR Code d'acces
           </Text>
-          <View className="bg-red-100 px-2 py-1 rounded">
-            <Text className="text-xs text-red-700 font-medium">Expiré</Text>
+          <View className="bg-danger-50 border border-danger-100 px-3 py-1 rounded-full">
+            <Text className="text-xs text-danger-400 font-medium">Expire</Text>
           </View>
         </View>
 
-        <View className="items-center py-6 bg-gray-50 rounded-lg mb-4">
-          <Ionicons name="alert-circle-outline" size={48} color="#ef4444" />
-          <Text className="text-gray-600 text-center mt-3">
-            Le lien d'accès a expiré
+        <View className="items-center py-6 bg-danger-50 rounded-xl mb-4">
+          <View className="w-14 h-14 bg-danger-100 rounded-full items-center justify-center mb-3">
+            <Ionicons name="alert-circle-outline" size={32} color="#E05B5B" />
+          </View>
+          <Text className="text-text-500 text-center">
+            Le lien d'acces a expire
           </Text>
         </View>
 
         <Button
-          title="Générer un nouveau lien"
+          title="Generer un nouveau lien"
           onPress={handleResend}
           icon={<Ionicons name="refresh-outline" size={20} color="white" />}
         />
-      </Card>
+      </View>
     );
   }
 
@@ -97,25 +101,36 @@ const PatientQRCode = ({ patientId, patientEmail }) => {
   const daysLeft = Math.ceil((expiresAt - new Date()) / (1000 * 60 * 60 * 24));
 
   return (
-    <Card className="mb-4">
+    <View className="bg-white rounded-xl p-5 mb-4">
       <View className="flex-row items-center justify-between mb-3">
-        <Text className="text-lg font-semibold text-gray-900">
-          QR Code d'accès patient
-        </Text>
-        <View className={`px-2 py-1 rounded ${daysLeft <= 2 ? 'bg-orange-100' : 'bg-green-100'}`}>
-          <Text className={`text-xs font-medium ${daysLeft <= 2 ? 'text-orange-700' : 'text-green-700'}`}>
+        <View className="flex-row items-center">
+          <View className="w-9 h-9 bg-patient-50 rounded-full items-center justify-center mr-3">
+            <Ionicons name="qr-code-outline" size={18} color="#5B9BD5" />
+          </View>
+          <Text className="text-lg font-semibold text-text-900">
+            QR Code d'acces patient
+          </Text>
+        </View>
+        <View className={`px-3 py-1.5 rounded-full ${
+          daysLeft <= 2
+            ? 'bg-therapist-100'
+            : 'bg-surface-100'
+        }`}>
+          <Text className={`text-xs font-medium ${
+            daysLeft <= 2 ? 'text-therapist-600' : 'text-text-500'
+          }`}>
             {daysLeft} jour{daysLeft > 1 ? 's' : ''} restant{daysLeft > 1 ? 's' : ''}
           </Text>
         </View>
       </View>
 
-      <Text className="text-sm text-gray-600 mb-4">
-        Le patient peut scanner ce QR code pour accéder à son espace personnel
+      <Text className="text-sm text-text-300 mb-4">
+        Le patient peut scanner ce QR code pour acceder a son espace personnel
       </Text>
 
       {/* QR Code */}
       <View className={`items-center mb-4 ${isWeb ? 'flex-row justify-around' : ''}`}>
-        <View className="bg-white p-4 rounded-lg shadow-md border-2 border-gray-100">
+        <View className="bg-surface-50 p-5 rounded-xl border border-surface-200">
           <Image
             source={{ uri: qrData.qrCode }}
             style={{ width: 180, height: 180 }}
@@ -125,23 +140,23 @@ const PatientQRCode = ({ patientId, patientEmail }) => {
 
         {isWeb && (
           <View className="flex-1 ml-6">
-            <Text className="text-sm font-medium text-gray-700 mb-2">
+            <Text className="text-sm font-medium text-text-700 mb-3">
               Instructions
             </Text>
-            <View className="space-y-2">
+            <View className="space-y-3">
               <View className="flex-row items-start">
-                <View className="w-6 h-6 bg-primary-100 rounded-full items-center justify-center mr-2">
-                  <Text className="text-xs text-primary-700 font-bold">1</Text>
+                <View className="w-7 h-7 bg-patient-100 rounded-full items-center justify-center mr-3">
+                  <Text className="text-xs text-patient-700 font-bold">1</Text>
                 </View>
-                <Text className="text-sm text-gray-600 flex-1">
-                  Scanner le QR code avec l'appareil photo du téléphone
+                <Text className="text-sm text-text-500 flex-1">
+                  Scanner le QR code avec l'appareil photo du telephone
                 </Text>
               </View>
               <View className="flex-row items-start">
-                <View className="w-6 h-6 bg-primary-100 rounded-full items-center justify-center mr-2">
-                  <Text className="text-xs text-primary-700 font-bold">2</Text>
+                <View className="w-7 h-7 bg-patient-100 rounded-full items-center justify-center mr-3">
+                  <Text className="text-xs text-patient-700 font-bold">2</Text>
                 </View>
-                <Text className="text-sm text-gray-600 flex-1">
+                <Text className="text-sm text-text-500 flex-1">
                   Ou copier le lien ci-dessous et l'envoyer au patient
                 </Text>
               </View>
@@ -151,43 +166,47 @@ const PatientQRCode = ({ patientId, patientEmail }) => {
       </View>
 
       {/* Lien */}
-      <View className="bg-gray-50 rounded-lg p-3 mb-3">
-        <Text className="text-xs text-gray-600 mb-2">Lien d'accès direct</Text>
-        <TouchableOpacity 
+      <View className="bg-surface-50 rounded-xl p-4 mb-4 border border-surface-200">
+        <Text className="text-xs text-text-300 mb-2">Lien d'acces direct</Text>
+        <TouchableOpacity
           onPress={handleCopyLink}
           className="flex-row items-center justify-between"
         >
-          <Text 
-            className="text-xs text-gray-700 flex-1 mr-2" 
+          <Text
+            className="text-xs text-text-700 flex-1 mr-2"
             numberOfLines={1}
             ellipsizeMode="middle"
           >
             {qrData.magicLink}
           </Text>
-          <Ionicons name="copy-outline" size={18} color="#0284c7" />
+          <View className="w-8 h-8 bg-patient-50 rounded-full items-center justify-center">
+            <Ionicons name="copy-outline" size={16} color="#5B9BD5" />
+          </View>
         </TouchableOpacity>
       </View>
 
       {/* Actions */}
       <View className={isWeb ? 'flex-row gap-3' : 'space-y-2'}>
         <View className={isWeb ? 'flex-1' : ''}>
-          <Button
-            title="Copier le lien"
+          <TouchableOpacity
             onPress={handleCopyLink}
-            variant="outline"
-            icon={<Ionicons name="copy-outline" size={18} color="#0284c7" />}
-          />
+            activeOpacity={0.7}
+            className="border border-patient-400 rounded-xl py-3 flex-row items-center justify-center"
+          >
+            <Ionicons name="copy-outline" size={18} color="#5B9BD5" />
+            <Text className="text-patient-400 font-semibold ml-2 text-sm">Copier le lien</Text>
+          </TouchableOpacity>
         </View>
         <View className={isWeb ? 'flex-1' : ''}>
           <Button
             title="Renvoyer par email"
             onPress={handleResend}
             variant="outline"
-            icon={<Ionicons name="mail-outline" size={18} color="#0284c7" />}
+            icon={<Ionicons name="mail-outline" size={18} color="#5B9BD5" />}
           />
         </View>
       </View>
-    </Card>
+    </View>
   );
 };
 

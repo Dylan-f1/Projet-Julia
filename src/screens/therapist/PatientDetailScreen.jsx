@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, ScrollView, Platform, Alert, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 import Loading from '../../components/common/Loading';
 import PatientHeader from '../../components/patient/PatientHeader';
@@ -23,7 +24,7 @@ const PatientDetailScreen = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const patientId = id;
-  
+
   const [patient, setPatient] = useState(null);
   const [stats, setStats] = useState(null);
   const [recentEvaluations, setRecentEvaluations] = useState([]);
@@ -31,7 +32,7 @@ const PatientDetailScreen = () => {
   const [sessionNotes, setSessionNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
-  
+
   const [showMagicLinkModal, setShowMagicLinkModal] = useState(false);
   const [magicLinkData, setMagicLinkData] = useState({
     magicLink: '',
@@ -48,9 +49,9 @@ const PatientDetailScreen = () => {
 
   const loadPatientData = async () => {
     setLoading(true);
-    
+
     try {
-      const [patientResult, statsResult, conversationsResult, notesResult] = 
+      const [patientResult, statsResult, conversationsResult, notesResult] =
         await Promise.all([
           patientService.getPatient(patientId),
           patientService.getPatientStats(patientId),
@@ -60,39 +61,39 @@ const PatientDetailScreen = () => {
 
       if (patientResult.success) setPatient(patientResult.data.patient);
       if (statsResult.success) setStats(statsResult.data);
-      
+
       if (conversationsResult.success) {
-        const convArray = Array.isArray(conversationsResult.data) 
-          ? conversationsResult.data 
+        const convArray = Array.isArray(conversationsResult.data)
+          ? conversationsResult.data
           : (conversationsResult.data?.conversations || []);
         setConversations(convArray);
       }
-      
+
       if (notesResult.success) {
-        const notesArray = Array.isArray(notesResult.data) 
-          ? notesResult.data 
+        const notesArray = Array.isArray(notesResult.data)
+          ? notesResult.data
           : (notesResult.data?.notes || []);
         setSessionNotes(notesArray);
       }
 
       const endDate = new Date().toISOString();
       const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-      
+
       const evalResult = await evaluationService.getPatientEvaluationsByTherapist(
-        patientId, 
-        startDate, 
+        patientId,
+        startDate,
         endDate
       );
-      
+
       if (evalResult.success) {
-        const evalArray = Array.isArray(evalResult.data) 
-          ? evalResult.data 
+        const evalArray = Array.isArray(evalResult.data)
+          ? evalResult.data
           : (evalResult.data?.evaluations || []);
         setRecentEvaluations(evalArray);
       }
     } catch (error) {
-      console.error('Erreur lors du chargement des données:', error);
-      Alert.alert('Erreur', 'Impossible de charger les données du patient');
+      console.error('Erreur lors du chargement des donnees:', error);
+      Alert.alert('Erreur', 'Impossible de charger les donnees du patient');
     } finally {
       setLoading(false);
     }
@@ -117,7 +118,7 @@ const PatientDetailScreen = () => {
   const handleArchive = async () => {
     Alert.alert(
       'Archiver le patient',
-      'Êtes-vous sûr de vouloir archiver ce patient ?',
+      'Etes-vous sur de vouloir archiver ce patient ?',
       [
         { text: 'Annuler', style: 'cancel' },
         {
@@ -126,7 +127,7 @@ const PatientDetailScreen = () => {
           onPress: async () => {
             const result = await patientService.archivePatient(patientId);
             if (result.success) {
-              Alert.alert('Succès', 'Patient archivé');
+              Alert.alert('Succes', 'Patient archive');
               router.back();
             } else {
               Alert.alert('Erreur', result.error);
@@ -139,14 +140,14 @@ const PatientDetailScreen = () => {
 
   const handleResendMagicLink = async () => {
     const result = await patientService.resendMagicLink(patientId);
-    
+
     if (result.success) {
       setMagicLinkData({
         magicLink: result.data.magicLink || '',
         qrCode: result.data.qrCode || '',
       });
       setShowMagicLinkModal(true);
-      Alert.alert('Succès', 'Email envoyé au patient');
+      Alert.alert('Succes', 'Email envoye au patient');
     } else {
       Alert.alert('Erreur', result.error || 'Impossible de renvoyer l\'email');
     }
@@ -158,7 +159,7 @@ const PatientDetailScreen = () => {
 
   const handleResendFromModal = async () => {
     const result = await patientService.resendMagicLink(patientId);
-    
+
     if (result.success) {
       setMagicLinkData({
         magicLink: result.data.magicLink || '',
@@ -175,29 +176,70 @@ const PatientDetailScreen = () => {
 
   if (!patient) {
     return (
-      <SafeAreaView className="flex-1 bg-white justify-center items-center">
-        <Text className="text-gray-600">Patient introuvable</Text>
+      <SafeAreaView className="flex-1 justify-center items-center" style={{ backgroundColor: '#FAFAFA' }}>
+        <View
+          style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: 20,
+            padding: 32,
+            alignItems: 'center',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.06,
+            shadowRadius: 12,
+            elevation: 3,
+          }}
+        >
+          <View
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: 32,
+              backgroundColor: '#FEF0F0',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 16,
+            }}
+          >
+            <Ionicons name="person-outline" size={28} color="#E05B5B" />
+          </View>
+          <Text style={{ color: '#1A1A1A', fontWeight: '600', fontSize: 16 }}>
+            Patient introuvable
+          </Text>
+        </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: '#FAFAFA' }}>
       <View className={`flex-1 ${isWeb ? 'max-w-5xl mx-auto w-full' : ''}`}>
-        
-        <PatientHeader
-          patient={patient}
-          onBack={handleGoBack}
-          onEdit={handleEditPatient}
-        />
 
+        {/* Patient header strip — therapist-50 background */}
+        <View
+          style={{
+            backgroundColor: '#FDF6EA',
+            borderBottomWidth: 1,
+            borderBottomColor: '#FAE8C4',
+          }}
+        >
+          <PatientHeader
+            patient={patient}
+            onBack={handleGoBack}
+            onEdit={handleEditPatient}
+          />
+        </View>
+
+        {/* Tabs — active uses therapist-400 underline */}
         <PatientTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
 
-        <ScrollView 
+        {/* Content area */}
+        <ScrollView
           className="flex-1"
+          style={{ backgroundColor: '#FAFAFA' }}
           showsVerticalScrollIndicator={!isWeb}
         >
           {activeTab === 'overview' && (
@@ -213,7 +255,6 @@ const PatientDetailScreen = () => {
             />
           )}
 
-          {/* 🔥 AJOUTER CE BLOC */}
           {activeTab === 'qrcode' && (
             <QRCodeTab
               patientId={patientId}
