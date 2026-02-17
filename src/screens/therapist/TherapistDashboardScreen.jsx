@@ -314,7 +314,7 @@ const TherapistDashboardScreen = () => {
           </View>
 
           {/* Search bar + Add button row */}
-          <View style={{ flexDirection: isWeb ? 'row' : 'column', gap: 12, alignItems: isWeb ? 'center' : 'stretch' }}>
+          <View style={{ flexDirection: isWeb ? 'row' : 'column', gap: 350, alignItems: isWeb ? 'center' : 'stretch' }}>
           {/* Search bar — constrained width */}
           <View
             style={{
