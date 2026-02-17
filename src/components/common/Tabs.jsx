@@ -8,10 +8,10 @@ import {
 } from 'react-native';
 
 const Tabs = ({
-  tabs = [], // [{ id: 'tab1', label: 'Tab 1', icon: <Icon /> }]
+  tabs = [], 
   activeTab,
   onTabChange,
-  variant = 'default', // default, pills
+  variant = 'default', 
   className = '',
 }) => {
   const { width } = useWindowDimensions();

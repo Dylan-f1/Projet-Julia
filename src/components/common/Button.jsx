@@ -48,10 +48,8 @@ const Button = ({
 }) => {
   const baseClasses = 'flex-row items-center justify-center';
 
-  // Resolve accent color for outline/ghost
   const accent = COLORS[color] || COLORS.patient;
 
-  // Size classes - more generous padding
   const sizeClasses = {
     small: 'px-5 py-2.5',
     medium: 'px-6 py-3.5',
@@ -64,7 +62,6 @@ const Button = ({
     large: 'text-lg',
   };
 
-  // Build variant-specific styling
   const getVariantConfig = () => {
     switch (variant) {
       case 'patient': {
@@ -140,7 +137,6 @@ const Button = ({
           spinnerColor: '#ffffff',
         };
       default: {
-        // Fallback to patient styling
         const c = COLORS.patient;
         return {
           containerClass: `${c.bg} rounded-xl`,

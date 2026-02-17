@@ -18,11 +18,9 @@ export const ChatProvider = ({ children }) => {
     }
   }, [isAuthenticated]);
 
-  // Charger la conversation active + l'historique
   const loadConversations = async () => {
     setLoading(true);
     try {
-      // Récupérer la conversation active
       const activeResult = await chatService.getActiveConversation();
       let allConvs = [];
 
@@ -30,14 +28,12 @@ export const ChatProvider = ({ children }) => {
         const activeConv = activeResult.data.conversation;
         allConvs.push(activeConv);
 
-        // Si pas de conversation courante, sélectionner la conversation active
         if (!currentConversation) {
           setCurrentConversation(activeConv);
           setMessages(activeConv.messages || []);
         }
       }
 
-      // Récupérer aussi l'historique des conversations fermées
       const historyResult = await chatService.getConversationHistory();
       if (historyResult.success) {
         const closedConvs = historyResult.data?.conversations || historyResult.data || [];
@@ -54,7 +50,6 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
-  // Charger une conversation spécifique par son ID
   const loadConversation = async (conversationId) => {
     setLoading(true);
     try {
@@ -71,16 +66,14 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
-  // Envoyer un message — crée une conversation si aucune n'est active
   const sendMessage = async (messageText) => {
     if (!messageText.trim()) return;
 
     setSending(true);
 
     try {
-      // Pas de conversation active → en créer une
       if (!currentConversation || currentConversation.status === 'closed') {
-        console.log('📝 Création nouvelle conversation avec:', messageText);
+        console.log('Création nouvelle conversation avec:', messageText);
         const createResult = await chatService.createConversation(messageText);
 
         if (createResult.success) {
@@ -90,12 +83,11 @@ export const ChatProvider = ({ children }) => {
           loadConversations();
           return createResult;
         } else {
-          console.error('❌ Erreur création conversation:', createResult.error);
+          console.error('Erreur création conversation:', createResult.error);
           return createResult;
         }
       }
 
-      // Conversation active → optimistic update + envoi
       const userMessage = {
         _id: Date.now().toString(),
         sender: 'patient',
@@ -104,19 +96,17 @@ export const ChatProvider = ({ children }) => {
       };
       setMessages(prev => [...prev, userMessage]);
 
-      console.log('📤 Envoi message vers conversation:', currentConversation._id);
+      console.log('Envoi message vers conversation:', currentConversation._id);
       const result = await chatService.sendMessage(currentConversation._id, messageText);
 
       if (result.success) {
-        // Le backend renvoie la conversation complète avec tous les messages
         const updatedConv = result.data.conversation || result.data;
         setCurrentConversation(updatedConv);
         setMessages(updatedConv.messages || []);
         loadConversations();
       } else {
-        // Retirer le message optimiste en cas d'erreur
         setMessages(prev => prev.filter(m => m._id !== userMessage._id));
-        console.error('❌ Erreur envoi message:', result.error);
+        console.error('Erreur envoi message:', result.error);
       }
       return result;
     } catch (error) {
@@ -127,7 +117,6 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
-  // Démarrer une nouvelle conversation (reset le state)
   const startNewConversation = () => {
     setCurrentConversation(null);
     setMessages([]);

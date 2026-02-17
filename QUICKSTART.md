@@ -116,14 +116,14 @@ eas build --platform all
 ## 🐛 Dépannage
 
 ### Le QR code ne marche pas
-- ✅ Vérifiez que téléphone et ordinateur sont sur le **même réseau WiFi**
-- ✅ Désactivez les VPN et pare-feu
-- ✅ Utilisez le mode Tunnel : `expo start --tunnel`
+- Vérifiez que téléphone et ordinateur sont sur le **même réseau WiFi**
+- Désactivez les VPN et pare-feu
+- Utilisez le mode Tunnel : `expo start --tunnel`
 
 ### Erreur "Network request failed"
-- ✅ Vérifiez l'URL de l'API dans `environment.js`
-- ✅ Vérifiez que le backend est lancé
-- ✅ Testez l'URL dans le navigateur : `http://YOUR_IP:3000/api/health`
+- Vérifiez l'URL de l'API dans `environment.js`
+- Vérifiez que le backend est lancé
+- Testez l'URL dans le navigateur : `http://YOUR_IP:3000/api/health`
 
 ### L'app ne se met pas à jour
 ```bash
@@ -179,10 +179,10 @@ theme: {
 
 ## 📚 Prochaines étapes
 
-1. ✅ **Lire le README.md** pour une vue complète
-2. ✅ **Consulter ARCHITECTURE.md** pour comprendre le code
-3. ✅ **Tester toutes les fonctionnalités**
-4. ✅ **Personnaliser selon vos besoins**
+1. **Lire le README.md** pour une vue complète
+2. **Consulter ARCHITECTURE.md** pour comprendre le code
+3. **Tester toutes les fonctionnalités**
+4. **Personnaliser selon vos besoins**
 
 ## 🆘 Besoin d'aide ?
 
@@ -192,14 +192,14 @@ theme: {
 
 ## ✨ Fonctionnalités disponibles
 
-- ✅ Authentification (Magic Link + Email/Password)
-- ✅ Chat avec IA 24/7
-- ✅ Historique des conversations
-- ✅ Évaluation quotidienne
-- ✅ Dashboard thérapeute
-- ✅ Gestion des patients
-- ✅ Notifications push
-- ✅ Upload de fichiers (notes de séance)
+- Authentification (Magic Link + Email/Password)
+- Chat avec IA 24/7
+- Historique des conversations
+- Évaluation quotidienne
+- Dashboard thérapeute
+- Gestion des patients
+- Notifications push
+- Upload de fichiers (notes de séance)
 
 ## 🎉 C'est parti !
 

@@ -6,7 +6,7 @@ const Avatar = ({
   name,
   size = 'medium',
   imageUrl = null,
-  type = 'patient', // patient, therapist, ai
+  type = 'patient', 
   className = '',
 }) => {
   const sizeClasses = {

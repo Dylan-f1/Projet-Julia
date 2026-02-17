@@ -1,4 +1,3 @@
-// src/contexts/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import authService from '../services/authService';
 import notificationService from '../services/notificationService';
@@ -32,7 +31,6 @@ export const AuthProvider = ({ children }) => {
           setUser(JSON.parse(storedUser));
         }
 
-        // Enregistrer pour les notifications push
         await notificationService.registerForPushNotifications();
       }
     } catch (error) {
@@ -48,19 +46,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   const verifyMagicLink = async (token) => {
-    console.log('🔐 === VERIFY MAGIC LINK ===');
-    console.log('🔐 Token reçu:', token);
+    console.log('=== VERIFY MAGIC LINK ===');
+    console.log('Token reçu:', token);
     
     const result = await authService.verifyMagicLink(token);
     
-    console.log('🔐 Résultat backend:', result);
-    console.log('🔐 result.success:', result.success);
-    console.log('🔐 result.data:', result.data);
-    console.log('🔐 result.data.token:', result.data?.token);
-    console.log('🔐 result.data.user:', result.data?.user);
+    console.log('Résultat backend:', result);
+    console.log('result.success:', result.success);
+    console.log('result.data:', result.data);
+    console.log('result.data.token:', result.data?.token);
+    console.log('result.data.user:', result.data?.user);
     
     if (result.success) {
-      console.log('✅ Vérification réussie, stockage du token...');
+      console.log('Vérification réussie, stockage du token...');
       
       await StorageService.setItem('userToken', result.data.token);
       await StorageService.setItem('userRole', 'patient');
@@ -70,25 +68,24 @@ export const AuthProvider = ({ children }) => {
       const storedToken = await StorageService.getItem('userToken');
       const storedRole = await StorageService.getItem('userRole');
       
-      console.log('✅ Token après stockage:', storedToken);
-      console.log('✅ Role après stockage:', storedRole);
+      console.log('Token après stockage:', storedToken);
+      console.log('Role après stockage:', storedRole);
       
       setUser(result.data.user);
       setToken(result.data.token);
       setUserRole('patient');
       setIsAuthenticated(true);
       
-      console.log('✅ États mis à jour');
+      console.log('États mis à jour');
       
       await notificationService.registerForPushNotifications();
     } else {
-      console.error('❌ Échec vérification:', result.error);
+      console.error('Échec vérification:', result.error);
     }
     
     return result;
   };
 
-  // 🔥 NOUVELLE FONCTION : Login Patient (alias de verifyMagicLink)
   const loginPatient = async (magicToken) => {
     try {
       console.log('=== AuthContext - loginPatient ===');
@@ -96,7 +93,7 @@ export const AuthProvider = ({ children }) => {
 
       const result = await authService.verifyMagicLink(magicToken);
       
-      console.log('✅ Résultat vérification:', result);
+      console.log('Résultat vérification:', result);
 
       if (result.success) {
         await StorageService.setItem('userToken', result.data.token);
@@ -116,7 +113,7 @@ export const AuthProvider = ({ children }) => {
 
       return result;
     } catch (error) {
-      console.error('❌ Erreur login patient:', error);
+      console.error('Erreur login patient:', error);
       return { 
         success: false, 
         error: error.message || 'Erreur réseau' 
@@ -134,7 +131,6 @@ export const AuthProvider = ({ children }) => {
       console.log('Résultat login:', result);
 
       if (result.success) {
-        // Stocker le token et l'utilisateur
         await StorageService.setItem('userToken', result.data.token);
         await StorageService.setItem('userRole', 'therapist');
         await StorageService.setItem('user', JSON.stringify(result.data.user));
@@ -144,7 +140,6 @@ export const AuthProvider = ({ children }) => {
         setUserRole('therapist');
         setIsAuthenticated(true);
 
-        // Enregistrer pour les notifications push
         await notificationService.registerForPushNotifications();
 
         return { success: true };
@@ -172,7 +167,6 @@ export const AuthProvider = ({ children }) => {
       console.log('Résultat inscription:', result);
 
       if (result.success) {
-        // Stocker le token et l'utilisateur
         await StorageService.setItem('userToken', result.data.token);
         await StorageService.setItem('userRole', 'therapist');
         await StorageService.setItem('user', JSON.stringify(result.data.user));
@@ -182,7 +176,6 @@ export const AuthProvider = ({ children }) => {
         setUserRole('therapist');
         setIsAuthenticated(true);
 
-        // Enregistrer pour les notifications push
         await notificationService.registerForPushNotifications();
 
         return { success: true };

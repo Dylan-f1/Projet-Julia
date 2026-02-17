@@ -1,4 +1,3 @@
-// src/components/patient/PatientActions.jsx
 import React from 'react';
 import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

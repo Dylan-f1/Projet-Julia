@@ -1,4 +1,3 @@
-// src/components/chat/TypingIndicator.jsx
 import React, { useEffect, useRef } from 'react';
 import { View, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

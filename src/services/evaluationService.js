@@ -3,7 +3,7 @@ import api from './api';
 class EvaluationService {
   async submitDailyEvaluation(evaluationData) {
     try {
-      const response = await api.post('/evaluations/daily', evaluationData);
+      const response = await api.post('/evaluations', evaluationData);
       return { success: true, data: response.data };
     } catch (error) {
       return { 
@@ -19,7 +19,7 @@ class EvaluationService {
       if (startDate) params.startDate = startDate;
       if (endDate) params.endDate = endDate;
       
-      const response = await api.get('/evaluations/patient', { params });
+      const response = await api.get('/evaluations', { params });
       return { success: true, data: response.data };
     } catch (error) {
       return { 

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, useWindowDimensions } from 'react-native';
 
 const ProgressBar = ({
-  progress = 0, // 0-100
+  progress = 0,
   label,
   showPercentage = true,
   color = 'patient',
@@ -30,7 +30,6 @@ const ProgressBar = ({
     danger: 'text-danger-600',
   };
 
-  // Desktop: slightly thicker bars
   const sizeClasses = {
     small: isDesktop ? 'h-1.5' : 'h-1',
     medium: isDesktop ? 'h-2.5' : 'h-2',

@@ -1,4 +1,3 @@
-// src/components/patient/PatientTabs.jsx
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

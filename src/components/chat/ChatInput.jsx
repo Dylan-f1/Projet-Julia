@@ -1,4 +1,3 @@
-// src/components/chat/ChatInput.jsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Platform, KeyboardAvoidingView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

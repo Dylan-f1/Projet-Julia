@@ -1,4 +1,3 @@
-// src/components/chat/ConversationCard.jsx
 import React from 'react';
 import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,15 +6,12 @@ const ConversationCard = ({ conversation, isActive, onPress }) => {
   const isWeb = Platform.OS === 'web';
 
   const getKeywords = (conv) => {
-    // summary.keywords
     if (conv.summary?.keywords && Array.isArray(conv.summary.keywords)) {
       return conv.summary.keywords;
     }
-    // keywords direct
     if (Array.isArray(conv.keywords)) {
       return conv.keywords;
     }
-    // analysis.keywords
     if (conv.analysis?.keywords && Array.isArray(conv.analysis.keywords)) {
       return conv.analysis.keywords;
     }
@@ -24,15 +20,14 @@ const ConversationCard = ({ conversation, isActive, onPress }) => {
 
   const keywords = getKeywords(conversation);
 
-  // Crisis level dot colors
   const getCrisisDotColor = (level) => {
     switch (level) {
       case 'high':
-        return '#E05B5B'; // danger-400
+        return '#E05B5B'; 
       case 'medium':
-        return '#E8A838'; // therapist-400
+        return '#E8A838';
       case 'low':
-        return '#4CAF82'; // success-400
+        return '#4CAF82'; 
       default:
         return null;
     }
@@ -50,7 +45,7 @@ const ConversationCard = ({ conversation, isActive, onPress }) => {
         padding: 14,
         marginBottom: 8,
         borderLeftWidth: 4,
-        borderLeftColor: isActive ? '#5B9BD5' : 'transparent', // patient-400 or transparent
+        borderLeftColor: isActive ? '#5B9BD5' : 'transparent', 
       }}
       activeOpacity={0.7}
     >

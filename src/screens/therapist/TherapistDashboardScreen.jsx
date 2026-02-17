@@ -64,7 +64,6 @@ const TherapistDashboardScreen = () => {
     await logout();
   };
 
-  // Filtrage des patients par recherche
   const filteredPatients = patients.filter((p) => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
@@ -79,13 +78,12 @@ const TherapistDashboardScreen = () => {
     return <Loading message="Chargement de vos patients..." />;
   }
 
-  // ---- Patient card with left border color based on status ----
   const PatientCard = ({ patient }) => {
-    let borderLeftColor = '#EEECEB'; // surface-200 default
+    let borderLeftColor = '#EEECEB';
     if (patient.criticalStatus) {
-      borderLeftColor = '#E05B5B'; // danger-400
+      borderLeftColor = '#E05B5B'; 
     } else if (patient.status === 'active') {
-      borderLeftColor = '#4CAF82'; // success-400
+      borderLeftColor = '#4CAF82'; 
     }
 
     return (
@@ -180,10 +178,7 @@ const TherapistDashboardScreen = () => {
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: '#FAFAFA' }}>
       {/* Responsive container */}
-      <View className={`flex-1 ${isWeb ? 'max-w-7xl mx-auto w-full' : ''}`}>
-        {/* ============================================ */}
-        {/* Header — therapist-50 bg, therapist-100 border */}
-        {/* ============================================ */}
+      <View className={`flex-1 ${isWeb ? 'max-w-5xl mx-auto w-full' : ''}`}>
         <View
           style={{
             backgroundColor: '#FDF6EA',
@@ -195,7 +190,7 @@ const TherapistDashboardScreen = () => {
           }}
         >
           {/* Title row */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
             <View>
               <Text style={{ fontSize: 24, fontWeight: '700', color: '#1A1A1A' }}>
                 Tableau de bord
@@ -228,49 +223,51 @@ const TherapistDashboardScreen = () => {
           {/* STATS WITH VISUAL HIERARCHY                  */}
           {/* ============================================ */}
 
-          {/* Main stat — full width, large */}
-          <View
-            style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: 16,
-              padding: 24,
-              marginBottom: 12,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.08,
-              shadowRadius: 16,
-              elevation: 4,
-            }}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+          {/* Stats row — compact horizontal layout on web */}
+          <View style={{ flexDirection: isWeb ? 'row' : 'column', gap: 12, marginBottom: 12 }}>
+            {/* Total patients stat */}
+            <View
+              style={{
+                flex: isWeb ? 1 : undefined,
+                backgroundColor: '#FFFFFF',
+                borderRadius: 14,
+                padding: 16,
+                flexDirection: 'row',
+                alignItems: 'center',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.06,
+                shadowRadius: 8,
+                elevation: 3,
+              }}
+            >
               <View
                 style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 22,
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
                   backgroundColor: '#FDF6EA',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  marginRight: 14,
+                  marginRight: 12,
                 }}
               >
-                <Ionicons name="people" size={22} color="#E8A838" />
+                <Ionicons name="people" size={20} color="#E8A838" />
               </View>
-              <Text style={{ fontSize: 14, color: '#6B6B6B', fontWeight: '500' }}>
-                Total patients
-              </Text>
+              <View>
+                <Text style={{ fontSize: 12, color: '#6B6B6B', fontWeight: '500' }}>
+                  Total patients
+                </Text>
+                <Text style={{ fontSize: 28, fontWeight: '700', color: '#1A1A1A' }}>
+                  {stats.total}
+                </Text>
+              </View>
             </View>
-            <Text style={{ fontSize: 40, fontWeight: '700', color: '#1A1A1A', marginLeft: 58 }}>
-              {stats.total}
-            </Text>
-          </View>
 
-          {/* Two small stats side by side */}
-          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 20 }}>
-            {/* Active stat — success left border */}
+            {/* Active stat */}
             <View
               style={{
-                flex: 1,
+                flex: isWeb ? 1 : undefined,
                 backgroundColor: '#FFFFFF',
                 borderRadius: 14,
                 padding: 16,
@@ -291,10 +288,10 @@ const TherapistDashboardScreen = () => {
               </Text>
             </View>
 
-            {/* Critical stat — danger left border */}
+            {/* Critical stat */}
             <View
               style={{
-                flex: 1,
+                flex: isWeb ? 1 : undefined,
                 backgroundColor: '#FFFFFF',
                 borderRadius: 14,
                 padding: 16,
@@ -316,9 +313,13 @@ const TherapistDashboardScreen = () => {
             </View>
           </View>
 
-          {/* Search bar — rounded-full */}
+          {/* Search bar + Add button row */}
+          <View style={{ flexDirection: isWeb ? 'row' : 'column', gap: 12, alignItems: isWeb ? 'center' : 'stretch' }}>
+          {/* Search bar — constrained width */}
           <View
             style={{
+              flex: isWeb ? 1 : undefined,
+              maxWidth: isWeb ? 400 : undefined,
               backgroundColor: '#FFFFFF',
               borderRadius: 24,
               borderWidth: 1,
@@ -327,7 +328,6 @@ const TherapistDashboardScreen = () => {
               alignItems: 'center',
               paddingHorizontal: 16,
               paddingVertical: Platform.OS === 'ios' ? 12 : 6,
-              marginBottom: 16,
             }}
           >
             <Ionicons name="search-outline" size={20} color="#A0A0A0" />
@@ -359,11 +359,11 @@ const TherapistDashboardScreen = () => {
               style={{
                 backgroundColor: '#E8A838',
                 borderRadius: 14,
-                paddingVertical: 14,
+                paddingVertical: 10,
+                paddingHorizontal: 18,
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                maxWidth: 280,
                 shadowColor: '#E8A838',
                 shadowOffset: { width: 0, height: 3 },
                 shadowOpacity: 0.2,
@@ -371,12 +371,13 @@ const TherapistDashboardScreen = () => {
                 elevation: 3,
               }}
             >
-              <Ionicons name="person-add" size={20} color="white" />
-              <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 15, marginLeft: 8 }}>
+              <Ionicons name="person-add" size={18} color="white" />
+              <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 14, marginLeft: 8 }}>
                 Ajouter un patient
               </Text>
             </TouchableOpacity>
           )}
+          </View>
         </View>
 
         {/* ============================================ */}
@@ -404,7 +405,7 @@ const TherapistDashboardScreen = () => {
             renderItem={({ item }) => <PatientCard patient={item} />}
             contentContainerStyle={{
               padding: isWeb ? 32 : 16,
-              ...(isWeb && { maxWidth: 1200, alignSelf: 'center', width: '100%' })
+              ...(isWeb && { maxWidth: 960, alignSelf: 'center', width: '100%' })
             }}
             numColumns={isWeb ? 2 : 1}
             key={isWeb ? 'grid' : 'list'}

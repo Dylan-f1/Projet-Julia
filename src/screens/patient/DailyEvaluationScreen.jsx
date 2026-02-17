@@ -8,12 +8,14 @@ import {
   Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import evaluationService from '../../services/evaluationService';
 
-const DailyEvaluationScreen = ({ navigation }) => {
+const DailyEvaluationScreen = () => {
+  const router = useRouter();
   const { width } = useWindowDimensions();
   const isDesktop = width >= 768;
 
@@ -54,7 +56,7 @@ const DailyEvaluationScreen = ({ navigation }) => {
     const result = await evaluationService.checkTodayEvaluation();
     setLoading(false);
 
-    if (result.success && result.data.completed) {
+    if (result.success && result.data?.evaluation) {
       setAlreadyCompleted(true);
     }
   };
@@ -231,7 +233,7 @@ const DailyEvaluationScreen = ({ navigation }) => {
           </Text>
           <Button
             title="Retour"
-            onPress={() => navigation.goBack()}
+            onPress={() => router.back()}
             variant="outline"
           />
         </View>
@@ -270,7 +272,7 @@ const DailyEvaluationScreen = ({ navigation }) => {
           </Text>
 
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() => router.back()}
             activeOpacity={0.8}
             className="py-4 px-8"
             style={{
@@ -297,7 +299,7 @@ const DailyEvaluationScreen = ({ navigation }) => {
           <View className="pt-6 pb-4">
             {isDesktop && (
               <TouchableOpacity
-                onPress={() => navigation.goBack()}
+                onPress={() => router.back()}
                 className="flex-row items-center mb-4"
               >
                 <Ionicons name="arrow-back" size={20} color="#5B9BD5" style={{ marginRight: 8 }} />

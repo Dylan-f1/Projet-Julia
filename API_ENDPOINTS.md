@@ -2,7 +2,7 @@
 
 Documentation de tous les endpoints API utilisés par l'application mobile.
 
-## 🔐 Authentification
+## Authentification
 
 ### Patient - Magic Link
 
@@ -390,7 +390,7 @@ Response 200:
 }
 ```
 
-## 📝 Notes de Séance
+## Notes de Séance
 
 ### Upload une note de séance
 ```http

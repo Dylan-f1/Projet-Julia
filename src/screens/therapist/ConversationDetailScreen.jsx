@@ -112,7 +112,9 @@ const ConversationDetailScreen = () => {
 
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 17, fontWeight: '600', color: '#1A1A1A' }}>
-                {conversation.summary || 'Conversation'}
+                {typeof conversation.summary === 'string'
+                  ? conversation.summary
+                  : conversation.summary?.mainConcern || 'Conversation'}
               </Text>
               <Text style={{ fontSize: 13, color: '#A0A0A0', marginTop: 4 }}>
                 {new Date(conversation.createdAt).toLocaleDateString('fr-FR', {

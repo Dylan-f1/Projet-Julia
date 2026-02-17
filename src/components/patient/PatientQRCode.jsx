@@ -1,4 +1,3 @@
-// src/components/patient/PatientQRCode.jsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Platform, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

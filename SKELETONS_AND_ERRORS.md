@@ -179,7 +179,7 @@ function ChatScreen() {
 
 ---
 
-## ❌ Gestion d'erreurs
+## Gestion d'erreurs
 
 ### Import
 ```javascript
@@ -607,7 +607,7 @@ Animated.timing(animatedValue, {
 
 ---
 
-## ✅ Bonnes pratiques
+## Bonnes pratiques
 
 1. **Toujours** afficher un skeleton pendant le chargement
 2. **Toujours** gérer les erreurs réseau

@@ -2,16 +2,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, ScrollView, Platform, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import ChatBubble from '../../components/chat/ChatBubble';
 import ChatInput from '../../components/chat/ChatInput';
 import TypingIndicator from '../../components/chat/TypingIndicator';
 import ConversationCard from '../../components/chat/ConversationCard';
+import WelcomeOptions from '../../components/chat/WelcomeOptions';
 
 import { useChat } from '../../contexts/ChatContext';
 
+// Messages d'amorce pour chaque option
+const OPTION_MESSAGES = {
+  chat: 'Bonjour Jul-IA, j\'aimerais discuter.',
+  appointment: 'J\'aimerais prendre ou modifier un rendez-vous avec mon psychologue.',
+  actions: 'Quelles sont les actions recommandées pour moi aujourd\'hui ?',
+};
+
 const ChatScreen = () => {
+  const router = useRouter();
+
   // Utiliser le ChatContext comme source de vérité unique
   const {
     conversations,
@@ -34,7 +45,6 @@ const ChatScreen = () => {
     loadConversations();
   }, []);
 
-  // Auto-scroll quand les messages changent
   useEffect(() => {
     if (messages.length > 0) {
       scrollToBottom();
@@ -43,14 +53,6 @@ const ChatScreen = () => {
 
   const handleSendMessage = async (content) => {
     if (!content.trim()) return;
-
-    console.log('📤 Envoi message:', content);
-
-    // sendMessage du contexte gère tout :
-    // - Création de conversation si besoin
-    // - Optimistic update
-    // - Appel API avec le bon conversationId
-    // - Mise à jour des messages avec la réponse IA
     await sendMessage(content);
     scrollToBottom();
   };
@@ -60,7 +62,6 @@ const ChatScreen = () => {
   };
 
   const handleNewConversation = () => {
-    console.log('🆕 Nouvelle conversation');
     startNewConversation();
   };
 
@@ -68,6 +69,16 @@ const ChatScreen = () => {
     setTimeout(() => {
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }, 150);
+  };
+
+  // Gestion des options du message d'introduction
+  const handleWelcomeOption = async (optionId) => {
+    const starterMessage = OPTION_MESSAGES[optionId];
+    if (starterMessage) {
+      await sendMessage(starterMessage);
+      scrollToBottom();
+    }
+    // L'option "emergency" est gérée directement dans WelcomeOptions
   };
 
   return (
@@ -120,8 +131,6 @@ const ChatScreen = () => {
                     onPress={() => handleSelectConversation(conv._id)}
                     activeOpacity={0.7}
                     style={{
-                      borderLeftWidth: 4,
-                      borderLeftColor: isActive ? '#5B9BD5' : 'transparent',
                       backgroundColor: isActive ? '#EEF4FB' : 'transparent',
                       borderRadius: 8,
                       marginBottom: 4,
@@ -191,31 +200,8 @@ const ChatScreen = () => {
                 <ActivityIndicator size="large" color="#5B9BD5" />
               </View>
             ) : messages.length === 0 ? (
-              /* ========== EMPTY STATE ========== */
-              <View className="flex-1 justify-center items-center py-20">
-                {/* Large 80px ai-400 circle with heart */}
-                <View
-                  className="items-center justify-center mb-6"
-                  style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: 40,
-                    backgroundColor: '#F0A8A0',
-                  }}
-                >
-                  <Ionicons name="heart" size={40} color="#FFFFFF" />
-                </View>
-                <Text className="text-xl font-bold mb-2" style={{ color: '#1A1A1A' }}>
-                  Bienvenue !
-                </Text>
-                <Text className="text-center px-8 leading-5 mb-6" style={{ color: '#6B6B6B' }}>
-                  Je suis Jul-IA, votre compagnon d'écoute disponible 24/7.
-                  {'\n'}Comment puis-je vous aider aujourd'hui ?
-                </Text>
-                <Text className="text-sm text-center px-12" style={{ color: '#A0A0A0' }}>
-                  Tapez votre message ci-dessous pour commencer
-                </Text>
-              </View>
+              /* ========== MESSAGE D'INTRODUCTION AVEC 4 OPTIONS ========== */
+              <WelcomeOptions onSelectOption={handleWelcomeOption} />
             ) : (
               <>
                 {messages.map((msg, index) => (

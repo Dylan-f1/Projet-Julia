@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import { View, FlatList, Text, useWindowDimensions, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import ConversationItem from '../../components/chat/ConversationItem';
 import Loading from '../../components/common/Loading';
-import EmptyState from '../../components/common/EmptyState';
-import Button from '../../components/common/Button';
 import { useChat } from '../../contexts/ChatContext';
 
-const ConversationHistoryScreen = ({ navigation }) => {
+const ConversationHistoryScreen = () => {
+  const router = useRouter();
   const { width } = useWindowDimensions();
   const isDesktop = width >= 768;
 
@@ -26,12 +26,12 @@ const ConversationHistoryScreen = ({ navigation }) => {
 
   const handleConversationPress = async (conversation) => {
     await loadConversation(conversation._id);
-    navigation.navigate('Chat');
+    router.push('/patient/chat');
   };
 
   const handleNewConversation = () => {
     startNewConversation();
-    navigation.navigate('Chat');
+    router.push('/patient/chat');
   };
 
   if (loading) {

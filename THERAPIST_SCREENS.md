@@ -2,7 +2,7 @@
 
 Documentation complète de tous les écrans pour les thérapeutes.
 
-## 🏠 Navigation Thérapeute
+## Navigation Thérapeute
 
 ```
 TherapistDashboard (Accueil)
@@ -23,11 +23,11 @@ TherapistDashboard (Accueil)
 **Fonction**: Connexion des thérapeutes par email/password
 
 **Features**:
-- ✅ Formulaire email + mot de passe
-- ✅ Toggle visibilité mot de passe
-- ✅ Lien vers inscription
-- ✅ Lien retour vers login patient
-- ✅ Gestion d'erreurs
+- Formulaire email + mot de passe
+- Toggle visibilité mot de passe
+- Lien vers inscription
+- Lien retour vers login patient
+- Gestion d'erreurs
 
 **Services utilisés**:
 - `authService.loginTherapist()`
@@ -40,12 +40,12 @@ TherapistDashboard (Accueil)
 **Fonction**: Inscription des nouveaux thérapeutes
 
 **Features**:
-- ✅ Formulaire complet (nom, prénom, email, tel, spécialité)
-- ✅ Sélection de spécialité (boutons)
-- ✅ Numéro ADELI/RPPS
-- ✅ Mot de passe + confirmation
-- ✅ Validation complète
-- ✅ Toggle visibilité mots de passe
+- Formulaire complet (nom, prénom, email, tel, spécialité)
+- Sélection de spécialité (boutons)
+- Numéro ADELI/RPPS
+- Mot de passe + confirmation
+- Validation complète
+- Toggle visibilité mots de passe
 
 **Champs**:
 - Prénom, Nom (requis)
@@ -66,18 +66,18 @@ TherapistDashboard (Accueil)
 **Fonction**: Vue d'ensemble des patients du thérapeute
 
 **Features**:
-- ✅ Statistiques (Total, Actifs, Critiques)
-- ✅ Liste de tous les patients
-- ✅ Indicateur patient critique
-- ✅ Dernier contact affiché
-- ✅ Bouton "Ajouter patient"
-- ✅ Pull-to-refresh
-- ✅ Navigation vers détail patient
-- ✅ Bouton déconnexion
+- Statistiques (Total, Actifs, Critiques)
+- Liste de tous les patients
+- Indicateur patient critique
+- Dernier contact affiché
+- Bouton "Ajouter patient"
+- Pull-to-refresh
+- Navigation vers détail patient
+- Bouton déconnexion
 
 **Statistiques affichées**:
 - 📊 Total patients
-- ✅ Patients actifs
+- Patients actifs
 - ⚠️ Situations critiques
 
 **Services utilisés**:
@@ -91,12 +91,12 @@ TherapistDashboard (Accueil)
 **Fonction**: Vue détaillée d'un patient avec onglets
 
 **Features**:
-- ✅ 4 onglets: Vue d'ensemble, Conversations, Évaluations, Notes
-- ✅ Alerte patient critique
-- ✅ Statistiques globales
-- ✅ Informations patient
-- ✅ Notes privées du thérapeute
-- ✅ Actions rapides (Modifier, Archiver)
+- 4 onglets: Vue d'ensemble, Conversations, Évaluations, Notes
+- Alerte patient critique
+- Statistiques globales
+- Informations patient
+- Notes privées du thérapeute
+- Actions rapides (Modifier, Archiver)
 
 **Onglet "Vue d'ensemble"**:
 - Stats: Nombre conversations, évaluations, notes
@@ -138,11 +138,11 @@ TherapistDashboard (Accueil)
 **Fonction**: Créer un nouveau patient
 
 **Features**:
-- ✅ Formulaire complet
-- ✅ Email automatique au patient
-- ✅ Notes privées
-- ✅ Validation des champs
-- ✅ Info bulle sur l'email automatique
+- Formulaire complet
+- Email automatique au patient
+- Notes privées
+- Validation des champs
+- Info bulle sur l'email automatique
 
 **Champs**:
 - Prénom (requis)
@@ -163,10 +163,10 @@ TherapistDashboard (Accueil)
 **Fonction**: Modifier les informations d'un patient
 
 **Features**:
-- ✅ Formulaire pré-rempli
-- ✅ Tous les champs modifiables
-- ✅ Validation
-- ✅ Retour au détail patient après sauvegarde
+- Formulaire pré-rempli
+- Tous les champs modifiables
+- Validation
+- Retour au détail patient après sauvegarde
 
 **Champs modifiables**:
 - Prénom, Nom
@@ -186,12 +186,12 @@ TherapistDashboard (Accueil)
 **Fonction**: Upload de notes manuscrites avec OCR
 
 **Features**:
-- ✅ 3 options: Prendre photo, Galerie, Document
-- ✅ Sélection date de séance
-- ✅ Preview de l'image
-- ✅ Upload + OCR automatique
-- ✅ Info bulle OCR + résumé IA
-- ✅ Permissions caméra/galerie
+- 3 options: Prendre photo, Galerie, Document
+- Sélection date de séance
+- Preview de l'image
+- Upload + OCR automatique
+- Info bulle OCR + résumé IA
+- Permissions caméra/galerie
 
 **Workflow**:
 1. Sélectionner date séance
@@ -213,11 +213,11 @@ TherapistDashboard (Accueil)
 **Fonction**: Lecture d'une conversation patient (read-only)
 
 **Features**:
-- ✅ Affichage des messages
-- ✅ Bulles user/assistant
-- ✅ Timestamps
-- ✅ Badge "LECTURE SEULE"
-- ✅ Info: Patient peut continuer à échanger
+- Affichage des messages
+- Bulles user/assistant
+- Timestamps
+- Badge "LECTURE SEULE"
+- Info: Patient peut continuer à échanger
 
 **Services utilisés**:
 - `chatService.getConversation()`
@@ -230,12 +230,12 @@ TherapistDashboard (Accueil)
 **Fonction**: Statistiques détaillées avec graphiques
 
 **Features**:
-- ✅ Sélection période (7j, 30j, 3m, 1an)
-- ✅ Stats globales (total évaluations, régularité)
-- ✅ Moyennes + min/max pour chaque indicateur
-- ✅ 3 graphiques (humeur, anxiété, sommeil)
-- ✅ Alertes automatiques (anxiété élevée, humeur basse)
-- ✅ Taux de complétion avec warning si < 50%
+- Sélection période (7j, 30j, 3m, 1an)
+- Stats globales (total évaluations, régularité)
+- Moyennes + min/max pour chaque indicateur
+- 3 graphiques (humeur, anxiété, sommeil)
+- Alertes automatiques (anxiété élevée, humeur basse)
+- Taux de complétion avec warning si < 50%
 
 **Graphiques** (LineChart):
 - Évolution humeur (vert)
@@ -266,28 +266,28 @@ TherapistDashboard (Accueil)
 - `type` - 'mood' | 'anxiety' | 'sleep'
 
 **Features**:
-- ✅ LineChart avec courbe lissée (Bézier)
-- ✅ 14 derniers jours max
-- ✅ Moyenne calculée
-- ✅ Couleur adaptée au type
-- ✅ Labels dates formatées
+- LineChart avec courbe lissée (Bézier)
+- 14 derniers jours max
+- Moyenne calculée
+- Couleur adaptée au type
+- Labels dates formatées
 
 **Librairie**:
 - `react-native-chart-kit`
 
 ---
 
-## 🔐 Sécurité & Permissions
+## Sécurité & Permissions
 
 ### Permissions requises
-- ✅ Camera (pour photos notes)
-- ✅ Media Library (pour galerie)
-- ✅ Storage (pour documents)
+- Camera (pour photos notes)
+- Media Library (pour galerie)
+- Storage (pour documents)
 
 ### Données sensibles
-- ✅ Notes privées (visibles uniquement par le thérapeute)
-- ✅ Conversations en lecture seule
-- ✅ Données patient protégées (JWT)
+- Notes privées (visibles uniquement par le thérapeute)
+- Conversations en lecture seule
+- Données patient protégées (JWT)
 
 ---
 
@@ -370,15 +370,15 @@ PatientDetail → Bouton Stats (ou icône)
 - 👥 `people` - Patients
 - 📊 `analytics` - Statistiques
 - 💬 `chatbubbles` - Conversations
-- 📝 `document-text` - Notes
+- `document-text` - Notes
 - ⚠️ `warning` - Critique
-- ✅ `checkmark-circle` - Actif
+- `checkmark-circle` - Actif
 
 ---
 
 ## 🧪 État d'avancement
 
-✅ **Complet**:
+**Complet**:
 - Login/Register thérapeute
 - Dashboard
 - Détail patient (4 onglets)

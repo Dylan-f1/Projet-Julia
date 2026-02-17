@@ -1,4 +1,3 @@
-// src/components/chat/MessageBubble.jsx
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

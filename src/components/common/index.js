@@ -1,4 +1,3 @@
-// Export all common components for easy import
 export { default as Alert } from './Alert';
 export { default as Avatar } from './Avatar';
 export { default as Badge } from './Badge';
@@ -15,9 +14,7 @@ export { default as SearchBar } from './SearchBar';
 export { default as Select } from './Select';
 export { default as Tabs } from './Tabs';
 
-// Error handling components
 export { default as ErrorMessage, NetworkError, AuthError, NotFoundError, ServerError, ValidationError, FormError, SuccessMessage, WarningMessage } from './ErrorMessage';
 
-// Skeleton components
 export { default as Skeleton, SkeletonText, SkeletonCard, SkeletonList, SkeletonAvatar, SkeletonButton, SkeletonInput, SkeletonChart, SkeletonPatientCard, SkeletonMessageBubble, SkeletonChatScreen, SkeletonDashboard } from './Skeleton';
 

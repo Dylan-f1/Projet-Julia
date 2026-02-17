@@ -57,20 +57,20 @@ julia-app-frontend/
 ## 📱 Fonctionnalités
 
 ### Pour les patients :
-- ✅ Connexion par Magic Link (email)
-- ✅ Chat 24/7 avec IA (Julia)
-- ✅ Historique des conversations
-- ✅ Évaluation quotidienne (humeur, anxiété, sommeil)
-- ✅ Notifications push
+- Connexion par Magic Link (email)
+- Chat 24/7 avec IA (Julia)
+- Historique des conversations
+- Évaluation quotidienne (humeur, anxiété, sommeil)
+- Notifications push
 
 ### Pour les thérapeutes :
-- ✅ Connexion email/password
-- ✅ Dashboard avec liste des patients
-- ✅ Vue détaillée par patient
-- ✅ Historique des conversations
-- ✅ Statistiques et évaluations
-- ✅ Upload de notes de séance (OCR)
-- ✅ Détection de situations critiques
+- Connexion email/password
+- Dashboard avec liste des patients
+- Vue détaillée par patient
+- Historique des conversations
+- Statistiques et évaluations
+- Upload de notes de séance (OCR)
+- Détection de situations critiques
 
 ## 🔧 Installation
 
@@ -195,7 +195,7 @@ npm start
 />
 ```
 
-## 🔐 Authentification
+## Authentification
 
 ### Flow Patient (Magic Link)
 1. Patient entre son email
@@ -274,12 +274,12 @@ Créer `eas.json` :
 
 ## 🔒 Sécurité
 
-- ✅ Tokens JWT stockés dans SecureStore
-- ✅ HTTPS uniquement en production
-- ✅ Validation des entrées
-- ✅ Gestion des erreurs API
-- ✅ Timeout sur requêtes (30s)
-- ✅ Refresh automatique si token expiré
+- Tokens JWT stockés dans SecureStore
+- HTTPS uniquement en production
+- Validation des entrées
+- Gestion des erreurs API
+- Timeout sur requêtes (30s)
+- Refresh automatique si token expiré
 
 ## 🐛 Debugging
 
@@ -294,7 +294,7 @@ npx react-native log-ios
 expo start -c
 ```
 
-## 📝 To-Do / Améliorations
+## To-Do / Améliorations
 
 - [ ] Mode hors-ligne avec cache
 - [ ] Optimisation des images

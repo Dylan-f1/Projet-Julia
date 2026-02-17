@@ -40,7 +40,9 @@ const ConversationsTab = ({ conversations = [], onViewConversation }) => {
                     <Ionicons name="chatbubble-outline" size={16} color="#5B9BD5" />
                   </View>
                   <Text className="text-base font-semibold text-text-900 flex-1">
-                    {conv.summary || 'Conversation'}
+                    {typeof conv.summary === 'string'
+                      ? conv.summary
+                      : conv.summary?.mainConcern || 'Conversation'}
                   </Text>
                 </View>
                 <Text className="text-xs text-text-300">

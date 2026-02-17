@@ -10,7 +10,6 @@ const Card = ({
 }) => {
   const Component = onPress ? TouchableOpacity : View;
 
-  // --- HERO variant: full-width, gradient-like two-tone bg, decorative circle ---
   if (variant === 'hero') {
     return (
       <Component
@@ -58,7 +57,6 @@ const Card = ({
     );
   }
 
-  // --- STAT variant: compact square-ish, centered content ---
   if (variant === 'stat') {
     return (
       <Component
@@ -80,7 +78,6 @@ const Card = ({
     );
   }
 
-  // --- ACTION variant: 4px left border, flex-row layout ---
   if (variant === 'action') {
     return (
       <Component
@@ -104,7 +101,6 @@ const Card = ({
     );
   }
 
-  // --- FLOATING variant: strong shadow, elevated feel ---
   if (variant === 'floating') {
     return (
       <Component
@@ -126,7 +122,6 @@ const Card = ({
     );
   }
 
-  // --- DEFAULT variant ---
   return (
     <Component
       onPress={onPress}

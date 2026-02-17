@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LineChart } from 'react-native-chart-kit';
 
 const EvaluationChart = ({ evaluations, type = 'mood' }) => {
-  const screenWidth = Dimensions.get('window').width - 48; // padding
+  const screenWidth = Dimensions.get('window').width - 48;
 
   if (!evaluations || evaluations.length === 0) {
     return (
@@ -17,10 +17,9 @@ const EvaluationChart = ({ evaluations, type = 'mood' }) => {
     );
   }
 
-  // Preparer les donnees pour le graphique
   const sortedEvaluations = [...evaluations]
     .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .slice(-14); // Garder les 14 derniers jours
+    .slice(-14); 
 
   const labels = sortedEvaluations.map((ev) => {
     const date = new Date(ev.date);

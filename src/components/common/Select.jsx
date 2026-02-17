@@ -13,7 +13,7 @@ const Select = ({
   label,
   placeholder = 'Selectionner...',
   value,
-  options = [], // [{ label: 'Option 1', value: 'opt1' }]
+  options = [],
   onSelect,
   error,
   disabled = false,

@@ -1,6 +1,19 @@
 import api from './api';
 
 class PatientService {
+  // Récupérer le profil du patient connecté (avec info du professionnel)
+  async getMyProfile() {
+    try {
+      const response = await api.get('/patients/me');
+      return { success: true, data: response.data };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Erreur lors du chargement du profil',
+      };
+    }
+  }
+
   async getMyPatients() {
     try {
       const response = await api.get('/patients');

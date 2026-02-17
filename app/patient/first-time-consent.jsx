@@ -1,4 +1,3 @@
-// app/patient/first-time-consent.jsx
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Platform, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,7 +14,6 @@ export default function FirstTimeConsentScreen() {
     try {
       setLoading(true);
 
-      // Stockage LOCAL du consentement (pas besoin de l'API pour l'instant)
       await AsyncStorage.setItem('dataConsentAccepted', 'true');
       await AsyncStorage.setItem('dataConsentDate', new Date().toISOString());
 

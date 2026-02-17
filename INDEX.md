@@ -102,20 +102,20 @@ npm start
 ## 📱 Fonctionnalités
 
 ### Patient
-- ✅ Connexion Magic Link (email sans mot de passe)
-- ✅ Chat 24/7 avec IA (Julia/Gemini)
-- ✅ Historique des conversations
-- ✅ Évaluation quotidienne (humeur, anxiété, sommeil)
-- ✅ Notifications push
+- Connexion Magic Link (email sans mot de passe)
+- Chat 24/7 avec IA (Julia/Gemini)
+- Historique des conversations
+- Évaluation quotidienne (humeur, anxiété, sommeil)
+- Notifications push
 
 ### Thérapeute
-- ✅ Connexion email/password
-- ✅ Dashboard avec vue d'ensemble
-- ✅ Liste et gestion des patients
-- ✅ Consultation des conversations
-- ✅ Visualisation des évaluations
-- ✅ Upload de notes de séance (OCR)
-- ✅ Détection de situations critiques
+- Connexion email/password
+- Dashboard avec vue d'ensemble
+- Liste et gestion des patients
+- Consultation des conversations
+- Visualisation des évaluations
+- Upload de notes de séance (OCR)
+- Détection de situations critiques
 
 ## 🎨 Design System
 
@@ -146,13 +146,13 @@ Tous les composants utilisent NativeWind (Tailwind) :
 />
 ```
 
-## 🔐 Sécurité
+## Sécurité
 
-- ✅ Tokens JWT stockés dans SecureStore (chiffré)
-- ✅ Intercepteurs Axios pour auto-refresh
-- ✅ Validation des inputs côté client
-- ✅ HTTPS uniquement en production
-- ✅ Timeout de 30s sur les requêtes
+- Tokens JWT stockés dans SecureStore (chiffré)
+- Intercepteurs Axios pour auto-refresh
+- Validation des inputs côté client
+- HTTPS uniquement en production
+- Timeout de 30s sur les requêtes
 
 ## 📊 Architecture
 
@@ -179,7 +179,7 @@ User Input → ChatContext → ChatService → API Backend
            Re-render UI
 ```
 
-## 📝 Scripts disponibles
+## Scripts disponibles
 
 ```bash
 npm start          # Démarre Expo
@@ -201,7 +201,7 @@ npx react-native log-android
 npx react-native log-ios
 ```
 
-## 📤 Build & Déploiement
+## Build & Déploiement
 
 ```bash
 # Build Android

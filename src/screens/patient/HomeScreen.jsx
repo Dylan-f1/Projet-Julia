@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, ScrollView, Platform, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
 import Loading from '../../components/common/Loading';
 import { useAuth } from '../../contexts/AuthContext';
+import patientService from '../../services/patientService';
+import evaluationService from '../../services/evaluationService';
+import chatService from '../../services/chatService';
 
 const HomeScreen = () => {
   const router = useRouter();
@@ -18,10 +18,15 @@ const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
   const [checkingConsent, setCheckingConsent] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [patientData, setPatientData] = useState(null);
+
+  const [patientProfile, setPatientProfile] = useState(null);
+  const [stats, setStats] = useState({
+    daysSinceCreation: 0,
+    evaluationCount: 0,
+    conversationCount: 0,
+  });
   const [lastEvaluation, setLastEvaluation] = useState(null);
 
-  // VERIFICATION DU CONSENTEMENT EN PREMIER
   useEffect(() => {
     checkConsent();
   }, []);
@@ -30,43 +35,66 @@ const HomeScreen = () => {
     try {
       const consentAccepted = await AsyncStorage.getItem('dataConsentAccepted');
 
-      console.log('🏠 Vérification consentement depuis HomeScreen:', consentAccepted);
-
       if (!consentAccepted || consentAccepted !== 'true') {
-        console.log('❌ Pas de consentement, redirection vers first-time-consent');
         router.replace('/patient/first-time-consent');
         return;
       }
 
-      console.log('✅ Consentement OK, chargement des données');
       setCheckingConsent(false);
-      loadPatientData();
-
+      loadAllData();
     } catch (error) {
       console.error('Erreur vérification consentement:', error);
       setCheckingConsent(false);
-      loadPatientData();
+      loadAllData();
     }
   };
 
-  const loadPatientData = async () => {
+  const loadAllData = useCallback(async () => {
     setLoading(true);
 
-    setTimeout(() => {
-      setPatientData({
-        firstName: user?.firstName || 'Patient',
-        lastName: user?.lastName || '',
-        therapistName: 'Dr. Martin',
-        nextAppointment: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        weeklyGoal: 'Pratiquer la méditation 10 minutes par jour',
-      });
+    try {
+      const [profileResult, evaluationsResult, conversationsResult] = await Promise.all([
+        patientService.getMyProfile(),
+        evaluationService.getPatientEvaluations(),
+        chatService.getConversationHistory(),
+      ]);
+
+      if (profileResult.success) {
+        const profile = profileResult.data?.patient || profileResult.data;
+        setPatientProfile(profile);
+
+        if (profile?.createdAt) {
+          const created = new Date(profile.createdAt);
+          const now = new Date();
+          const diffDays = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+          setStats(prev => ({ ...prev, daysSinceCreation: Math.max(1, diffDays) }));
+        }
+      }
+
+      if (evaluationsResult.success) {
+        const evaluations = evaluationsResult.data?.evaluations || [];
+        setStats(prev => ({ ...prev, evaluationCount: evaluations.length }));
+
+        if (evaluations.length > 0) {
+          setLastEvaluation(evaluations[0]);
+        }
+      }
+
+      if (conversationsResult.success) {
+        const conversations = conversationsResult.data?.conversations || conversationsResult.data || [];
+        const count = Array.isArray(conversations) ? conversations.length : 0;
+        setStats(prev => ({ ...prev, conversationCount: count }));
+      }
+    } catch (error) {
+      console.error('Erreur chargement données dashboard:', error);
+    } finally {
       setLoading(false);
-    }, 1000);
-  };
+    }
+  }, []);
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await loadPatientData();
+    await loadAllData();
     setRefreshing(false);
   };
 
@@ -76,7 +104,7 @@ const HomeScreen = () => {
   };
 
   const handleNewEvaluation = () => {
-    router.push('/patient/evaluation/new');
+    router.push('/patient/evaluation');
   };
 
   const handleViewJournal = () => {
@@ -91,7 +119,54 @@ const HomeScreen = () => {
     router.push('/patient/chat');
   };
 
-  // Afficher un loader pendant la verification du consentement
+  const getTherapistName = () => {
+    if (patientProfile?.professionalId?.firstName && patientProfile?.professionalId?.lastName) {
+      return `${patientProfile.professionalId.firstName} ${patientProfile.professionalId.lastName}`;
+    }
+    return null;
+  };
+
+  const getNextAppointment = () => {
+    if (patientProfile?.nextSessionDate) {
+      return new Date(patientProfile.nextSessionDate);
+    }
+    return null;
+  };
+
+  const getTimeSinceEvaluation = () => {
+    if (!lastEvaluation?.date && !lastEvaluation?.createdAt) return null;
+    const evalDate = new Date(lastEvaluation.date || lastEvaluation.createdAt);
+    const now = new Date();
+    const diffHours = Math.floor((now - evalDate) / (1000 * 60 * 60));
+
+    if (diffHours < 1) return "À l'instant";
+    if (diffHours < 24) return `Il y a ${diffHours}h`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays === 1) return 'Hier';
+    return `Il y a ${diffDays} jours`;
+  };
+
+  const getMoodIcon = (mood) => {
+    if (!mood) return { name: 'help-circle', color: '#A0A0A0', bg: '#F5F5F4' };
+    if (mood >= 4) return { name: 'happy', color: '#4CAF82', bg: '#EDFAF2' };
+    if (mood >= 3) return { name: 'remove-circle', color: '#E8A838', bg: '#FDF6EA' };
+    return { name: 'sad', color: '#E05B5B', bg: '#FEF0F0' };
+  };
+
+  const getAnxietyIcon = (anxiety) => {
+    if (!anxiety) return { name: 'help-circle', color: '#A0A0A0', bg: '#F5F5F4' };
+    if (anxiety <= 2) return { name: 'pulse', color: '#4CAF82', bg: '#EDFAF2' };
+    if (anxiety <= 3) return { name: 'pulse', color: '#E8A838', bg: '#FDF6EA' };
+    return { name: 'pulse', color: '#E05B5B', bg: '#FEF0F0' };
+  };
+
+  const getSleepIcon = (sleep) => {
+    if (!sleep) return { name: 'help-circle', color: '#A0A0A0', bg: '#F5F5F4' };
+    if (sleep >= 4) return { name: 'moon', color: '#5B9BD5', bg: '#EEF4FB' };
+    if (sleep >= 3) return { name: 'moon', color: '#E8A838', bg: '#FDF6EA' };
+    return { name: 'moon', color: '#E05B5B', bg: '#FEF0F0' };
+  };
+
   if (checkingConsent) {
     return (
       <SafeAreaView className="flex-1 bg-surface-50">
@@ -106,6 +181,13 @@ const HomeScreen = () => {
   if (loading) {
     return <Loading message="Chargement de votre espace..." />;
   }
+
+  const firstName = patientProfile?.firstName || user?.firstName || 'Patient';
+  const therapistName = getTherapistName();
+  const nextAppointment = getNextAppointment();
+  const moodIcon = getMoodIcon(lastEvaluation?.mood);
+  const anxietyIcon = getAnxietyIcon(lastEvaluation?.anxiety);
+  const sleepIcon = getSleepIcon(lastEvaluation?.sleep);
 
   return (
     <SafeAreaView className="flex-1 bg-surface-50">
@@ -128,20 +210,6 @@ const HomeScreen = () => {
               overflow: 'hidden',
             }}
           >
-            {/* Decorative circle */}
-            <View
-              style={{
-                position: 'absolute',
-                top: -30,
-                right: -30,
-                width: 150,
-                height: 150,
-                borderRadius: 9999,
-                backgroundColor: '#A9C9EB',
-                opacity: 0.2,
-              }}
-            />
-
             {/* Logout icon top-right */}
             <View className="flex-row justify-end mb-4">
               <TouchableOpacity
@@ -154,7 +222,7 @@ const HomeScreen = () => {
             </View>
 
             <Text className="text-2xl font-bold mb-1" style={{ color: '#1A1A1A' }}>
-              Bonjour, {patientData?.firstName} !
+              Bonjour, {firstName} !
             </Text>
             <Text className="text-base mb-5" style={{ color: '#6B6B6B' }}>
               Comment allez-vous ?
@@ -178,9 +246,9 @@ const HomeScreen = () => {
 
           <View className="px-5 pt-5 pb-6">
 
-            {/* ========== STATS ROW — ASYMMETRIC ========== */}
+            {/* ========== STATS ROW — DYNAMIQUES ========== */}
             <View className="flex-row mb-6" style={{ gap: 12 }}>
-              {/* Stat 1 — Tall */}
+              {/* Stat 1 — Jours de suivi */}
               <View
                 className="items-center justify-center rounded-2xl p-4"
                 style={{
@@ -194,14 +262,18 @@ const HomeScreen = () => {
                   elevation: 3,
                 }}
               >
-                <View className="w-10 h-10 rounded-xl items-center justify-center mb-2" style={{ backgroundColor: '#EEF4FB' }}>
+                <View className="w-8 h-8 rounded-xl items-center justify-center mb-2" style={{ backgroundColor: '#EEF4FB' }}>
                   <Ionicons name="calendar-outline" size={20} color="#5B9BD5" />
                 </View>
-                <Text className="text-3xl font-bold" style={{ color: '#1A1A1A' }}>7</Text>
-                <Text className="text-xs mt-1 text-center" style={{ color: '#6B6B6B' }}>jours{'\n'}de suivi</Text>
+                <Text className="text-3xl font-bold" style={{ color: '#1A1A1A' }}>
+                  {stats.daysSinceCreation}
+                </Text>
+                <Text className="text-xs mt-1 text-center" style={{ color: '#6B6B6B' }}>
+                  {stats.daysSinceCreation <= 1 ? 'jour de suivi' : 'jours de suivi'}
+                </Text>
               </View>
 
-              {/* Stat 2 */}
+              {/* Stat 2 — Nombre d'évaluations */}
               <View
                 className="items-center justify-center rounded-2xl p-4"
                 style={{
@@ -214,11 +286,13 @@ const HomeScreen = () => {
                   elevation: 3,
                 }}
               >
-                <Text className="text-2xl font-bold" style={{ color: '#1A1A1A' }}>3</Text>
+                <Text className="text-2xl font-bold" style={{ color: '#1A1A1A' }}>
+                  {stats.evaluationCount}
+                </Text>
                 <Text className="text-xs mt-1" style={{ color: '#6B6B6B' }}>éval.</Text>
               </View>
 
-              {/* Stat 3 */}
+              {/* Stat 3 — Conversations */}
               <View
                 className="items-center justify-center rounded-2xl p-4"
                 style={{
@@ -231,8 +305,10 @@ const HomeScreen = () => {
                   elevation: 3,
                 }}
               >
-                <Text className="text-2xl font-bold" style={{ color: '#4CAF82' }}>85%</Text>
-                <Text className="text-xs mt-1" style={{ color: '#6B6B6B' }}>objectif</Text>
+                <Text className="text-2xl font-bold" style={{ color: '#5B9BD5' }}>
+                  {stats.conversationCount}
+                </Text>
+                <Text className="text-xs mt-1" style={{ color: '#6B6B6B' }}>discuss.</Text>
               </View>
             </View>
 
@@ -282,59 +358,64 @@ const HomeScreen = () => {
             {/* ========== TWO COLUMNS ASYMMETRIC (60% / 40%) ========== */}
             <View className="flex-row mb-6" style={{ gap: 12 }}>
               {/* Rendez-vous — 60% */}
-              {patientData?.nextAppointment && (
-                <View
-                  className="rounded-2xl p-5"
-                  style={{
-                    flex: 3,
-                    backgroundColor: '#FDF6EA',
-                  }}
-                >
-                  <View className="flex-row items-center mb-3">
-                    <View className="w-9 h-9 rounded-xl items-center justify-center mr-2" style={{ backgroundColor: '#FAE8C4' }}>
-                      <Ionicons name="calendar" size={18} color="#E8A838" />
-                    </View>
-                    <Text className="text-sm font-semibold" style={{ color: '#8C5C18' }}>
-                      Rendez-vous
+              <View
+                className="rounded-2xl p-5"
+                style={{
+                  flex: 3,
+                  backgroundColor: '#FDF6EA',
+                }}
+              >
+                <View className="flex-row items-center mb-3">
+                  <View className="w-9 h-9 rounded-xl items-center justify-center mr-2" style={{ backgroundColor: '#FAE8C4' }}>
+                    <Ionicons name="calendar" size={18} color="#E8A838" />
+                  </View>
+                  <Text className="text-sm font-semibold" style={{ color: '#8C5C18' }}>
+                    Rendez-vous
+                  </Text>
+                </View>
+                {nextAppointment ? (
+                  <>
+                    <Text className="text-base font-bold mb-1" style={{ color: '#1A1A1A' }}>
+                      {nextAppointment.toLocaleDateString('fr-FR', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                      })}
                     </Text>
-                  </View>
-                  <Text className="text-base font-bold mb-1" style={{ color: '#1A1A1A' }}>
-                    {patientData.nextAppointment.toLocaleDateString('fr-FR', {
-                      weekday: 'long',
-                      day: 'numeric',
-                      month: 'long',
-                    })}
-                  </Text>
+                    {therapistName && (
+                      <Text className="text-sm" style={{ color: '#6B6B6B' }}>
+                        Avec {therapistName}
+                      </Text>
+                    )}
+                  </>
+                ) : (
                   <Text className="text-sm" style={{ color: '#6B6B6B' }}>
-                    Avec {patientData.therapistName}
+                    Aucun rendez-vous prévu
                   </Text>
-                </View>
-              )}
+                )}
+              </View>
 
-              {/* Objectif semaine — 40% */}
-              {patientData?.weeklyGoal && (
-                <View
-                  className="rounded-2xl p-5"
-                  style={{
-                    flex: 2,
-                    backgroundColor: '#EEF4FB',
-                  }}
-                >
-                  <View className="w-8 h-8 rounded-lg items-center justify-center mb-2" style={{ backgroundColor: '#D4E4F5' }}>
-                    <Ionicons name="flag" size={16} color="#5B9BD5" />
-                  </View>
-                  <Text className="text-sm font-semibold mb-1" style={{ color: '#1F4F7A' }}>
-                    Objectif
-                  </Text>
-                  <Text className="text-xs leading-4" style={{ color: '#404040' }} numberOfLines={3}>
-                    {patientData.weeklyGoal}
-                  </Text>
-                  {/* Small progress bar */}
-                  <View className="mt-3 rounded-full h-2" style={{ backgroundColor: '#D4E4F5' }}>
-                    <View className="h-2 rounded-full" style={{ width: '85%', backgroundColor: '#5B9BD5' }} />
-                  </View>
+              {/* Séances — 40% */}
+              <View
+                className="rounded-2xl p-5"
+                style={{
+                  flex: 2,
+                  backgroundColor: '#EEF4FB',
+                }}
+              >
+                <View className="w-8 h-8 rounded-lg items-center justify-center mb-2" style={{ backgroundColor: '#D4E4F5' }}>
+                  <Ionicons name="people" size={16} color="#5B9BD5" />
                 </View>
-              )}
+                <Text className="text-sm font-semibold mb-1" style={{ color: '#1F4F7A' }}>
+                  Séances
+                </Text>
+                <Text className="text-2xl font-bold" style={{ color: '#1A1A1A' }}>
+                  {patientProfile?.sessionCount || 0}
+                </Text>
+                <Text className="text-xs" style={{ color: '#6B6B6B' }}>
+                  avec votre psy
+                </Text>
+              </View>
             </View>
 
             {/* ========== TOOLS — HORIZONTAL ScrollView ========== */}
@@ -402,7 +483,7 @@ const HomeScreen = () => {
               </TouchableOpacity>
             </ScrollView>
 
-            {/* ========== DERNIERE EVALUATION ========== */}
+            {/* ========== DERNIERE EVALUATION — DYNAMIQUE ========== */}
             <View
               className="rounded-2xl p-5 mb-4"
               style={{
@@ -418,43 +499,70 @@ const HomeScreen = () => {
                 <Text className="text-base font-semibold" style={{ color: '#1A1A1A' }}>
                   Dernière évaluation
                 </Text>
-                <Text className="text-sm font-medium" style={{ color: '#A0A0A0' }}>Il y a 2 jours</Text>
+                <Text className="text-sm font-medium" style={{ color: '#A0A0A0' }}>
+                  {lastEvaluation ? getTimeSinceEvaluation() : 'Aucune'}
+                </Text>
               </View>
 
-              <View className="flex-row justify-between">
-                <View className="items-center flex-1">
-                  <Text className="text-xs mb-2 font-medium" style={{ color: '#6B6B6B' }}>Humeur</Text>
-                  <View className="flex-row items-center mb-1">
-                    <Text className="text-2xl font-bold" style={{ color: '#1A1A1A' }}>4</Text>
-                    <Text style={{ color: '#A0A0A0' }}>/5</Text>
+              {lastEvaluation ? (
+                <View className="flex-row justify-between">
+                  <View className="items-center flex-1">
+                    <Text className="text-xs mb-2 font-medium" style={{ color: '#6B6B6B' }}>Humeur</Text>
+                    <View className="flex-row items-center mb-1">
+                      <Text className="text-2xl font-bold" style={{ color: '#1A1A1A' }}>
+                        {lastEvaluation.mood}
+                      </Text>
+                      <Text style={{ color: '#A0A0A0' }}>/5</Text>
+                    </View>
+                    <View className="w-9 h-9 rounded-xl items-center justify-center" style={{ backgroundColor: moodIcon.bg }}>
+                      <Ionicons name={moodIcon.name} size={18} color={moodIcon.color} />
+                    </View>
                   </View>
-                  <View className="w-9 h-9 rounded-xl items-center justify-center" style={{ backgroundColor: '#EDFAF2' }}>
-                    <Ionicons name="happy" size={18} color="#4CAF82" />
-                  </View>
-                </View>
 
-                <View className="items-center flex-1">
-                  <Text className="text-xs mb-2 font-medium" style={{ color: '#6B6B6B' }}>Anxiété</Text>
-                  <View className="flex-row items-center mb-1">
-                    <Text className="text-2xl font-bold" style={{ color: '#1A1A1A' }}>2</Text>
-                    <Text style={{ color: '#A0A0A0' }}>/5</Text>
+                  <View className="items-center flex-1">
+                    <Text className="text-xs mb-2 font-medium" style={{ color: '#6B6B6B' }}>Anxiété</Text>
+                    <View className="flex-row items-center mb-1">
+                      <Text className="text-2xl font-bold" style={{ color: '#1A1A1A' }}>
+                        {lastEvaluation.anxiety || '-'}
+                      </Text>
+                      {lastEvaluation.anxiety && <Text style={{ color: '#A0A0A0' }}>/5</Text>}
+                    </View>
+                    <View className="w-9 h-9 rounded-xl items-center justify-center" style={{ backgroundColor: anxietyIcon.bg }}>
+                      <Ionicons name={anxietyIcon.name} size={18} color={anxietyIcon.color} />
+                    </View>
                   </View>
-                  <View className="w-9 h-9 rounded-xl items-center justify-center" style={{ backgroundColor: '#EEF4FB' }}>
-                    <Ionicons name="pulse" size={18} color="#5B9BD5" />
-                  </View>
-                </View>
 
-                <View className="items-center flex-1">
-                  <Text className="text-xs mb-2 font-medium" style={{ color: '#6B6B6B' }}>Sommeil</Text>
-                  <View className="flex-row items-center mb-1">
-                    <Text className="text-2xl font-bold" style={{ color: '#1A1A1A' }}>3</Text>
-                    <Text style={{ color: '#A0A0A0' }}>/5</Text>
-                  </View>
-                  <View className="w-9 h-9 rounded-xl items-center justify-center" style={{ backgroundColor: '#FEF4F3' }}>
-                    <Ionicons name="moon" size={18} color="#F0A8A0" />
+                  <View className="items-center flex-1">
+                    <Text className="text-xs mb-2 font-medium" style={{ color: '#6B6B6B' }}>Sommeil</Text>
+                    <View className="flex-row items-center mb-1">
+                      <Text className="text-2xl font-bold" style={{ color: '#1A1A1A' }}>
+                        {lastEvaluation.sleep || '-'}
+                      </Text>
+                      {lastEvaluation.sleep && <Text style={{ color: '#A0A0A0' }}>/5</Text>}
+                    </View>
+                    <View className="w-9 h-9 rounded-xl items-center justify-center" style={{ backgroundColor: sleepIcon.bg }}>
+                      <Ionicons name={sleepIcon.name} size={18} color={sleepIcon.color} />
+                    </View>
                   </View>
                 </View>
-              </View>
+              ) : (
+                <View className="items-center py-4">
+                  <View className="w-12 h-12 rounded-full items-center justify-center mb-3" style={{ backgroundColor: '#EEF4FB' }}>
+                    <Ionicons name="analytics-outline" size={24} color="#5B9BD5" />
+                  </View>
+                  <Text className="text-sm text-center" style={{ color: '#6B6B6B' }}>
+                    Pas encore d'évaluation.{'\n'}Faites votre première !
+                  </Text>
+                  <TouchableOpacity
+                    onPress={handleNewEvaluation}
+                    activeOpacity={0.8}
+                    className="mt-3 py-2.5 px-5"
+                    style={{ backgroundColor: '#5B9BD5', borderRadius: 12 }}
+                  >
+                    <Text className="text-white font-semibold text-sm">Commencer</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
 
           </View>

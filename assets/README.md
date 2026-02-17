@@ -68,18 +68,18 @@ https://www.figma.com/community/file/1155362909441341285
 ## 📐 Recommandations de design
 
 ### Icône (icon.png)
-- ✅ Simple et reconnaissable à petite taille
-- ✅ Pas de texte (sauf logo)
-- ✅ Contraste élevé
-- ✅ Fond transparent si possible
-- ❌ Pas de détails trop fins
+- Simple et reconnaissable à petite taille
+- Pas de texte (sauf logo)
+- Contraste élevé
+- Fond transparent si possible
+- Pas de détails trop fins
 
 ### Splash Screen
-- ✅ Logo centré
-- ✅ Fond de couleur unie (correspondant au thème)
-- ✅ Nom de l'app (optionnel)
-- ❌ Pas de texte de chargement
-- ❌ Pas d'informations qui changent
+- Logo centré
+- Fond de couleur unie (correspondant au thème)
+- Nom de l'app (optionnel)
+- Pas de texte de chargement
+- Pas d'informations qui changent
 
 ## 🎨 Suggestions pour Julia App
 
@@ -122,7 +122,7 @@ En attendant vos assets définitifs, vous pouvez utiliser :
 
 L'app fonctionnera avec les assets par défaut d'Expo, mais il est recommandé de les remplacer avant publication.
 
-## ✅ Checklist avant publication
+## Checklist avant publication
 
 - [ ] icon.png créé (1024x1024)
 - [ ] splash.png créé (1284x2778)

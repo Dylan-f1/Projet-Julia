@@ -6,7 +6,7 @@ import Button from './Button';
 const ErrorMessage = ({
   title = 'Une erreur est survenue',
   message,
-  type = 'general', // general, network, auth, notfound, server, validation
+  type = 'general', 
   onRetry,
   onGoBack,
   icon,
@@ -128,7 +128,6 @@ const ErrorMessage = ({
   );
 };
 
-// Erreurs pre-configurees
 export const NetworkError = ({ onRetry, className = '' }) => (
   <ErrorMessage
     type="network"
@@ -184,7 +183,6 @@ export const ValidationError = ({ errors = [], onGoBack, className = '' }) => (
   />
 );
 
-// Composant pour afficher les erreurs dans un formulaire
 export const FormError = ({ error, className = '' }) => {
   if (!error) return null;
 
@@ -200,7 +198,6 @@ export const FormError = ({ error, className = '' }) => {
   );
 };
 
-// Composant pour afficher les messages de succes
 export const SuccessMessage = ({ message, onDismiss, className = '' }) => {
   if (!message) return null;
 
@@ -223,7 +220,6 @@ export const SuccessMessage = ({ message, onDismiss, className = '' }) => {
   );
 };
 
-// Composant pour afficher les warnings
 export const WarningMessage = ({ message, onDismiss, className = '' }) => {
   if (!message) return null;
 

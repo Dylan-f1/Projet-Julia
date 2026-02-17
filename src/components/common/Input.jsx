@@ -20,14 +20,12 @@ const Input = ({
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
-  // Border color logic with new tokens
   const borderColor = error
     ? 'border-danger-400'
     : isFocused
     ? 'border-patient-300'
     : 'border-surface-200';
 
-  // Focus glow effect via inline style
   const focusStyle =
     isFocused && !error
       ? {

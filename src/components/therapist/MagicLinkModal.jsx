@@ -1,4 +1,3 @@
-// src/components/therapist/MagicLinkModal.jsx
 import React, { useState } from 'react';
 import { View, Text, Modal, TouchableOpacity, Platform, Alert, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';

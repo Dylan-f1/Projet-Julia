@@ -1,4 +1,3 @@
-// app/(auth)/verify-magic-link.jsx
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

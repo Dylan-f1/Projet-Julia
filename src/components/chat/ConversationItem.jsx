@@ -1,4 +1,3 @@
-// src/components/chat/ConversationItem.jsx
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { format, isToday, isYesterday } from 'date-fns';
@@ -35,7 +34,9 @@ const ConversationItem = ({ conversation, onPress }) => {
           }`}
           numberOfLines={1}
         >
-          {conversation.summary || 'Nouvelle conversation'}
+          {typeof conversation.summary === 'string'
+            ? conversation.summary
+            : conversation.summary?.mainConcern || 'Nouvelle conversation'}
         </Text>
 
         <Text className="text-xs ml-2 text-text-300">
