@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-const LOCAL_IP = '192.168.1.16';
+const LOCAL_IP = '192.168.189.204';
 
 const ENV = {
   apiUrl: Platform.select({

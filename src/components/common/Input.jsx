@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, TextInput, Text, TouchableOpacity } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, TextInput, Text, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 
 const Input = ({
   label,
@@ -19,6 +19,7 @@ const Input = ({
   ...props
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef(null);
 
   const borderColor = error
     ? 'border-danger-400'
@@ -43,41 +44,44 @@ const Input = ({
         <Text className="text-text-700 font-medium mb-2">{label}</Text>
       )}
 
-      <View
-        className={`flex-row border rounded-xl px-3 ${borderColor} ${
-          !editable ? 'bg-surface-100' : 'bg-white'
-        } ${multiline ? 'items-start' : 'items-center'}`}
-        style={focusStyle}
-      >
-        {icon && (
-          <View className={`mr-2 ${multiline ? 'pt-3' : ''}`}>{icon}</View>
-        )}
+      <TouchableWithoutFeedback onPress={() => editable && inputRef.current?.focus()}>
+        <View
+          className={`flex-row border rounded-xl px-3 ${borderColor} ${
+            !editable ? 'bg-surface-100' : 'bg-white'
+          } ${multiline ? 'items-start' : 'items-center'}`}
+          style={focusStyle}
+        >
+          {icon && (
+            <View className={`mr-2 ${multiline ? 'pt-3' : ''}`}>{icon}</View>
+          )}
 
-        <TextInput
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor="#A0A0A0"
-          secureTextEntry={secureTextEntry}
-          keyboardType={keyboardType}
-          multiline={multiline}
-          numberOfLines={numberOfLines}
-          editable={editable}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          textAlignVertical={multiline ? 'top' : 'center'}
-          className={`flex-1 py-3 text-text-900 ${
-            multiline ? 'min-h-[120px]' : ''
-          }`}
-          {...props}
-        />
+          <TextInput
+            ref={inputRef}
+            value={value}
+            onChangeText={onChangeText}
+            placeholder={placeholder}
+            placeholderTextColor="#A0A0A0"
+            secureTextEntry={secureTextEntry}
+            keyboardType={keyboardType}
+            multiline={multiline}
+            numberOfLines={numberOfLines}
+            editable={editable}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            textAlignVertical={multiline ? 'top' : 'center'}
+            className={`flex-1 py-3 text-text-900 ${
+              multiline ? 'min-h-[120px]' : ''
+            }`}
+            {...props}
+          />
 
-        {rightIcon && (
-          <TouchableOpacity onPress={onRightIconPress} className="ml-2">
-            {rightIcon}
-          </TouchableOpacity>
-        )}
-      </View>
+          {rightIcon && (
+            <TouchableOpacity onPress={onRightIconPress} className="ml-2">
+              {rightIcon}
+            </TouchableOpacity>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
 
       {error && (
         <Text className="text-danger-400 text-sm mt-1">{error}</Text>
