@@ -224,7 +224,7 @@ const TherapistDashboardScreen = () => {
           {/* ============================================ */}
 
           {/* Stats row — compact horizontal layout on web */}
-          <View style={{ flexDirection: isWeb ? 'row' : 'column', gap: 12, marginBottom: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
             {/* Total patients stat */}
             <View
               style={{
@@ -314,12 +314,11 @@ const TherapistDashboardScreen = () => {
           </View>
 
           {/* Search bar + Add button row */}
-          <View style={{ flexDirection: isWeb ? 'row' : 'column', gap: 350, alignItems: isWeb ? 'center' : 'stretch' }}>
+          <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
           {/* Search bar — constrained width */}
           <View
             style={{
-              flex: isWeb ? 1 : undefined,
-              maxWidth: isWeb ? 400 : undefined,
+              flex: 1,
               backgroundColor: '#FFFFFF',
               borderRadius: 24,
               borderWidth: 1,
