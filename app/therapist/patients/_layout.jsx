@@ -31,7 +31,6 @@ export default function PatientsLayout() {
       <Stack.Screen
         name="add"
         options={{
-          title: 'Ajouter un patient',
           presentation: 'modal',
         }}
       />

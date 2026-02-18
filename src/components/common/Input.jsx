@@ -44,12 +44,14 @@ const Input = ({
       )}
 
       <View
-        className={`flex-row items-center border rounded-xl px-3 ${borderColor} ${
+        className={`flex-row border rounded-xl px-3 ${borderColor} ${
           !editable ? 'bg-surface-100' : 'bg-white'
-        }`}
+        } ${multiline ? 'items-start' : 'items-center'}`}
         style={focusStyle}
       >
-        {icon && <View className="mr-2">{icon}</View>}
+        {icon && (
+          <View className={`mr-2 ${multiline ? 'pt-3' : ''}`}>{icon}</View>
+        )}
 
         <TextInput
           value={value}
@@ -63,8 +65,9 @@ const Input = ({
           editable={editable}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
+          textAlignVertical={multiline ? 'top' : 'center'}
           className={`flex-1 py-3 text-text-900 ${
-            multiline ? 'min-h-[100px] text-top' : ''
+            multiline ? 'min-h-[120px]' : ''
           }`}
           {...props}
         />

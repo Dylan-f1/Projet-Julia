@@ -35,14 +35,48 @@ const TherapistLoginScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className={`flex-1 ${isWeb ? 'max-w-md mx-auto w-full' : ''}`}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: isWeb ? '#FDF6EA' : '#FFFFFF',
+      }}
+    >
+      <View
+        style={{
+          flex: 1,
+          justifyContent: isWeb ? 'center' : undefined,
+          alignItems: isWeb ? 'center' : undefined,
+        }}
+      >
         <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ flexGrow: 1 }}
+          style={{ width: '100%' }}
+          contentContainerStyle={
+            isWeb
+              ? { flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }
+              : { flexGrow: 1 }
+          }
           keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={!isWeb}
+          showsVerticalScrollIndicator={false}
           bounces={false}
+        >
+        {/* Wrapper carte desktop */}
+        <View
+          style={
+            isWeb
+              ? {
+                  width: '100%',
+                  maxWidth: 440,
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: 24,
+                  overflow: 'hidden',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: 0.10,
+                  shadowRadius: 24,
+                  elevation: 8,
+                }
+              : { flex: 1 }
+          }
         >
           {/* ============================================ */}
           {/* TOP 45% — Warm gold background with decoration */}
@@ -260,6 +294,8 @@ const TherapistLoginScreen = () => {
               </TouchableOpacity>
             </View>
           </View>
+          {/* close desktop card wrapper */}
+        </View>
         </ScrollView>
       </View>
     </SafeAreaView>

@@ -191,9 +191,9 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-surface-50">
-      <View className={`flex-1 ${isWeb ? 'max-w-4xl mx-auto w-full' : ''}`}>
+      <View style={{ flex: 1 }}>
         <ScrollView
-          className="flex-1"
+          style={{ flex: 1 }}
           showsVerticalScrollIndicator={!isWeb}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={['#5B9BD5']} tintColor="#5B9BD5" />
@@ -202,7 +202,6 @@ const HomeScreen = () => {
 
           {/* ========== HERO BANNER ========== */}
           <View
-            className="px-6 pt-8 pb-10"
             style={{
               backgroundColor: '#EEF4FB',
               borderBottomLeftRadius: 28,
@@ -210,41 +209,69 @@ const HomeScreen = () => {
               overflow: 'hidden',
             }}
           >
-            {/* Logout icon top-right */}
-            <View className="flex-row justify-end mb-4">
-              <TouchableOpacity
-                onPress={handleLogout}
-                className="p-2 rounded-xl"
-                style={{ backgroundColor: 'rgba(255,255,255,0.5)' }}
-              >
-                <Ionicons name="log-out-outline" size={22} color="#1F4F7A" />
-              </TouchableOpacity>
-            </View>
-
-            <Text className="text-2xl font-bold mb-1" style={{ color: '#1A1A1A' }}>
-              Bonjour, {firstName} !
-            </Text>
-            <Text className="text-base mb-5" style={{ color: '#6B6B6B' }}>
-              Comment allez-vous ?
-            </Text>
-
-            {/* Evaluation rapide button */}
-            <TouchableOpacity
-              onPress={handleNewEvaluation}
-              activeOpacity={0.8}
-              className="py-3.5 px-6 self-start"
+            {/* Inner centré desktop */}
+            <View
               style={{
-                backgroundColor: '#5B9BD5',
-                borderRadius: 14,
+                maxWidth: isWeb ? 900 : undefined,
+                alignSelf: isWeb ? 'center' : undefined,
+                width: '100%',
+                paddingHorizontal: isWeb ? 40 : 24,
+                paddingTop: 32,
+                paddingBottom: 40,
               }}
             >
-              <Text className="text-white font-bold text-base">
-                Évaluation rapide
-              </Text>
-            </TouchableOpacity>
+              {/* Logout + Éval en ligne */}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <View>
+                  <Text style={{ fontSize: 26, fontWeight: '700', color: '#1A1A1A', marginBottom: 4 }}>
+                    Bonjour, {firstName} !
+                  </Text>
+                  <Text style={{ fontSize: 15, color: '#6B6B6B' }}>Comment allez-vous ?</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                  <TouchableOpacity
+                    onPress={handleNewEvaluation}
+                    activeOpacity={0.8}
+                    style={{
+                      backgroundColor: '#5B9BD5',
+                      borderRadius: 14,
+                      paddingVertical: 10,
+                      paddingHorizontal: 18,
+                    }}
+                  >
+                    <Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 14 }}>
+                      Évaluation rapide
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleLogout}
+                    style={{
+                      width: 38,
+                      height: 38,
+                      borderRadius: 19,
+                      backgroundColor: 'rgba(255,255,255,0.6)',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Ionicons name="log-out-outline" size={20} color="#1F4F7A" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
           </View>
 
-          <View className="px-5 pt-5 pb-6">
+          {/* ===== CONTENU CENTRÉ DESKTOP ===== */}
+          <View
+            style={{
+              maxWidth: isWeb ? 900 : undefined,
+              alignSelf: isWeb ? 'center' : undefined,
+              width: '100%',
+              paddingHorizontal: isWeb ? 40 : 20,
+              paddingTop: 20,
+              paddingBottom: 24,
+            }}
+          >
 
             {/* ========== STATS ROW — DYNAMIQUES ========== */}
             <View className="flex-row mb-6" style={{ gap: 12 }}>
@@ -312,11 +339,16 @@ const HomeScreen = () => {
               </View>
             </View>
 
-            {/* ========== CTA CHAT — FLOATING CARD WITH LEFT BORDER ========== */}
+            {/* ===== LAYOUT DESKTOP : 2 COLONNES ===== */}
+            <View style={{ flexDirection: isWeb ? 'row' : 'column', gap: 20, alignItems: isWeb ? 'flex-start' : undefined }}>
+
+            {/* ===== COLONNE GAUCHE (desktop) ===== */}
+            <View style={{ flex: isWeb ? 3 : undefined }}>
+
+            {/* ========== CTA CHAT ========== */}
             <TouchableOpacity
               onPress={handleChat}
               activeOpacity={0.8}
-              className="mb-6"
               style={{
                 backgroundColor: '#FFFFFF',
                 borderRadius: 14,
@@ -324,6 +356,7 @@ const HomeScreen = () => {
                 borderLeftColor: '#F0A8A0',
                 paddingVertical: 18,
                 paddingHorizontal: 18,
+                marginBottom: 16,
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.1,
@@ -331,32 +364,41 @@ const HomeScreen = () => {
                 elevation: 6,
               }}
             >
-              <View className="flex-row items-center">
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View
-                  className="w-11 h-11 rounded-full items-center justify-center mr-4"
-                  style={{ backgroundColor: '#FEF4F3' }}
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 22,
+                    backgroundColor: '#FEF4F3',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginRight: 14,
+                  }}
                 >
                   <Ionicons name="heart" size={22} color="#F0A8A0" />
                 </View>
-                <View className="flex-1">
-                  <Text className="text-lg font-bold" style={{ color: '#1A1A1A' }}>
-                    Jul-IA
-                  </Text>
-                  <Text className="text-sm" style={{ color: '#6B6B6B' }}>
-                    Votre assistante disponible 24/7
-                  </Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 17, fontWeight: '700', color: '#1A1A1A' }}>Jul-IA</Text>
+                  <Text style={{ fontSize: 13, color: '#6B6B6B' }}>Votre assistante disponible 24/7</Text>
                 </View>
                 <View
-                  className="w-9 h-9 rounded-full items-center justify-center"
-                  style={{ backgroundColor: '#EEF4FB' }}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 18,
+                    backgroundColor: '#EEF4FB',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
                 >
                   <Ionicons name="arrow-forward" size={18} color="#5B9BD5" />
                 </View>
               </View>
             </TouchableOpacity>
 
-            {/* ========== TWO COLUMNS ASYMMETRIC (60% / 40%) ========== */}
-            <View className="flex-row mb-6" style={{ gap: 12 }}>
+            {/* ========== RDV + SEANCES ========== */}
+            <View style={{ flexDirection: 'row', marginBottom: 16, gap: 12 }}>
               {/* Rendez-vous — 60% */}
               <View
                 className="rounded-2xl p-5"
@@ -417,71 +459,70 @@ const HomeScreen = () => {
                 </Text>
               </View>
             </View>
+            {/* fin colonne gauche desktop */}
+            </View>
 
-            {/* ========== TOOLS — HORIZONTAL ScrollView ========== */}
-            <Text className="text-lg font-bold mb-3" style={{ color: '#1A1A1A' }}>
+            {/* ===== COLONNE DROITE (desktop) — Outils + Évaluation ===== */}
+            <View style={{ flex: isWeb ? 2 : undefined }}>
+
+            {/* ========== TOOLS ========== */}
+            <Text style={{ fontSize: 16, fontWeight: '700', color: '#1A1A1A', marginBottom: 12 }}>
               Mes outils
             </Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="mb-6"
-              contentContainerStyle={{ gap: 12 }}
+            <View
+              style={{
+                flexDirection: 'row',
+                flexWrap: isWeb ? 'wrap' : undefined,
+                gap: 10,
+                marginBottom: 16,
+              }}
             >
-              {/* Journal */}
-              <TouchableOpacity
-                onPress={handleViewJournal}
-                activeOpacity={0.7}
-                className="items-center justify-center"
-                style={{
-                  width: 120,
-                  height: 120,
-                  backgroundColor: '#FAFAFA',
-                  borderRadius: 20,
-                }}
-              >
-                <View className="w-12 h-12 rounded-xl items-center justify-center mb-2" style={{ backgroundColor: '#FDF6EA' }}>
-                  <Ionicons name="book-outline" size={24} color="#E8A838" />
-                </View>
-                <Text className="text-sm font-medium" style={{ color: '#1A1A1A' }}>Journal</Text>
-              </TouchableOpacity>
-
-              {/* Exercices */}
-              <TouchableOpacity
-                onPress={handleViewExercises}
-                activeOpacity={0.7}
-                className="items-center justify-center"
-                style={{
-                  width: 120,
-                  height: 120,
-                  backgroundColor: '#FAFAFA',
-                  borderRadius: 20,
-                }}
-              >
-                <View className="w-12 h-12 rounded-xl items-center justify-center mb-2" style={{ backgroundColor: '#EDFAF2' }}>
-                  <Ionicons name="fitness-outline" size={24} color="#4CAF82" />
-                </View>
-                <Text className="text-sm font-medium" style={{ color: '#1A1A1A' }}>Exercices</Text>
-              </TouchableOpacity>
-
-              {/* Historique */}
-              <TouchableOpacity
-                onPress={() => router.push('/patient/history')}
-                activeOpacity={0.7}
-                className="items-center justify-center"
-                style={{
-                  width: 120,
-                  height: 120,
-                  backgroundColor: '#FAFAFA',
-                  borderRadius: 20,
-                }}
-              >
-                <View className="w-12 h-12 rounded-xl items-center justify-center mb-2" style={{ backgroundColor: '#EEF4FB' }}>
-                  <Ionicons name="bar-chart-outline" size={24} color="#5B9BD5" />
-                </View>
-                <Text className="text-sm font-medium" style={{ color: '#1A1A1A' }}>Historique</Text>
-              </TouchableOpacity>
-            </ScrollView>
+              {/* Sur mobile : ScrollView horizontal */}
+              {!isWeb ? (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 10 }}
+                >
+                  {[
+                    { label: 'Journal', icon: 'book-outline', color: '#E8A838', bg: '#FDF6EA', onPress: handleViewJournal },
+                    { label: 'Exercices', icon: 'fitness-outline', color: '#4CAF82', bg: '#EDFAF2', onPress: handleViewExercises },
+                    { label: 'Historique', icon: 'bar-chart-outline', color: '#5B9BD5', bg: '#EEF4FB', onPress: () => router.push('/patient/history') },
+                  ].map((tool) => (
+                    <TouchableOpacity
+                      key={tool.label}
+                      onPress={tool.onPress}
+                      activeOpacity={0.7}
+                      style={{ width: 110, height: 110, backgroundColor: '#FFFFFF', borderRadius: 18, alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: tool.bg, alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+                        <Ionicons name={tool.icon} size={22} color={tool.color} />
+                      </View>
+                      <Text style={{ fontSize: 12, fontWeight: '600', color: '#1A1A1A' }}>{tool.label}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              ) : (
+                /* Sur desktop : grille 3 colonnes */
+                [
+                  { label: 'Journal', icon: 'book-outline', color: '#E8A838', bg: '#FDF6EA', onPress: handleViewJournal },
+                  { label: 'Exercices', icon: 'fitness-outline', color: '#4CAF82', bg: '#EDFAF2', onPress: handleViewExercises },
+                  { label: 'Historique', icon: 'bar-chart-outline', color: '#5B9BD5', bg: '#EEF4FB', onPress: () => router.push('/patient/history') },
+                ].map((tool) => (
+                  <TouchableOpacity
+                    key={tool.label}
+                    onPress={tool.onPress}
+                    activeOpacity={0.7}
+                    style={{ flex: 1, minWidth: 80, backgroundColor: '#FFFFFF', borderRadius: 16, paddingVertical: 16, alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: tool.bg, alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+                      <Ionicons name={tool.icon} size={22} color={tool.color} />
+                    </View>
+                    <Text style={{ fontSize: 12, fontWeight: '600', color: '#1A1A1A' }}>{tool.label}</Text>
+                  </TouchableOpacity>
+                ))
+              )}
+            </View>
 
             {/* ========== DERNIERE EVALUATION — DYNAMIQUE ========== */}
             <View
@@ -563,6 +604,12 @@ const HomeScreen = () => {
                   </TouchableOpacity>
                 </View>
               )}
+            </View>
+
+            {/* fin colonne droite desktop */}
+            </View>
+
+            {/* fin wrapper 2 colonnes desktop */}
             </View>
 
           </View>

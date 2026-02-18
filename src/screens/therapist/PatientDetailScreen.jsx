@@ -213,9 +213,9 @@ const PatientDetailScreen = () => {
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: '#FAFAFA' }}>
-      <View className={`flex-1 ${isWeb ? 'max-w-5xl mx-auto w-full' : ''}`}>
+      <View style={{ flex: 1 }}>
 
-        {/* Patient header strip — therapist-50 background */}
+        {/* Bande header — pleine largeur avec contenu centré */}
         <View
           style={{
             backgroundColor: '#FDF6EA',
@@ -223,24 +223,44 @@ const PatientDetailScreen = () => {
             borderBottomColor: '#FAE8C4',
           }}
         >
-          <PatientHeader
-            patient={patient}
-            onBack={handleGoBack}
-            onEdit={handleEditPatient}
+          <View
+            style={
+              isWeb
+                ? { maxWidth: 960, alignSelf: 'center', width: '100%' }
+                : undefined
+            }
+          >
+            <PatientHeader
+              patient={patient}
+              onBack={handleGoBack}
+              onEdit={handleEditPatient}
+            />
+          </View>
+        </View>
+
+        {/* Tabs — contenu centré desktop */}
+        <View
+          style={
+            isWeb
+              ? { maxWidth: 960, alignSelf: 'center', width: '100%' }
+              : undefined
+          }
+        >
+          <PatientTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
           />
         </View>
 
-        {/* Tabs — active uses therapist-400 underline */}
-        <PatientTabs
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
-
         {/* Content area */}
         <ScrollView
-          className="flex-1"
-          style={{ backgroundColor: '#FAFAFA' }}
+          style={{ flex: 1, backgroundColor: '#FAFAFA' }}
           showsVerticalScrollIndicator={!isWeb}
+          contentContainerStyle={
+            isWeb
+              ? { maxWidth: 960, alignSelf: 'center', width: '100%' }
+              : undefined
+          }
         >
           {activeTab === 'overview' && (
             <OverviewTab

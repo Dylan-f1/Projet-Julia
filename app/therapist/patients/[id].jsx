@@ -1,4 +1,3 @@
-// app/therapist/patients/[id].jsx
 import { Stack } from 'expo-router';
 import PatientDetailScreen from '../../../src/screens/therapist/PatientDetailScreen';
 

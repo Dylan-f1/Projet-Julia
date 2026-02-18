@@ -12,7 +12,6 @@ export default function TherapistLayout() {
         tabBarActiveTintColor: '#E8A838',
         tabBarInactiveTintColor: '#A0A0A0',
         tabBarStyle: {
-          // Cache la tab bar sur web si tu preferes une sidebar
           display: isWeb ? 'none' : 'flex',
           backgroundColor: '#FFFFFF',
           borderTopWidth: 0,

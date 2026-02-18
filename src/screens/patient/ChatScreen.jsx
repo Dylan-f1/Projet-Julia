@@ -83,124 +83,181 @@ const ChatScreen = () => {
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: '#FAFAFA' }}>
-      <View className={`flex-1 ${isWeb ? 'flex-row' : ''}`}>
+      {/* Centrage max-width desktop */}
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          maxWidth: isWeb ? 1100 : undefined,
+          width: '100%',
+          alignSelf: isWeb ? 'center' : undefined,
+          borderLeftWidth: isWeb ? 1 : 0,
+          borderRightWidth: isWeb ? 1 : 0,
+          borderColor: '#EEECEB',
+        }}
+      >
 
         {/* ========== SIDEBAR (Web only) ========== */}
-        {isWeb && showSidebar && (
+        {isWeb && (
           <View
-            className="w-80"
             style={{
+              width: 300,
               borderRightWidth: 1,
               borderRightColor: '#EEECEB',
-              backgroundColor: '#FAFAFA',
+              backgroundColor: '#FFFFFF',
+              flexShrink: 0,
             }}
           >
             {/* Header sidebar */}
             <View
-              className="p-5"
               style={{
+                padding: 20,
                 borderBottomWidth: 1,
                 borderBottomColor: '#EEECEB',
+                backgroundColor: '#FEF4F3',
               }}
             >
-              <Text className="text-lg font-bold mb-3" style={{ color: '#1A1A1A' }}>
-                Mes conversations
-              </Text>
+              {/* Logo Jul-IA */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+                <View
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 18,
+                    backgroundColor: '#F0A8A0',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginRight: 10,
+                  }}
+                >
+                  <Ionicons name="sparkles" size={18} color="#FFFFFF" />
+                </View>
+                <View>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: '#1A1A1A' }}>Jul-IA</Text>
+                  <Text style={{ fontSize: 11, color: '#A0A0A0' }}>Vos conversations</Text>
+                </View>
+              </View>
               <TouchableOpacity
                 onPress={handleNewConversation}
-                className="py-3 px-4 flex-row items-center justify-center"
                 style={{
                   backgroundColor: '#5B9BD5',
-                  borderRadius: 14,
+                  borderRadius: 12,
+                  paddingVertical: 11,
+                  paddingHorizontal: 16,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 <Ionicons name="add" size={20} color="white" />
-                <Text className="text-white font-semibold ml-2">
+                <Text style={{ color: '#FFFFFF', fontWeight: '600', marginLeft: 8, fontSize: 14 }}>
                   Nouvelle discussion
                 </Text>
               </TouchableOpacity>
             </View>
 
             {/* Conversation list */}
-            <ScrollView className="flex-1 p-2">
-              {conversations.map(conv => {
-                const isActive = conv._id === activeConversation;
-                return (
-                  <TouchableOpacity
-                    key={conv._id}
-                    onPress={() => handleSelectConversation(conv._id)}
-                    activeOpacity={0.7}
-                    style={{
-                      backgroundColor: isActive ? '#EEF4FB' : 'transparent',
-                      borderRadius: 8,
-                      marginBottom: 4,
-                    }}
-                  >
-                    <ConversationCard
-                      conversation={conv}
-                      isActive={isActive}
+            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+              {conversations.length === 0 ? (
+                <View style={{ padding: 24, alignItems: 'center' }}>
+                  <Ionicons name="chatbubbles-outline" size={40} color="#C8C4C0" />
+                  <Text style={{ color: '#A0A0A0', marginTop: 12, textAlign: 'center', fontSize: 13 }}>
+                    Aucune conversation pour l'instant
+                  </Text>
+                </View>
+              ) : (
+                conversations.map(conv => {
+                  const isActive = conv._id === activeConversation;
+                  return (
+                    <TouchableOpacity
+                      key={conv._id}
                       onPress={() => handleSelectConversation(conv._id)}
-                    />
-                  </TouchableOpacity>
-                );
-              })}
+                      activeOpacity={0.7}
+                      style={{
+                        backgroundColor: isActive ? '#EEF4FB' : 'transparent',
+                        borderRadius: 0,
+                        borderBottomWidth: 1,
+                        borderBottomColor: '#F5F5F4',
+                      }}
+                    >
+                      <ConversationCard
+                        conversation={conv}
+                        isActive={isActive}
+                        onPress={() => handleSelectConversation(conv._id)}
+                      />
+                    </TouchableOpacity>
+                  );
+                })
+              )}
             </ScrollView>
           </View>
         )}
 
         {/* ========== MAIN CHAT AREA ========== */}
-        <View className="flex-1">
-          {/* Header */}
+        <View style={{ flex: 1, backgroundColor: '#FAFAFA' }}>
+          {/* Header chat */}
           <View
-            className="px-5 py-4 flex-row items-center"
             style={{
+              paddingHorizontal: 20,
+              paddingVertical: 14,
+              flexDirection: 'row',
+              alignItems: 'center',
               backgroundColor: '#FFFFFF',
               borderBottomWidth: 1,
               borderBottomColor: '#EEECEB',
             }}
           >
-            {/* Avatar */}
+            {/* Avatar Jul-IA */}
             <View
-              className="items-center justify-center mr-3"
               style={{
-                width: 36,
-                height: 36,
-                borderRadius: 18,
+                width: 40,
+                height: 40,
+                borderRadius: 20,
                 backgroundColor: '#F0A8A0',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 12,
               }}
             >
-              <Ionicons name="sparkles" size={18} color="#FFFFFF" />
+              <Ionicons name="sparkles" size={20} color="#FFFFFF" />
             </View>
-            <View className="flex-1">
-              <View className="flex-row items-center">
-                <Text className="text-lg font-bold mr-2" style={{ color: '#1A1A1A' }}>Jul-IA</Text>
-                {/* Green online dot */}
-                <View
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: '#4CAF82',
-                  }}
-                />
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ fontSize: 17, fontWeight: '700', color: '#1A1A1A', marginRight: 8 }}>Jul-IA</Text>
+                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#4CAF82' }} />
               </View>
-              <Text className="text-sm" style={{ color: '#6B6B6B' }}>Toujours là pour vous écouter</Text>
+              <Text style={{ fontSize: 13, color: '#6B6B6B' }}>Toujours là pour vous écouter</Text>
             </View>
+            {/* Bouton nouvelle conversation (mobile) */}
+            {!isWeb && (
+              <TouchableOpacity
+                onPress={handleNewConversation}
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: '#EEF4FB',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Ionicons name="add" size={22} color="#5B9BD5" />
+              </TouchableOpacity>
+            )}
           </View>
 
-          {/* Messages area */}
+          {/* Zone messages */}
           <ScrollView
             ref={scrollViewRef}
-            className="flex-1 px-4 py-4"
-            style={{ backgroundColor: '#FAFAFA' }}
+            style={{ flex: 1, backgroundColor: '#FAFAFA' }}
+            contentContainerStyle={{ paddingHorizontal: isWeb ? 24 : 16, paddingVertical: 16 }}
             showsVerticalScrollIndicator={false}
           >
             {loading ? (
-              <View className="flex-1 justify-center items-center py-20">
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 80 }}>
                 <ActivityIndicator size="large" color="#5B9BD5" />
               </View>
             ) : messages.length === 0 ? (
-              /* ========== MESSAGE D'INTRODUCTION AVEC 4 OPTIONS ========== */
               <WelcomeOptions onSelectOption={handleWelcomeOption} />
             ) : (
               <>
@@ -216,10 +273,10 @@ const ChatScreen = () => {
             )}
           </ScrollView>
 
-          {/* ========== INPUT AREA ========== */}
+          {/* Input area */}
           <View
             style={{
-              backgroundColor: '#F5F5F4',
+              backgroundColor: '#FFFFFF',
               borderTopWidth: 1,
               borderTopColor: '#EEECEB',
             }}

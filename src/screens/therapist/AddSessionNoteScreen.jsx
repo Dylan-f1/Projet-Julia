@@ -21,8 +21,9 @@ import sessionNoteService from '../../services/sessionNoteService';
 
 const STEPS = [
   { id: 1, label: 'Date' },
-  { id: 2, label: 'Document' },
-  { id: 3, label: 'Upload' },
+  { id: 2, label: 'Contenu' },
+  { id: 3, label: 'Document' },
+  { id: 4, label: 'Upload' },
 ];
 
 const AddSessionNoteScreen = () => {
@@ -34,6 +35,7 @@ const AddSessionNoteScreen = () => {
   const [sessionDate, setSessionDate] = useState(
     new Date().toISOString().split('T')[0]
   );
+  const [noteContent, setNoteContent] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
@@ -42,7 +44,7 @@ const AddSessionNoteScreen = () => {
   const [scaleAnim] = useState(new Animated.Value(0));
 
   // Step actuel pour l'indicateur de progression
-  const currentStep = uploadSuccess ? 3 : selectedFile ? 2 : sessionDate ? 1 : 0;
+  const currentStep = uploadSuccess ? 4 : selectedFile ? 3 : noteContent.trim() ? 2 : sessionDate ? 1 : 0;
 
   // --- Navigation ---
   const goToPatient = () => {
@@ -120,8 +122,8 @@ const AddSessionNoteScreen = () => {
 
   // --- Upload ---
   const handleUpload = async () => {
-    if (!selectedFile) {
-      Alert.alert('Erreur', 'Veuillez selectionner un fichier');
+    if (!selectedFile && !noteContent.trim()) {
+      Alert.alert('Erreur', 'Veuillez saisir du contenu ou selectionner un fichier');
       return;
     }
 
@@ -134,7 +136,8 @@ const AddSessionNoteScreen = () => {
     const result = await sessionNoteService.uploadSessionNote(
       patientId,
       selectedFile,
-      sessionDate
+      sessionDate,
+      noteContent.trim()
     );
     setUploading(false);
 
@@ -378,6 +381,51 @@ const AddSessionNoteScreen = () => {
             />
           </View>
 
+          {/* ---- Contenu de la note ---- */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: 16,
+              padding: isDesktop ? 28 : 20,
+              marginBottom: 16,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              elevation: 2,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+              <View
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: '#FAE8C4',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 12,
+                }}
+              >
+                <Ionicons name="create-outline" size={16} color="#E8A838" />
+              </View>
+              <Text style={{ fontSize: 17, fontWeight: '600', color: '#1A1A1A' }}>
+                Contenu de la note
+              </Text>
+            </View>
+            <Input
+              placeholder="Redigez vos observations, remarques ou notes de seance..."
+              value={noteContent}
+              onChangeText={setNoteContent}
+              multiline
+              numberOfLines={6}
+              icon={<Ionicons name="create-outline" size={20} color="#E8A838" />}
+            />
+            <Text style={{ fontSize: 12, color: '#A0A0A0', marginTop: -8, textAlign: 'right' }}>
+              {noteContent.length} caractere{noteContent.length > 1 ? 's' : ''}
+            </Text>
+          </View>
+
           {/* ---- Selection de fichier ---- */}
           <View
             style={{
@@ -407,7 +455,7 @@ const AddSessionNoteScreen = () => {
                 <Ionicons name="document-outline" size={16} color="#E8A838" />
               </View>
               <Text style={{ fontSize: 17, fontWeight: '600', color: '#1A1A1A' }}>
-                Document
+                Document (optionnel)
               </Text>
             </View>
 
@@ -621,10 +669,10 @@ const AddSessionNoteScreen = () => {
             <View style={isDesktop ? { minWidth: 200 } : undefined}>
               <TouchableOpacity
                 onPress={handleUpload}
-                disabled={!selectedFile || uploading}
+                disabled={(!selectedFile && !noteContent.trim()) || uploading}
                 activeOpacity={0.8}
                 style={{
-                  backgroundColor: selectedFile && !uploading ? '#E8A838' : '#C8C4C0',
+                  backgroundColor: (selectedFile || noteContent.trim()) && !uploading ? '#E8A838' : '#C8C4C0',
                   borderRadius: 14,
                   paddingVertical: 16,
                   flexDirection: 'row',
@@ -632,11 +680,11 @@ const AddSessionNoteScreen = () => {
                   justifyContent: 'center',
                   marginBottom: isDesktop ? 0 : 12,
                   opacity: uploading ? 0.6 : 1,
-                  shadowColor: selectedFile ? '#E8A838' : 'transparent',
+                  shadowColor: (selectedFile || noteContent.trim()) ? '#E8A838' : 'transparent',
                   shadowOffset: { width: 0, height: 3 },
                   shadowOpacity: 0.2,
                   shadowRadius: 8,
-                  elevation: selectedFile ? 3 : 0,
+                  elevation: (selectedFile || noteContent.trim()) ? 3 : 0,
                 }}
               >
                 {uploading ? (
@@ -651,17 +699,17 @@ const AddSessionNoteScreen = () => {
                     <Ionicons
                       name="cloud-upload-outline"
                       size={20}
-                      color={selectedFile ? '#FFFFFF' : '#A0A0A0'}
+                      color={(selectedFile || noteContent.trim()) ? '#FFFFFF' : '#A0A0A0'}
                     />
                     <Text
                       style={{
-                        color: selectedFile ? '#FFFFFF' : '#A0A0A0',
+                        color: (selectedFile || noteContent.trim()) ? '#FFFFFF' : '#A0A0A0',
                         fontWeight: '600',
                         fontSize: 16,
                         marginLeft: 8,
                       }}
                     >
-                      Uploader la note
+                      Enregistrer la note
                     </Text>
                   </>
                 )}

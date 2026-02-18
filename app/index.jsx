@@ -16,8 +16,6 @@ export default function Index() {
   }
 
   if (!isAuthenticated) {
-    // Redirect vers login therapeute
-    // Les patients arrivent directement via Magic Link
     return <Redirect href="/auth/therapist-login" />;
   }
 

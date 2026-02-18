@@ -2,31 +2,47 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const TabButton = ({ id, label, icon, activeTab, onPress }) => {
-  const isWeb = Platform.OS === 'web';
+const TABS = [
+  { id: 'overview',       label: "Vue d'ensemble", icon: 'grid-outline' },
+  { id: 'conversations',  label: 'Conversations',  icon: 'chatbubbles-outline' },
+  { id: 'evaluations',    label: 'Évaluations',    icon: 'analytics-outline' },
+  { id: 'notes',          label: 'Notes',          icon: 'document-text-outline' },
+];
+
+const TabButton = ({ id, label, icon, activeTab, onPress, isWeb }) => {
   const isActive = activeTab === id;
 
   return (
     <TouchableOpacity
       onPress={() => onPress(id)}
-      className={`py-3.5 border-b-2 ${
-        isActive ? 'border-therapist-400' : 'border-transparent'
-      } ${isWeb ? 'flex-1 hover:bg-surface-50' : 'min-w-[140px]'}`}
+      style={{
+        flex: isWeb ? 1 : undefined,
+        minWidth: isWeb ? undefined : 130,
+        paddingVertical: 14,
+        paddingHorizontal: isWeb ? 8 : 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderBottomWidth: 3,
+        borderBottomColor: isActive ? '#E8A838' : 'transparent',
+        backgroundColor: isActive ? '#FFFAF0' : 'transparent',
+      }}
     >
-      <View className="items-center">
-        <Ionicons
-          name={icon}
-          size={20}
-          color={isActive ? '#E8A838' : '#A0A0A0'}
-        />
-        <Text
-          className={`text-sm mt-1 ${
-            isActive ? 'text-text-900 font-semibold' : 'text-text-300'
-          }`}
-        >
-          {label}
-        </Text>
-      </View>
+      <Ionicons
+        name={icon}
+        size={20}
+        color={isActive ? '#E8A838' : '#A0A0A0'}
+      />
+      <Text
+        style={{
+          fontSize: 12,
+          marginTop: 4,
+          fontWeight: isActive ? '700' : '500',
+          color: isActive ? '#1A1A1A' : '#A0A0A0',
+        }}
+        numberOfLines={1}
+      >
+        {label}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -34,22 +50,23 @@ const TabButton = ({ id, label, icon, activeTab, onPress }) => {
 const PatientTabs = ({ activeTab, onTabChange }) => {
   const isWeb = Platform.OS === 'web';
 
-  const tabs = [
-    { id: 'overview', label: 'Vue d\'ensemble', icon: 'grid-outline' },
-    { id: 'conversations', label: 'Conversations', icon: 'chatbubbles-outline' },
-    { id: 'evaluations', label: 'Evaluations', icon: 'analytics-outline' },
-    { id: 'notes', label: 'Notes', icon: 'document-text-outline' },
-  ];
-
   if (isWeb) {
     return (
-      <View className="flex-row bg-white border-b border-surface-200">
-        {tabs.map((tab) => (
+      <View
+        style={{
+          flexDirection: 'row',
+          backgroundColor: '#FFFFFF',
+          borderBottomWidth: 1,
+          borderBottomColor: '#EEECEB',
+        }}
+      >
+        {TABS.map((tab) => (
           <TabButton
             key={tab.id}
             {...tab}
             activeTab={activeTab}
             onPress={onTabChange}
+            isWeb={isWeb}
           />
         ))}
       </View>
@@ -60,16 +77,17 @@ const PatientTabs = ({ activeTab, onTabChange }) => {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      className="bg-white border-b border-surface-200"
+      style={{ backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#EEECEB' }}
       contentContainerStyle={{ flexGrow: 1 }}
     >
-      <View className="flex-row">
-        {tabs.map((tab) => (
+      <View style={{ flexDirection: 'row' }}>
+        {TABS.map((tab) => (
           <TabButton
             key={tab.id}
             {...tab}
             activeTab={activeTab}
             onPress={onTabChange}
+            isWeb={false}
           />
         ))}
       </View>
